@@ -1,23 +1,41 @@
+from src.models.recommendation import Recommendation
+
+
 class RecommendationEngine:
 
-    def get_next_best_action(self, player):
+    def generate_recommendations(self, player):
+
+        recommendations = []
 
         if not player.steel_path_unlocked:
-            return {
-                "action": "Unlock Steel Path",
-                "reason": "Access to endgame content and better rewards.",
-                "priority": 95
-            }
+            recommendations.append(
+                Recommendation(
+                    action="Unlock Steel Path",
+                    reason="Access endgame content.",
+                    power_gain=95,
+                    account_progress=100,
+                    time_efficiency=70
+                )
+            )
 
-        if "Galvanized Chamber" not in player.owned_mods:
-            return {
-                "action": "Farm Arbitrations",
-                "reason": "Unlock powerful Galvanized Mods.",
-                "priority": 90
-            }
+        recommendations.append(
+            Recommendation(
+                action="Farm Arbitrations",
+                reason="Unlock Galvanized Mods.",
+                power_gain=90,
+                account_progress=85,
+                time_efficiency=80
+            )
+        )
 
-        return {
-            "action": "Optimize Build",
-            "reason": "General account improvement.",
-            "priority": 50
-        }
+        recommendations.append(
+            Recommendation(
+                action="Get Primary Merciless",
+                reason="Huge weapon damage increase.",
+                power_gain=85,
+                account_progress=75,
+                time_efficiency=90
+            )
+        )
+
+        return recommendations
