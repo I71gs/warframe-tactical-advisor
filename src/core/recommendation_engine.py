@@ -1,16 +1,18 @@
-from operator import mod
 from src.models.recommendation import Recommendation
-from src.core.knowledge_base import KnowledgeBase 
+from src.core.knowledge_base import KnowledgeBase
 
-kb = KnowledgeBase()
 
 class RecommendationEngine:
+
+    def __init__(self):
+        self.kb = KnowledgeBase()
 
     def generate_recommendations(self, player):
 
         recommendations = []
 
-        for mod in kb.mods:
+        # Recommendations from mods.json
+        for mod in self.kb.mods:
 
             recommendations.append(
                 Recommendation(
@@ -19,10 +21,12 @@ class RecommendationEngine:
                     power_gain=mod['importance'],
                     account_progress=80,
                     time_efficiency=70
-        )
-    )
+                )
+            )
 
+        # Steel Path recommendation
         if not player.steel_path_unlocked:
+
             recommendations.append(
                 Recommendation(
                     action="Unlock Steel Path",
@@ -33,6 +37,7 @@ class RecommendationEngine:
                 )
             )
 
+        # Arbitration recommendation
         recommendations.append(
             Recommendation(
                 action="Farm Arbitrations",
@@ -43,6 +48,7 @@ class RecommendationEngine:
             )
         )
 
+        # Arcane recommendation
         recommendations.append(
             Recommendation(
                 action="Get Primary Merciless",
@@ -53,17 +59,10 @@ class RecommendationEngine:
             )
         )
 
-        if not player.steel_path_unlocked:
+        # Remove duplicates automatically
+        unique_recommendations = {}
 
-            recommendations.append(
-                Recommendation(
-                    action="Unlock Steel Path",
-                    reason="Unlock endgame progression.",
-                    power_gain=95,
-                    account_progress=100,
-                    time_efficiency=70
-                )
-            )
-    
+        for rec in recommendations:
+            unique_recommendations[rec.action] = rec
 
-        return recommendations
+        return list(unique_recommendations.values())
