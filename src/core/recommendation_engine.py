@@ -14,6 +14,9 @@ class RecommendationEngine:
         # Recommendations from mods.json
         for mod in self.kb.mods:
 
+            if mod["name"] in player.owned_mods:
+                continue
+
             recommendations.append(
                 Recommendation(
                     action=f"Acquire {mod['name']}",
@@ -24,6 +27,20 @@ class RecommendationEngine:
                 )
             )
 
+
+        for quest in self.kb.quests:
+            if quest["name"] in player.completed_quests:
+                continue
+
+            recommendations.append(
+                Recommendation(
+                    action=f"Complete {quest['name']}",
+                    reason="Important story progression.",
+                    power_gain=quest["importance"],
+                    account_progress=100,
+                    time_efficiency=60
+                )
+            )
         # Steel Path recommendation
         if not player.steel_path_unlocked:
 

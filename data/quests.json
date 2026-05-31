@@ -1,14 +1,22 @@
 [
-    {
-        "name": "The Second Dream",
-        "importance": 80
-    },
-    {
-        "name": "The War Within",
-        "importance": 90
-    },
-    {
-        "name": "The New War",
-        "importance": 100
-    }
+  {
+    "name": "The Second Dream",
+    "importance": 80,
+    "requires": []
+  },
+  {
+    "name": "The War Within",
+    "importance": 95,
+    "requires": ["The Second Dream"]
+  },
+  {
+    "name": "The Sacrifice",
+    "importance": 90,
+    "requires": ["The War Within"]
+  },
+  {
+    "name": "The New War",
+    "importance": 100,
+    "requires": ["The Sacrifice"]
+  }
 ]
