@@ -1,10 +1,14 @@
 [
     {
-        "name": "The New War",
-        "importance": 100
+        "name": "The Second Dream",
+        "importance": 80
     },
     {
-        "name": "The Second Dream",
+        "name": "The War Within",
         "importance": 90
+    },
+    {
+        "name": "The New War",
+        "importance": 100
     }
 ]

@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "name": "Torid",
+        "type": "Primary",
+        "importance": 95
+    },
+    {
+        "name": "Phenmor",
+        "type": "Primary",
+        "importance": 100
+    }
+]
