@@ -10,6 +10,9 @@ from PySide6.QtWidgets import (
 from src.gui.profile_tab import ProfileTab
 from src.gui.recommendations_tab import RecommendationsTab
 
+from src.gui.build_advisor_tab import (
+    BuildAdvisorTab
+)
 
 class MainWindow(QMainWindow):
 
@@ -22,6 +25,8 @@ class MainWindow(QMainWindow):
         self.resize(1000, 700)
 
         self.progression_tab = ProgressionTab()
+
+        self.build_tab = BuildAdvisorTab()
 
         # -------------------------
         # Central Tab Widget
@@ -50,6 +55,11 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(
             self.progression_tab,
             "Progression"
+        )
+
+        self.tabs.addTab(
+            self.build_tab,
+            "Build Advisor"
         )
 
         self.setCentralWidget(self.tabs)

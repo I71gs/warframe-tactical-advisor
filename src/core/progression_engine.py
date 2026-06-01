@@ -68,17 +68,30 @@ class ProgressionEngine:
 
     def get_readiness_score(self, player):
 
-        story = self.get_story_completion_percentage(
-            player
+        story = (
+            self.get_story_completion_percentage(
+                player
+            )
         )
 
-        mods = min(
-            len(player.owned_mods) * 10,
-            100
+        mods = (
+            self.get_mod_completion_percentage(
+                player
+            )
+        )
+
+        arcanes = (
+            self.get_arcane_completion_percentage(
+                player
+            )
         )
 
         return round(
-            (story * 0.7) + (mods * 0.3),
+            (
+                story * 0.5
+                + mods * 0.3
+                + arcanes * 0.2
+            ),
             1
         )
     
