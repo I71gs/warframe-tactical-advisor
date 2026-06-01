@@ -1,10 +1,14 @@
+import sys
+from src.gui.progression_tab import ProgressionTab
+
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QLabel
+    QTabWidget
 )
 
-import sys
+from src.gui.profile_tab import ProfileTab
+from src.gui.recommendations_tab import RecommendationsTab
 
 
 class MainWindow(QMainWindow):
@@ -13,28 +17,62 @@ class MainWindow(QMainWindow):
 
         super().__init__()
 
-        self.setWindowTitle(
-            "Warframe Tactical Advisor"
+        self.setWindowTitle("Warframe Tactical Advisor")
+
+        self.resize(1000, 700)
+
+        self.progression_tab = ProgressionTab()
+
+        # -------------------------
+        # Central Tab Widget
+        # -------------------------
+        self.tabs = QTabWidget()
+
+        # -------------------------
+        # Tabs
+        # -------------------------
+        self.profile_tab = ProfileTab(
+            refresh_callback=self.refresh_recommendations
         )
 
-        self.setMinimumSize(
-            1000,
-            700
+        self.recommendations_tab = RecommendationsTab()
+
+        self.tabs.addTab(
+            self.profile_tab,
+            "Profile"
         )
 
-        label = QLabel(
-            "Warframe Tactical Advisor"
+        self.tabs.addTab(
+            self.recommendations_tab,
+            "Recommendations"
         )
 
-        self.setCentralWidget(
-            label
+        self.tabs.addTab(
+            self.progression_tab,
+            "Progression"
         )
 
+        self.setCentralWidget(self.tabs)
 
-app = QApplication(sys.argv)
+    # -------------------------
+    # Refresh Hook
+    # -------------------------
+    def refresh_recommendations(self):
 
-window = MainWindow()
+        self.recommendations_tab.load_recommendations()
 
-window.show()
+        self.progression_tab.load_progress()
 
-app.exec()
+def main():
+
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+
+    window.show()
+
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()

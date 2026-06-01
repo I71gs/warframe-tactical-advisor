@@ -1,5 +1,5 @@
-from src.models.player import Player
 from src.database.database import DatabaseManager
+from src.models.player import Player
 
 
 class PlayerLoader:
@@ -8,17 +8,20 @@ class PlayerLoader:
 
         db = DatabaseManager()
 
-        completed_quests = (
-            db.get_completed_quests()
-        )
+        player_row = db.get_player()
 
-        owned_mods = (
-            db.get_owned_mods()
-        )
+        mastery_rank = 0
+        steel_path_unlocked = False
+
+        if player_row:
+
+            mastery_rank = player_row[0]
+            steel_path_unlocked = bool(player_row[1])
 
         return Player(
-            mastery_rank=10,
-            completed_quests=completed_quests,
-            owned_mods=owned_mods,
-            steel_path_unlocked=False
+            mastery_rank=mastery_rank,
+            steel_path_unlocked=steel_path_unlocked,
+            completed_quests=db.get_completed_quests(),
+            owned_mods=db.get_owned_mods(),
+            owned_arcanes=db.get_owned_arcanes()
         )
