@@ -1,7 +1,35 @@
+﻿from __future__ import annotations
+
 import json
+import sys
+
+from pathlib import Path
+from typing import Any
 
 
-def load_json(path):
+def get_root() -> Path:
 
-    with open(path, "r", encoding="utf-8") as file:
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS)
+
+    return Path(__file__).resolve().parents[2]
+
+
+def load_json(path: Path | str) -> Any:
+
+    file_path = Path(path)
+
+    if not file_path.is_absolute():
+
+        file_path = (
+            get_root()
+            / file_path
+        )
+
+    with open(
+        file_path,
+        "r",
+        encoding="utf-8"
+    ) as file:
+
         return json.load(file)
