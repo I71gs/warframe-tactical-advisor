@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "dark_mode": true,
+  "auto_refresh": true,
+  "remember_size": false,
+  "remember_tab": false,
+  "last_tab_index": 0,
+  "window_size": {
+    "width": 1000,
+    "height": 700
+  }
+}
