@@ -7,10 +7,10 @@ from src.core.build_database import BUILDS
 from src.core.farming_database import FARMING_DATA
 
 ROOT = Path(__file__).resolve().parents[2]
-PLUGINS_DIR = ROOT / 'src' / 'plugins'
+PLUGINS_DIR = ROOT / 'plugins'
 
 class PluginManager:
-    """Auto-loads custom JSON databases to extend weapons, builds, or farming routes."""
+    """Loads custom directories or JSON databases to extend weapons, builds, or farming routes."""
 
     def __init__(self, plugins_dir: Path | str | None = None) -> None:
         self.plugins_dir = Path(plugins_dir) if plugins_dir else PLUGINS_DIR
@@ -20,7 +20,7 @@ class PluginManager:
         if not self.plugins_dir.exists():
             try:
                 self.plugins_dir.mkdir(parents=True, exist_ok=True)
-                # Create a sample plugin to demonstrate and verify behavior
+                # Create a sample legacy/json plugin file inside the directory
                 sample_plugin = {
                     "weapons": [
                         {

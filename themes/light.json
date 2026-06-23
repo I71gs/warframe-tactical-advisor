@@ -1,0 +1,9 @@
+{
+    "name": "Light",
+    "PRIMARY": "#f1f5f9",
+    "SECONDARY": "#e2e8f0",
+    "ACCENT": "#007ea7",
+    "TEXT": "#0f172a",
+    "MUTED": "#64748b",
+    "CARD": "#ffffff"
+}

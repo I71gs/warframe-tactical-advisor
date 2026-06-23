@@ -123,6 +123,21 @@ class DependencyGraphEngine:
                 "children": children
             }
 
+        elif name_lower == "archon hunts":
+            # Check player status (mock: unlocked if MR >= 5, New War completed, and Steel Path unlocked)
+            is_completed = "the new war" in completed_quests and player.steel_path_unlocked and player.mastery_rank >= 5
+            children.append(self._resolve_node("The New War", player))
+            children.append(self._resolve_node("Steel Path", player))
+            children.append(self._resolve_node("Arbitrations", player))
+            children.append(self._resolve_node("Galvanized Chamber", player))
+            status = self._determine_status(is_completed, children)
+            return {
+                "name": "Archon Hunts Unlocked",
+                "type": "SYSTEM",
+                "status": status,
+                "children": children
+            }
+
         # 4. Fallback default leaf node
         return {
             "name": name,

@@ -9,68 +9,38 @@ THEMES_DIR = ROOT / "themes"
 THEMES_DIR.mkdir(parents=True, exist_ok=True)
 CUSTOM_THEME_FILE = THEMES_DIR / "custom_theme.json"
 
-BUILT_IN_THEMES = {
-    "Dark": {
-        "PRIMARY": "#0b1220",
-        "SECONDARY": "#0f1724",
-        "ACCENT": "#00a3cc",
-        "TEXT": "#e6eef6",
-        "MUTED": "#9fb6c8",
-        "CARD": "#0f1a24"
-    },
-    "Light": {
-        "PRIMARY": "#f1f5f9",
-        "SECONDARY": "#e2e8f0",
-        "ACCENT": "#007ea7",
-        "TEXT": "#0f172a",
-        "MUTED": "#64748b",
-        "CARD": "#ffffff"
-    },
-    "Lotus": {
-        "PRIMARY": "#1c1124",
-        "SECONDARY": "#2b1a37",
-        "ACCENT": "#e056fd",
-        "TEXT": "#f9f5ff",
-        "MUTED": "#a29bfe",
-        "CARD": "#382547"
-    },
-    "Corpus": {
-        "PRIMARY": "#0d1f2d",
-        "SECONDARY": "#1d2d44",
-        "ACCENT": "#f2a65a",
-        "TEXT": "#f0ebd8",
-        "MUTED": "#748cab",
-        "CARD": "#1d3557"
-    },
-    "Orokin": {
-        "PRIMARY": "#fdfbf7",
-        "SECONDARY": "#f4efe6",
-        "ACCENT": "#cfad64",
-        "TEXT": "#1c1917",
-        "MUTED": "#78716c",
-        "CARD": "#ffffff"
-    },
-    "Zariman": {
-        "PRIMARY": "#071a17",
-        "SECONDARY": "#0f2d29",
-        "ACCENT": "#20b2aa",
-        "TEXT": "#e0f2f1",
-        "MUTED": "#4db6ac",
-        "CARD": "#123e38"
-    }
-}
-
 class ThemeManager:
-    """Manages active theme selectors, built-in themes, and custom theme.json loaders."""
+    """Manages active theme selectors, built-in themes, and custom theme.json loaders from files."""
 
     def __init__(self) -> None:
         self.settings = SettingsManager()
-        self._ensure_sample_custom_theme()
+        self.themes: dict[str, dict[str, str]] = {}
+        self._ensure_default_themes()
+        self.load_themes_from_files()
 
-    def _ensure_sample_custom_theme(self) -> None:
+    def _ensure_default_themes(self) -> None:
+        # Fallback dictionary if disk files are empty or unreadable
+        self.fallback_themes = {
+            "Dark": {
+                "PRIMARY": "#0b1220",
+                "SECONDARY": "#0f1724",
+                "ACCENT": "#00a3cc",
+                "TEXT": "#e6eef6",
+                "MUTED": "#9fb6c8",
+                "CARD": "#0f1a24"
+            },
+            "Light": {
+                "PRIMARY": "#f1f5f9",
+                "SECONDARY": "#e2e8f0",
+                "ACCENT": "#007ea7",
+                "TEXT": "#0f172a",
+                "MUTED": "#64748b",
+                "CARD": "#ffffff"
+            }
+        }
         if not CUSTOM_THEME_FILE.exists():
             sample = {
-                "name": "Custom Zariman Blue",
+                "name": "Custom Theme",
                 "PRIMARY": "#05111a",
                 "SECONDARY": "#0c1e2d",
                 "ACCENT": "#33ffaa",
@@ -84,27 +54,48 @@ class ThemeManager:
             except Exception:
                 pass
 
-    def get_themes(self) -> list[str]:
-        """Returns list of all available theme names."""
-        themes = list(BUILT_IN_THEMES.keys())
-        themes.append("Custom Theme")
-        return themes
-
-    def get_theme_colors(self, name: str) -> dict[str, str]:
-        """Returns color maps for a given theme name."""
-        if name in BUILT_IN_THEMES:
-            return BUILT_IN_THEMES[name]
-            
-        if name == "Custom Theme" and CUSTOM_THEME_FILE.exists():
+    def load_themes_from_files(self) -> None:
+        """Scan THEMES_DIR for any json theme configuration files."""
+        self.themes.clear()
+        
+        # Load any json files in themes/
+        for p in THEMES_DIR.glob("*.json"):
             try:
-                with open(CUSTOM_THEME_FILE, 'r', encoding='utf-8') as f:
-                    custom_data = json.load(f)
-                    if isinstance(custom_data, dict):
-                        return custom_data
+                with open(p, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    if isinstance(data, dict) and "PRIMARY" in data:
+                        name = data.get("name") or p.stem.capitalize()
+                        # If it is custom_theme.json, name it "Custom Theme" to match GUI
+                        if p.name == "custom_theme.json":
+                            name = "Custom Theme"
+                        self.themes[name] = data
             except Exception:
                 pass
                 
-        return BUILT_IN_THEMES["Dark"]
+        # Fill in fallbacks if dark/light are missing
+        for name, colors in self.fallback_themes.items():
+            if name not in self.themes:
+                self.themes[name] = colors
+
+        # Register themes from PluginRegistry
+        try:
+            from src.core.plugin_registry import PluginRegistry
+            for name, colors in PluginRegistry().themes.items():
+                self.themes[name] = colors
+        except Exception:
+            pass
+
+    def get_themes(self) -> list[str]:
+        """Returns list of all available theme names."""
+        self.load_themes_from_files()
+        return sorted(list(self.themes.keys()))
+
+    def get_theme_colors(self, name: str) -> dict[str, str]:
+        """Returns color maps for a given theme name."""
+        self.load_themes_from_files()
+        if name in self.themes:
+            return self.themes[name]
+        return self.themes.get("Dark", self.fallback_themes["Dark"])
 
     def get_active_theme_name(self) -> str:
         """Fetch saved active theme or default to Dark."""

@@ -36,3 +36,7 @@ class NotificationService:
         if 'pytest' not in sys.modules:
             toast = NotificationWidget(message, level, parent)
             toast.show_toast(duration_ms)
+
+    def notify(self, message: str, level: str = "info") -> None:
+        """Helper to trigger notifications via event bus."""
+        self.context.event_bus.publish("NOTIFICATION", {"message": message, "level": level})

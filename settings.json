@@ -8,5 +8,7 @@
   "window_size": {
     "width": 1000,
     "height": 700
-  }
+  },
+  "current_profile": "default",
+  "active_theme": "Dark"
 }

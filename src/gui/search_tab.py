@@ -1,13 +1,14 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QMessageBox
 from PySide6.QtCore import Qt
-from src.core.search_engine import SearchEngine
+from src.core.search_engine_v3 import SearchEngineV3
 
 class SearchTab(QWidget):
     """GUI tab providing global search functionality across all data sources with interactive popups."""
 
     def __init__(self) -> None:
         super().__init__()
-        self.engine = SearchEngine()
+        from src.core.app_context import AppContext
+        self.engine = SearchEngineV3(AppContext())
         self.results_map = {}
         
         self.layout = QVBoxLayout()

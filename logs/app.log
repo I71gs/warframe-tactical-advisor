@@ -151,3 +151,87 @@ ValueError: Simulated Architecture Test Exception
 2026-06-23 08:44:48,459 INFO Volatile memory cache invalidated on profile update.
 2026-06-23 08:44:48,460 INFO Volatile memory cache invalidated on profile update.
 2026-06-23 08:44:48,746 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:21:13,253 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:21:13,359 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:21:13,365 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:21:13,366 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:21:13,368 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:21:13,368 INFO Plugins loaded successfully.
+2026-06-23 09:21:13,368 INFO Starting background backup...
+2026-06-23 09:21:13,368 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:21:13,368 INFO Recording progression snapshot...
+2026-06-23 09:21:13,370 INFO Progression snapshot recorded successfully.
+2026-06-23 09:21:13,374 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:21:14,531 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:21:14,532 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:21:14,533 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:21:14,677 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:22:14,867 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:22:14,952 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:22:14,955 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:22:14,957 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:22:14,959 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:22:14,959 INFO Plugins loaded successfully.
+2026-06-23 09:22:14,960 INFO Starting background backup...
+2026-06-23 09:22:14,960 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:22:14,960 INFO Recording progression snapshot...
+2026-06-23 09:22:14,962 INFO Progression snapshot recorded successfully.
+2026-06-23 09:22:14,967 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:22:16,093 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:22:16,094 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:22:16,094 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:22:16,194 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:23:26,252 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:23:26,672 INFO Settings saved
+2026-06-23 09:23:26,722 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:23:26,724 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:23:26,726 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:23:26,727 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:23:26,727 INFO Plugins loaded successfully.
+2026-06-23 09:23:26,727 INFO Starting background backup...
+2026-06-23 09:23:26,727 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:23:26,727 INFO Recording progression snapshot...
+2026-06-23 09:23:26,731 INFO Progression snapshot recorded successfully.
+2026-06-23 09:23:26,736 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:23:27,857 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:23:27,858 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:23:27,859 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:23:28,006 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:25:05,324 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:25:09,538 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:25:09,579 INFO Settings saved
+2026-06-23 09:25:09,592 INFO Settings saved
+2026-06-23 09:25:09,639 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:25:09,644 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:25:09,645 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:25:09,646 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:25:09,647 INFO Plugins loaded successfully.
+2026-06-23 09:25:09,647 INFO Starting background backup...
+2026-06-23 09:25:09,647 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:25:09,647 INFO Recording progression snapshot...
+2026-06-23 09:25:09,650 INFO Progression snapshot recorded successfully.
+2026-06-23 09:25:09,654 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:25:10,778 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:25:10,778 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:25:10,779 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:25:10,888 INFO Successfully loaded plugin folder: Test Plugin

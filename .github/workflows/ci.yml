@@ -45,5 +45,5 @@ jobs:
     - name: Upload Windows Executable Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Warframe-Tactical-Advisor-v6.0
+        name: Warframe-Tactical-Advisor-v7.0
         path: dist/WarframeTacticalAdvisor.exe

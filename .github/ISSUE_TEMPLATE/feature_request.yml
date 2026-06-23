@@ -1,0 +1,20 @@
+name: Feature Request
+description: Propose a new feature or idea.
+body:
+  - type: markdown
+    attributes:
+      value: Share your ideas for new features.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      placeholder: Describe the problem or limitation you are facing.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      placeholder: Describe the behavior or functionality you want.
+    validations:
+      required: true

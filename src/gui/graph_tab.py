@@ -27,6 +27,7 @@ class GraphTab(QWidget):
         header_layout.addWidget(QLabel("Target Milestone/Weapon:"))
         self.item_selector = QComboBox()
         self.item_selector.addItems([
+            "Archon Hunts",
             "Phenmor",
             "Laetum",
             "Felarx",

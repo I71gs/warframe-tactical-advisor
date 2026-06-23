@@ -1,0 +1,7 @@
+{
+  "name": "Sample Plugin",
+  "author": "Shubham Salunke",
+  "version": "1.0.0",
+  "dependencies": [],
+  "minimum_wta_version": "7.0"
+}
