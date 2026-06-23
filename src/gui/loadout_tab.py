@@ -44,5 +44,9 @@ class LoadoutTab(QWidget):
                 self.list_widget.addItem(f'+ {s}')
             for w in rec.get('weaknesses', []):
                 self.list_widget.addItem(f'- {w}')
+            self.list_widget.addItem('')
+            self.list_widget.addItem(f"Synergy Rating: {rec.get('synergy_rating')} (Score: {rec.get('synergy_score')}/100)")
+            for reason in rec.get('synergy_reasons', []):
+                self.list_widget.addItem(f"  • {reason}")
         else:
             self.list_widget.addItem('Player data unavailable for scoring')

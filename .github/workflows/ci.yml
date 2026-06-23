@@ -1,0 +1,49 @@
+name: CI/CD Professionalization
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out codebase
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov ruff black mypy pyinstaller fastapi uvicorn PySide6 matplotlib
+
+    - name: Run Code Formatter (Black)
+      run: black --check src/ tests/
+
+    - name: Run Linter (Ruff)
+      run: ruff check src/ tests/
+
+    - name: Run Static Type Checker (Mypy)
+      run: mypy --ignore-missing-imports src/
+
+    - name: Run Automated Test Suite
+      run: |
+        python -m pytest --cov=src --cov-report=xml --cov-fail-under=90
+
+    - name: Build Standalone Executable (PyInstaller)
+      run: |
+        pyinstaller --onefile --windowed --name="WarframeTacticalAdvisor" src/gui/main_window.py
+
+    - name: Upload Windows Executable Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Warframe-Tactical-Advisor-v6.0
+        path: dist/WarframeTacticalAdvisor.exe

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warframe Tactical Advisor - Web Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0b1220;
+            color: #e6eef6;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-[#00a3cc]">Warframe Tactical Advisor</h1>
+                <p class="text-gray-400 text-sm">v6.0 Web Companion (Sync Mode)</p>
+            </div>
+            <div id="connection-badge" class="px-3 py-1 bg-red-950 text-red-400 text-xs rounded-full border border-red-900">
+                Disconnected from Server
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Left Column: Profile & Stats -->
+            <div class="bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg">
+                <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">Account Profile</h2>
+                <div id="profile-data" class="space-y-3">
+                    <p class="text-gray-400">Loading profile data...</p>
+                </div>
+            </div>
+
+            <!-- Middle Column: AI Advisor & Questions -->
+            <div class="bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg md:col-span-2">
+                <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">AI Advisor Directives</h2>
+                
+                <!-- Quick Prompts -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <button onclick="askAdvisor('What should I do tonight?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">What should I do tonight?</button>
+                    <button onclick="askAdvisor('How do I unlock Steel Path fastest?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">How do I unlock Steel Path?</button>
+                    <button onclick="askAdvisor('What is my biggest power gain?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">What's my biggest power gain?</button>
+                </div>
+
+                <!-- Custom Input -->
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="advisor-input" placeholder="Ask the advisor anything (e.g. Phenmor, mods)..." class="bg-[#0b1220] border border-gray-800 rounded p-2 text-sm flex-1 focus:outline-none focus:border-[#00a3cc]">
+                    <button onclick="submitCustomQuestion()" class="bg-[#00a3cc] text-black font-semibold px-4 py-2 rounded hover:opacity-90 text-sm transition">Ask</button>
+                </div>
+
+                <!-- Response Panel -->
+                <div id="advisor-response" class="bg-[#0b1220] p-4 rounded border border-gray-800 min-h-[150px] flex items-center justify-center text-gray-500 text-sm">
+                    Select a query or ask a question to see tactical coaching feedback.
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom section: Build Recommendations -->
+        <div class="mt-6 bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg">
+            <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">Recommended Builds & Milestones</h2>
+            <div id="recommendations-data" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <p class="text-gray-400">Loading recommendations...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integration Scripts -->
+    <script>
+        const API_URL = "http://127.0.0.1:8000";
+
+        async function testConnection() {
+            const badge = document.getElementById("connection-badge");
+            try {
+                const res = await fetch(`${API_URL}/progression`);
+                if (res.ok) {
+                    badge.textContent = "Synced with Local Server";
+                    badge.className = "px-3 py-1 bg-green-950 text-green-400 text-xs rounded-full border border-green-900";
+                    return true;
+                }
+            } catch (e) {
+                badge.textContent = "Server Offline (127.0.0.1:8000)";
+                badge.className = "px-3 py-1 bg-red-950 text-red-400 text-xs rounded-full border border-red-900";
+            }
+            return false;
+        }
+
+        async function loadProfile() {
+            const container = document.getElementById("profile-data");
+            try {
+                const res = await fetch(`${API_URL}/profile`);
+                const data = await res.json();
+                
+                container.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between border-b border-gray-800 pb-1">
+                            <span class="text-gray-400 text-sm">Mastery Rank:</span>
+                            <span class="font-bold text-[#00a3cc]">MR ${data.mastery_rank}</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-1">
+                            <span class="text-gray-400 text-sm">Steel Path:</span>
+                            <span class="font-semibold ${data.steel_path_unlocked ? 'text-green-400' : 'text-red-400'}">${data.steel_path_unlocked ? 'Unlocked' : 'Locked'}</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-1">
+                            <span class="text-gray-400 text-sm">Arbitrations:</span>
+                            <span class="font-semibold ${data.arbitrations_unlocked ? 'text-green-400' : 'text-red-400'}">${data.arbitrations_unlocked ? 'Unlocked' : 'Locked'}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-400 text-sm block mb-1">Completed Quests (${data.completed_quests.length}):</span>
+                            <div class="text-xs text-gray-500 max-h-32 overflow-y-auto space-y-1">
+                                ${data.completed_quests.map(q => `• ${q}`).join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                container.innerHTML = `<p class="text-red-400 text-sm">Offline. Make sure uvicorn is running.</p>`;
+            }
+        }
+
+        async function loadRecommendations() {
+            const container = document.getElementById("recommendations-data");
+            try {
+                const res = await fetch(`${API_URL}/recommendations`);
+                const data = await res.json();
+                
+                if (data.length === 0) {
+                    container.innerHTML = `<p class="text-gray-500 text-sm">All builds optimized!</p>`;
+                    return;
+                }
+                
+                container.innerHTML = data.map(rec => `
+                    <div class="bg-[#0b1220] p-4 rounded border border-gray-800">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-[#caa3ff] px-2 py-0.5 bg-purple-950/50 rounded border border-purple-900">${rec.category}</span>
+                            <span class="text-xs text-gray-500">Weight: ${rec.weight}</span>
+                        </div>
+                        <h3 class="font-bold text-sm mb-1">${rec.item}</h3>
+                        <p class="text-xs text-gray-400">${rec.reason}</p>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = `<p class="text-red-400 text-sm">Offline.</p>`;
+            }
+        }
+
+        async function askAdvisor(question) {
+            const responseContainer = document.getElementById("advisor-response");
+            responseContainer.innerHTML = `<p class="text-gray-400 text-sm animate-pulse">Consulting Expert Rule System...</p>`;
+            
+            try {
+                const res = await fetch(`${API_URL}/advisor?q=${encodeURIComponent(question)}`);
+                const data = await res.json();
+                
+                responseContainer.innerHTML = `
+                    <div class="space-y-4 w-full">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Recommended Directive</h4>
+                            <p class="text-sm font-semibold text-white">${data.task}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Estimated Duration (ETA)</h4>
+                                <p class="text-sm text-amber-400 font-semibold">${data.eta}</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Expected Power Gain</h4>
+                                <p class="text-sm text-green-400 font-semibold">${data.power_gain}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Prerequisites</h4>
+                            <p class="text-xs text-gray-400">${data.prerequisites}</p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Next Playback / Follow-up Steps</h4>
+                            <p class="text-xs text-gray-400">${data.follow_up}</p>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                responseContainer.innerHTML = `<p class="text-red-400 text-sm">Failed to connect to AI Advisor service.</p>`;
+            }
+        }
+
+        function submitCustomQuestion() {
+            const input = document.getElementById("advisor-input");
+            const q = input.value.strip ? input.value.strip() : input.value;
+            if (q) {
+                askAdvisor(q);
+            }
+        }
+
+        // Auto Refresh Initialization
+        async function init() {
+            const isConnected = await testConnection();
+            if (isConnected) {
+                loadProfile();
+                loadRecommendations();
+            }
+        }
+
+        setInterval(testConnection, 5000);
+        init();
+    </script>
+</body>
+</html>

@@ -54,4 +54,48 @@ class LoadoutEngine:
         missing_high_meta = [w['name'] for w in WEAPONS if w.get('meta_rating', 0) >= 90 and w['name'].lower() not in owned]
         if missing_high_meta:
             weaknesses.append(f"Missing high-meta weapons: {', '.join(missing_high_meta)}")
-        return {'primary': best_primary, 'secondary': best_secondary, 'melee': best_melee, 'overall_score': overall_score, 'strengths': strengths, 'weaknesses': weaknesses}
+
+        # Calculate Synergy
+        from src.core.synergy_engine import SynergyEngine
+        se = SynergyEngine()
+        syn = se.evaluate_synergy(
+            "Wisp",
+            best_primary["name"] if best_primary else "",
+            best_secondary["name"] if best_secondary else "",
+            player.owned_arcanes,
+            player.owned_mods
+        )
+
+        # Calculate EHP and combat scores for v2.0
+        health = 300 + player.mastery_rank * 10
+        armor = 200 + (100 if player.steel_path_unlocked else 0)
+        shield = 300 + (150 if player.arbitrations_unlocked else 0)
+        ehp = int(shield + health * (1 + armor / 300))
+        
+        owned_mods = {m.lower() for m in player.owned_mods}
+        dps_score = overall_score
+        crit_score = 50 + (25 if "point strike" in owned_mods else 0) + (20 if "vital sense" in owned_mods else 0)
+        status_score = 50 + (30 if "galvanized aptitude" in owned_mods or "galvanized shot" in owned_mods else 0)
+        survivability_score = min(100, int((ehp / 1200) * 100))
+        overall_rating = int((dps_score + crit_score + status_score + survivability_score) / 4)
+
+        return {
+            'primary': best_primary,
+            'secondary': best_secondary,
+            'melee': best_melee,
+            'overall_score': overall_score,
+            'strengths': strengths,
+            'weaknesses': weaknesses,
+            'synergy_rating': syn["rating"],
+            'synergy_score': syn["score"],
+            'synergy_reasons': syn["reasons"],
+            'health': health,
+            'armor': armor,
+            'shield': shield,
+            'ehp': ehp,
+            'dps_score': dps_score,
+            'crit_score': crit_score,
+            'status_score': status_score,
+            'survivability_score': survivability_score,
+            'overall_rating': overall_rating
+        }
