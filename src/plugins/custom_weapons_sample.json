@@ -1,0 +1,35 @@
+{
+    "weapons": [
+        {
+            "name": "Rubico Prime",
+            "type": "Primary",
+            "acquisition": "Relic / Prime Vault",
+            "meta_rating": 85,
+            "category": "Sniper"
+        }
+    ],
+    "builds": [
+        {
+            "weapon": "Rubico Prime",
+            "mods": [
+                "Serration",
+                "Split Chamber",
+                "Point Strike",
+                "Vital Sense",
+                "Stormbringer",
+                "Infected Clip",
+                "Hellfire",
+                "Vigilant Armaments"
+            ],
+            "arcane": "Primary Merciless",
+            "element": "Corrosive Heat",
+            "rating": 89
+        }
+    ],
+    "farming": {
+        "rubico prime": {
+            "source": "Lith / Meso Relics",
+            "estimated_time": "2-4 hours"
+        }
+    }
+}

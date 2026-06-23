@@ -1,0 +1,8 @@
+{
+    "id": "sample_ext_arsenal",
+    "name": "Sample Extended Arsenal",
+    "version": "1.0.0",
+    "min_app_version": "6.0.0",
+    "description": "Developer SDK sample weapons and command hooks.",
+    "dependencies": []
+}

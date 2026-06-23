@@ -22,4 +22,5 @@ class Recommendation:
 
     def calculate_score(self) -> float:
         """Calculate a weighted score for recommendation ranking."""
-        return self.power_gain * 0.4 + self.account_progress * 0.4 + self.time_efficiency * 0.2
+        from src.core.scoring_engine import ScoringEngine
+        return ScoringEngine().calculate_score(self)

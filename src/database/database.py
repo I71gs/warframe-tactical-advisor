@@ -15,14 +15,28 @@ class DatabaseManager:
 
     def __init__(self, db_path: Path | str | None = None, timeout: int = 5) -> None:
         """Open or create the SQLite database file."""
-        self.db_path = Path(db_path) if db_path is not None else DB_PATH
+        if db_path is not None:
+            self.db_path = Path(db_path)
+        else:
+            from src.core.settings_manager import SettingsManager
+            profile = SettingsManager().get('current_profile', 'default')
+            if profile == 'default':
+                self.db_path = DB_PATH
+            else:
+                self.db_path = ROOT / f'player_{profile}.db'
         self.connection = sqlite3.connect(str(self.db_path), timeout=timeout)
         self.cursor = self.connection.cursor()
         self.create_tables()
 
     def create_tables(self) -> None:
         """Create the required database tables if they do not already exist."""
-        self.cursor.execute('\n        CREATE TABLE IF NOT EXISTS players (\n            id INTEGER PRIMARY KEY,\n            mastery_rank INTEGER,\n            steel_path_unlocked INTEGER\n        )\n        ')
+        self.cursor.execute('\n        CREATE TABLE IF NOT EXISTS players (\n            id INTEGER PRIMARY KEY,\n            mastery_rank INTEGER,\n            steel_path_unlocked INTEGER,\n            arbitrations_unlocked INTEGER DEFAULT 0,\n            helminth_unlocked INTEGER DEFAULT 0\n        )\n        ')
+        self.cursor.execute("PRAGMA table_info(players)")
+        columns = [row[1] for row in self.cursor.fetchall()]
+        if 'arbitrations_unlocked' not in columns:
+            self.cursor.execute("ALTER TABLE players ADD COLUMN arbitrations_unlocked INTEGER DEFAULT 0")
+        if 'helminth_unlocked' not in columns:
+            self.cursor.execute("ALTER TABLE players ADD COLUMN helminth_unlocked INTEGER DEFAULT 0")
         self.cursor.execute('\n        CREATE TABLE IF NOT EXISTS metadata (\n            key TEXT PRIMARY KEY,\n            value TEXT\n        )\n        ')
         if self.get_schema_version() is None:
             self.set_schema_version(SCHEMA_VERSION)
@@ -148,18 +162,20 @@ class DatabaseManager:
         self.cursor.execute('\n            DELETE FROM owned_weapons\n            WHERE LOWER(\n                weapon_name\n            ) = LOWER(?)\n            ', (weapon_name,))
         self.connection.commit()
 
-    def save_player(self, mastery_rank: int, steel_path_unlocked: bool) -> None:
-        """Save the player's mastery and Steel Path status."""
+    def save_player(self, mastery_rank: int, steel_path_unlocked: bool, arbitrations_unlocked: bool = False, helminth_unlocked: bool = False) -> None:
+        """Save the player's mastery and status flags."""
         self.cursor.execute('DELETE FROM players')
-        self.cursor.execute('\n            INSERT INTO players (\n                mastery_rank,\n                steel_path_unlocked\n            )\n            VALUES (?, ?)\n            ', (mastery_rank, int(steel_path_unlocked)))
+        self.cursor.execute('\n            INSERT INTO players (\n                mastery_rank,\n                steel_path_unlocked,\n                arbitrations_unlocked,\n                helminth_unlocked\n            )\n            VALUES (?, ?, ?, ?)\n            ', (mastery_rank, int(steel_path_unlocked), int(arbitrations_unlocked), int(helminth_unlocked)))
         self.connection.commit()
 
-    def get_player(self) -> tuple[int, int] | None:
+    def get_player(self) -> tuple[int, int, int, int] | None:
         """Return the saved player row or None if no player exists."""
         self.cursor.execute("""
             SELECT
                 mastery_rank,
-                steel_path_unlocked
+                steel_path_unlocked,
+                arbitrations_unlocked,
+                helminth_unlocked
             FROM players
             LIMIT 1
             """)
@@ -167,12 +183,14 @@ class DatabaseManager:
         self.connection.commit()
         return player
 
-    def get_players(self) -> list[tuple[int, int]]:
+    def get_players(self) -> list[tuple[int, int, int, int]]:
         """Return all saved player rows."""
         self.cursor.execute("""
             SELECT
                 mastery_rank,
-                steel_path_unlocked
+                steel_path_unlocked,
+                arbitrations_unlocked,
+                helminth_unlocked
             FROM players
             """)
         players = self.cursor.fetchall()

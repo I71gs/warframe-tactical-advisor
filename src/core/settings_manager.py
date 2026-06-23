@@ -16,6 +16,7 @@ DEFAULT_SETTINGS = {
     'remember_tab': True,
     'last_tab_index': 0,
     'window_size': {'width': 1000, 'height': 700},
+    'current_profile': 'default',
 }
 
 class SettingsManager:

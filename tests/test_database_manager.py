@@ -10,9 +10,9 @@ def test_database_manager_temporary_database(tmp_path: Path) -> None:
     assert db.get_schema_version() == '1'
     assert db.get_players() == []
 
-    db.save_player(12, 1)
-    assert db.get_player() == (12, 1)
-    assert db.get_players() == [(12, 1)]
+    db.save_player(12, True, False, False)
+    assert db.get_player() == (12, 1, 0, 0)
+    assert db.get_players() == [(12, 1, 0, 0)]
 
     db.add_completed_quest('The New War')
     assert db.get_completed_quests() == ['The New War']
