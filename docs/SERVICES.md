@@ -1,7 +1,7 @@
-# Service Layer Specifications (v7.0)
+# Service Layer Specifications (v8.0)
 
 ## Overview
-The middleware services orchestrate logic between calculation engines, natural language helpers, event notifications, and persistence.
+The middleware services orchestrate logic between calculation engines, event notifications, import/export interfaces, and data integrity controllers.
 
 ## Core Services
 
@@ -19,12 +19,16 @@ The middleware services orchestrate logic between calculation engines, natural l
 - Supports time-to-live (TTL) expiration limits for queries.
 - Evicts volatile cache items upon receiving the `"PROFILE_UPDATED"` event.
 
-### 4. `LLMService`
-- Interfaces with local Ollama endpoints (default model: `gemma:2b`).
-- Dynamically injects context (MR level, owned items, completed quests) into query prompts before execution.
-
-### 5. `PlayerService`
+### 4. `PlayerService`
 - Manages the active profile loading, creation, and synchronization.
 
-### 6. `ProgressionService`
+### 5. `ProgressionService`
 - Evaluates account status progression tiers and primary goal indicators.
+
+### 6. `DataVersionService`
+- Manages database schema migrations and validates dataset JSON integrity on startup.
+- Verifies files compatibility requirements.
+
+### 7. `ImportExportService`
+- Direct exports of profile models to JSON and CSV formats.
+- Performs profile merge/union calculations and database restorations.

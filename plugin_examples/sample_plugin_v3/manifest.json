@@ -1,0 +1,8 @@
+{
+  "id": "sample_plugin_v3",
+  "name": "Sample Plugin V3",
+  "author": "Shubham",
+  "version": "3.0.0",
+  "minimum_wta_version": "9.0.0",
+  "dependencies": []
+}

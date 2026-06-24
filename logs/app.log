@@ -235,3 +235,404 @@ ValueError: Simulated Architecture Test Exception
 2026-06-23 09:25:10,778 INFO Volatile memory cache invalidated on profile update.
 2026-06-23 09:25:10,779 INFO Volatile memory cache invalidated on profile update.
 2026-06-23 09:25:10,888 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:45:04,587 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:45:08,805 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:45:08,848 INFO Settings saved
+2026-06-23 09:45:08,866 INFO Settings saved
+2026-06-23 09:45:08,924 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:45:08,932 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:45:08,934 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:45:08,935 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:45:08,936 INFO Plugins loaded successfully.
+2026-06-23 09:45:08,936 INFO Starting background backup...
+2026-06-23 09:45:08,936 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:45:08,936 INFO Recording progression snapshot...
+2026-06-23 09:45:08,939 INFO Progression snapshot recorded successfully.
+2026-06-23 09:45:08,949 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:45:10,075 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:45:10,077 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:45:10,078 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:45:10,190 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:50:24,632 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmp0kzgaohq.json
+2026-06-23 09:50:24,637 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmprvxdbgco.csv
+2026-06-23 09:50:26,146 INFO Database successfully restored with player profile.
+2026-06-23 09:50:26,146 INFO Successfully merged profiles.
+2026-06-23 09:50:27,354 INFO Database successfully restored with player profile.
+2026-06-23 09:50:27,437 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:50:27,475 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:50:27,477 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 09:50:31,979 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:50:31,986 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:50:32,011 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 09:50:32,027 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 09:50:32,090 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:50:32,143 INFO Settings saved
+2026-06-23 09:50:32,150 INFO Settings saved
+2026-06-23 09:50:32,209 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:50:32,217 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:50:32,222 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:50:32,223 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:50:32,224 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 09:50:32,224 INFO Plugins loaded successfully.
+2026-06-23 09:50:32,224 INFO Starting background backup...
+2026-06-23 09:50:32,224 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:50:32,225 INFO Recording progression snapshot...
+2026-06-23 09:50:32,231 INFO Progression snapshot recorded successfully.
+2026-06-23 09:50:32,243 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:50:33,385 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:50:33,386 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:50:33,388 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:50:33,563 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:52:05,440 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmph_76q6ms.json
+2026-06-23 09:52:05,442 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmp7k7kq02h.csv
+2026-06-23 09:52:07,492 INFO Database successfully restored with player profile.
+2026-06-23 09:52:07,492 INFO Successfully merged profiles.
+2026-06-23 09:52:08,742 INFO Database successfully restored with player profile.
+2026-06-23 09:52:08,857 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:52:08,888 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:52:08,890 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 09:52:13,328 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:52:13,332 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:52:13,357 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 09:52:13,370 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 09:52:13,412 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:52:13,450 INFO Settings saved
+2026-06-23 09:52:13,453 INFO Settings saved
+2026-06-23 09:52:13,497 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:52:13,501 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:52:13,503 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:52:13,504 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:52:13,504 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 09:52:13,505 INFO Plugins loaded successfully.
+2026-06-23 09:52:13,505 INFO Starting background backup...
+2026-06-23 09:52:13,505 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:52:13,507 INFO Recording progression snapshot...
+2026-06-23 09:52:13,510 INFO Progression snapshot recorded successfully.
+2026-06-23 09:52:13,516 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:52:14,649 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:14,650 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:14,651 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:14,946 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:52:37,411 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmp6k3keck2.json
+2026-06-23 09:52:37,414 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmp7yq0pks5.csv
+2026-06-23 09:52:39,305 INFO Database successfully restored with player profile.
+2026-06-23 09:52:39,306 INFO Successfully merged profiles.
+2026-06-23 09:52:41,863 INFO Database successfully restored with player profile.
+2026-06-23 09:52:41,968 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:52:41,993 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:52:41,995 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 09:52:46,521 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:52:46,526 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:52:46,556 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 09:52:46,577 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 09:52:46,688 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:52:46,762 INFO Settings saved
+2026-06-23 09:52:46,765 INFO Settings saved
+2026-06-23 09:52:46,823 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:52:46,829 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:52:46,831 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:52:46,833 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:52:46,834 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 09:52:46,834 INFO Plugins loaded successfully.
+2026-06-23 09:52:46,834 INFO Starting background backup...
+2026-06-23 09:52:46,834 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:52:46,834 INFO Recording progression snapshot...
+2026-06-23 09:52:46,837 INFO Progression snapshot recorded successfully.
+2026-06-23 09:52:46,842 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:52:47,968 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:47,970 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:47,972 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:52:48,217 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 09:54:04,627 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmp37p_f0kk.json
+2026-06-23 09:54:04,637 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpvrht3d5l.csv
+2026-06-23 09:54:06,072 INFO Database successfully restored with player profile.
+2026-06-23 09:54:06,079 INFO Successfully merged profiles.
+2026-06-23 09:54:07,412 INFO Database successfully restored with player profile.
+2026-06-23 09:54:07,779 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 09:54:07,830 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:54:07,835 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 09:54:12,789 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 09:54:12,798 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:54:12,851 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 09:54:12,886 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 09:54:12,963 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:54:12,964 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 09:54:13,051 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 09:54:13,164 INFO Settings saved
+2026-06-23 09:54:13,177 INFO Settings saved
+2026-06-23 09:54:13,327 INFO Scanning and loading custom plugins in background...
+2026-06-23 09:54:13,344 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 09:54:13,350 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 09:54:13,356 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 09:54:13,357 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 09:54:13,357 INFO Plugins loaded successfully.
+2026-06-23 09:54:13,358 INFO Starting background backup...
+2026-06-23 09:54:13,358 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 09:54:13,359 INFO Recording progression snapshot...
+2026-06-23 09:54:13,364 INFO Progression snapshot recorded successfully.
+2026-06-23 09:54:13,383 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 09:54:14,546 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:54:14,547 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:54:14,548 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 09:54:14,914 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 10:03:18,337 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-23 10:03:23,567 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmpfuzlkxfj.json
+2026-06-23 10:03:23,590 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpi3rru_kr.csv
+2026-06-23 10:03:25,955 INFO Database successfully restored with player profile.
+2026-06-23 10:03:25,956 INFO Successfully merged profiles.
+2026-06-23 10:03:27,340 INFO Database successfully restored with player profile.
+2026-06-23 10:03:27,548 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 10:03:27,595 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:03:27,598 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 10:03:32,603 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 10:03:32,612 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:03:32,671 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 10:03:32,702 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 10:03:32,753 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:03:32,754 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:03:32,849 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:03:33,002 INFO Settings saved
+2026-06-23 10:03:33,012 INFO Settings saved
+2026-06-23 10:03:33,127 INFO Scanning and loading custom plugins in background...
+2026-06-23 10:03:33,154 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 10:03:33,158 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 10:03:33,168 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 10:03:33,170 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 10:03:33,170 INFO Plugins loaded successfully.
+2026-06-23 10:03:33,171 INFO Starting background backup...
+2026-06-23 10:03:33,171 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 10:03:33,172 INFO Recording progression snapshot...
+2026-06-23 10:03:33,185 INFO Progression snapshot recorded successfully.
+2026-06-23 10:03:33,201 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 10:03:34,378 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:03:34,383 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:03:34,387 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:03:34,775 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 10:12:38,614 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-23 10:12:38,664 INFO Created new profile db: acc1
+2026-06-23 10:12:38,713 INFO Created new profile db: acc2
+2026-06-23 10:12:39,140 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 10:12:39,143 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 10:12:39,207 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmpy1o_x4tf.json
+2026-06-23 10:12:39,219 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpk1implek.csv
+2026-06-23 10:12:41,044 INFO Database successfully restored with player profile.
+2026-06-23 10:12:41,045 INFO Successfully merged profiles.
+2026-06-23 10:12:42,585 INFO Database successfully restored with player profile.
+2026-06-23 10:12:42,731 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 10:12:42,772 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:12:42,776 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 10:12:47,560 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 10:12:47,567 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:12:47,601 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 10:12:47,619 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 10:12:47,650 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:12:47,651 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:12:47,721 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:12:47,842 INFO Settings saved
+2026-06-23 10:12:47,853 INFO Settings saved
+2026-06-23 10:12:47,927 INFO Scanning and loading custom plugins in background...
+2026-06-23 10:12:47,936 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 10:12:47,938 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 10:12:47,941 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 10:12:47,943 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 10:12:47,943 INFO Plugins loaded successfully.
+2026-06-23 10:12:47,944 INFO Starting background backup...
+2026-06-23 10:12:47,944 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 10:12:47,944 INFO Recording progression snapshot...
+2026-06-23 10:12:47,951 INFO Progression snapshot recorded successfully.
+2026-06-23 10:12:47,963 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 10:12:49,116 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:12:49,122 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:12:49,125 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:12:49,494 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-23 10:18:18,209 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-23 10:18:18,283 INFO Created new profile db: acc1
+2026-06-23 10:18:18,340 INFO Created new profile db: acc2
+2026-06-23 10:18:19,046 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 10:18:19,051 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 10:18:19,134 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmpeye4adzg.json
+2026-06-23 10:18:19,144 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpmhi_zilc.csv
+2026-06-23 10:18:20,683 INFO Database successfully restored with player profile.
+2026-06-23 10:18:20,684 INFO Successfully merged profiles.
+2026-06-23 10:18:22,110 INFO Database successfully restored with player profile.
+2026-06-23 10:18:22,259 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-23 10:18:22,298 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:18:22,300 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-23 10:18:27,076 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-23 10:18:27,081 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:18:27,140 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-23 10:18:27,168 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-23 10:18:27,225 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:18:27,226 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-23 10:18:27,302 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-23 10:18:27,417 INFO Settings saved
+2026-06-23 10:18:27,423 INFO Settings saved
+2026-06-23 10:18:27,505 INFO Scanning and loading custom plugins in background...
+2026-06-23 10:18:27,512 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-23 10:18:27,514 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-23 10:18:27,517 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-23 10:18:27,518 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-23 10:18:27,519 INFO Plugins loaded successfully.
+2026-06-23 10:18:27,519 INFO Starting background backup...
+2026-06-23 10:18:27,520 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-23 10:18:27,520 INFO Recording progression snapshot...
+2026-06-23 10:18:27,527 INFO Progression snapshot recorded successfully.
+2026-06-23 10:18:27,541 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-23 10:18:28,695 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:18:28,696 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:18:28,698 INFO Volatile memory cache invalidated on profile update.
+2026-06-23 10:18:29,081 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-24 11:37:22,910 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:37:22,945 INFO Created new profile db: acc1
+2026-06-24 11:37:22,960 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:37:23,001 INFO Created new profile db: acc1
+2026-06-24 11:37:23,035 INFO Created new profile db: acc2
+2026-06-24 11:37:23,677 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:37:25,648 INFO Created new profile db: acc1
+2026-06-24 11:37:25,686 INFO Created new profile db: acc2
+2026-06-24 11:37:25,733 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:37:25,779 INFO Created new profile db: acc1
+2026-06-24 11:37:25,826 INFO Created new profile db: acc2
+2026-06-24 11:37:26,195 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:37:26,196 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:37:26,231 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:37:26,233 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:37:26,264 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:37:26,265 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:37:26,294 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:37:26,295 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:37:26,327 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmpmf_5yiwf.json
+2026-06-24 11:37:26,332 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpp50mqb8j.csv
+2026-06-24 11:37:27,757 INFO Database successfully restored with player profile.
+2026-06-24 11:37:27,757 INFO Successfully merged profiles.
+2026-06-24 11:37:29,097 INFO Database successfully restored with player profile.
+2026-06-24 11:37:29,219 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-24 11:37:29,239 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-24 11:37:29,240 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-24 11:37:33,860 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-24 11:37:33,867 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:37:33,903 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:37:33,925 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:37:33,971 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:37:33,972 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:37:33,997 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-24 11:37:34,076 INFO Settings saved
+2026-06-24 11:37:34,188 INFO Settings saved
+2026-06-24 11:37:34,191 INFO Settings saved
+2026-06-24 11:37:34,234 INFO Scanning and loading custom plugins in background...
+2026-06-24 11:37:34,321 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-24 11:37:34,344 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-24 11:37:34,369 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-24 11:37:34,371 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-24 11:37:34,371 INFO Plugins loaded successfully.
+2026-06-24 11:37:34,371 INFO Starting background backup...
+2026-06-24 11:37:34,371 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-24 11:37:34,372 INFO Recording progression snapshot...
+2026-06-24 11:37:34,376 INFO Progression snapshot recorded successfully.
+2026-06-24 11:37:34,423 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-24 11:37:35,561 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:37:35,563 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:37:35,563 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:37:36,249 INFO Successfully loaded plugin folder: Test Plugin
+2026-06-24 11:39:13,041 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:39:13,082 INFO Created new profile db: acc1
+2026-06-24 11:39:13,091 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:39:13,127 INFO Created new profile db: acc1
+2026-06-24 11:39:13,179 INFO Created new profile db: acc2
+2026-06-24 11:39:13,223 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:39:13,265 INFO Created new profile db: acc1
+2026-06-24 11:39:13,305 INFO Created new profile db: acc2
+2026-06-24 11:39:13,322 INFO Migrated legacy root player.db to profiles/default/player.db
+2026-06-24 11:39:13,357 INFO Created new profile db: acc1
+2026-06-24 11:39:13,394 INFO Created new profile db: acc2
+2026-06-24 11:39:13,642 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:39:13,644 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:39:13,671 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:39:13,672 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:39:13,699 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:39:13,700 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:39:13,725 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:39:13,726 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:39:13,756 INFO Profile successfully exported to JSON: C:\Users\ThePC\AppData\Local\Temp\tmpgico8d5l.json
+2026-06-24 11:39:13,759 INFO Profile successfully exported to CSV: C:\Users\ThePC\AppData\Local\Temp\tmpo7_u2y8i.csv
+2026-06-24 11:39:15,257 INFO Database successfully restored with player profile.
+2026-06-24 11:39:15,257 INFO Successfully merged profiles.
+2026-06-24 11:39:16,530 INFO Database successfully restored with player profile.
+2026-06-24 11:39:16,590 INFO Successfully loaded legacy plugin: custom_test_plugin.json
+2026-06-24 11:39:16,604 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-24 11:39:16,605 INFO Saved progress snapshot for date: 2026-06-05
+2026-06-24 11:39:21,030 WARNING Local LLM (Ollama) request failed: <urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>
+2026-06-24 11:39:21,034 ERROR Failed to load session logs: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:39:21,056 INFO Saved progress snapshot for date: 2026-06-20
+2026-06-24 11:39:21,070 INFO Saved progress snapshot for date: 2026-06-21
+2026-06-24 11:39:21,090 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:39:21,091 ERROR Failed to load snapshot file 2026-06-20.json: Expecting value: line 1 column 1 (char 0)
+2026-06-24 11:39:21,118 INFO Saved progress snapshot for date: 2026-06-01
+2026-06-24 11:39:21,169 INFO Settings saved
+2026-06-24 11:39:21,190 INFO Settings saved
+2026-06-24 11:39:21,193 INFO Settings saved
+2026-06-24 11:39:21,239 INFO Scanning and loading custom plugins in background...
+2026-06-24 11:39:21,242 INFO Successfully loaded plugin folder: Sample Plugin
+2026-06-24 11:39:21,244 INFO Successfully loaded plugin folder: Sample Routes Plugin
+2026-06-24 11:39:21,245 INFO Successfully loaded plugin folder: Sample Theme Plugin
+2026-06-24 11:39:21,246 INFO Successfully loaded legacy plugin: plugin_catalog.json
+2026-06-24 11:39:21,246 INFO Plugins loaded successfully.
+2026-06-24 11:39:21,246 INFO Starting background backup...
+2026-06-24 11:39:21,246 ERROR Background backup failed: 'ProfileManager' object has no attribute 'backup_profile'
+2026-06-24 11:39:21,246 INFO Recording progression snapshot...
+2026-06-24 11:39:21,250 INFO Progression snapshot recorded successfully.
+2026-06-24 11:39:21,256 ERROR Unhandled Exception: ValueError: Simulated Architecture Test Exception
+Traceback (most recent call last):
+  File "D:\Shubham\Code\Python\Project\warframe-tactical-advisor\tests\test_v4_architecture.py", line 47, in test_error_handler
+    raise ValueError("Simulated Architecture Test Exception")
+ValueError: Simulated Architecture Test Exception
+
+2026-06-24 11:39:22,382 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:39:22,382 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:39:22,383 INFO Volatile memory cache invalidated on profile update.
+2026-06-24 11:39:22,537 INFO Successfully loaded plugin folder: Test Plugin

@@ -1,4 +1,4 @@
-# Local REST API Specifications (v7.0)
+# Local REST API Specifications (v8.0)
 
 ## Overview
 The application hosts a local developer-friendly FastAPI backend endpoint to query player profile states, check recommendations, and trigger commands.
@@ -47,3 +47,19 @@ Returns custom progress coaching advice.
 
 ### 8. `GET /sim`
 Runs future projection simulations.
+
+### 9. `GET /charts`
+Returns historical progress growth data and radar metric categories.
+
+### 10. `GET /codex`
+Returns database items list containing weapons, arcanes, and warframes.
+
+### 11. `GET /statistics`
+Returns overall story and weapon clearance stats ratios and detailed score breakdowns.
+
+### 12. `GET /packs`
+Returns a list of all available data packs (Base, Meta, Endgame, etc.) and any unmet dependency hierarchies.
+
+### 13. `POST /packs/{pack_id}/toggle`
+Toggles the enabled/disabled state of a data pack.
+- **Parameters**: `pack_id` (string, path parameter), `enabled` (boolean, query parameter)

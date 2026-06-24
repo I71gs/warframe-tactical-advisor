@@ -1,0 +1,24 @@
+{
+    "id": "meta_pack",
+    "name": "Meta Pack",
+    "version": "1.0.0",
+    "dependencies": ["base_pack"],
+    "enabled": true,
+    "weapons": [
+        {
+            "name": "Soma Prime",
+            "type": "Primary",
+            "acquisition": "Relics",
+            "meta_rating": 80,
+            "category": "Rifle"
+        }
+    ],
+    "mods": [
+        {
+            "name": "Split Chamber",
+            "category": "Rifle",
+            "source": "General Drops",
+            "importance": 9
+        }
+    ]
+}

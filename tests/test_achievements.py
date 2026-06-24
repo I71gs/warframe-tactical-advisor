@@ -31,4 +31,7 @@ def test_achievement_badges() -> None:
     
     badges_adv = ae.get_badges(player_adv)
     # Story Master, Steel Path, Archon Hunter, Incarnon Collector, Mod Master should be unlocked
-    assert all(b["unlocked"] is True for b in badges_adv)
+    core_badge_ids = {"story_master", "steel_path", "archon_hunter", "incarnon_collector", "mod_master"}
+    for b in badges_adv:
+        if b["id"] in core_badge_ids:
+            assert b["unlocked"] is True

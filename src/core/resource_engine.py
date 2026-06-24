@@ -43,7 +43,17 @@ class ResourceEngine:
     """Calculates resource requirements and deficits based on player target items."""
 
     def __init__(self, state_path: Path | str | None = None) -> None:
-        self.state_path = Path(state_path) if state_path else RESOURCE_STATE_PATH
+        if state_path:
+            self.state_path = Path(state_path)
+        else:
+            from src.core.settings_manager import SettingsManager
+            profile = SettingsManager().get('current_profile', 'default')
+            from src.core.save_manager import SaveManager
+            sm = SaveManager()
+            # Ensure the directory exists
+            sm.profiles_dir.mkdir(parents=True, exist_ok=True)
+            (sm.profiles_dir / profile).mkdir(parents=True, exist_ok=True)
+            self.state_path = sm.profiles_dir / profile / 'resource_state.json'
 
     def load_owned_resources(self) -> dict[str, int]:
         """Loads player's currently owned resource counts."""

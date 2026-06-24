@@ -1,13 +1,16 @@
-# Database Schema & Storage (v7.0)
+# Database Schema & Storage (v8.0)
 
 ## Overview
-All player profile progression, owned items, completed quests, and system settings are stored offline locally. 
+All player profile progression, owned items, completed quests, system settings, history snapshots, and session productivity records are stored offline locally. 
 Database files are located at the root of the workspace directory.
 
 ## File Mappings
 - **Active Database**: `player.db` (or `player_{profile}.db` for custom profile names).
 - **Settings Store**: `settings.json`.
 - **Resource Inventory**: `resource_state.json`.
+- **Daily snapshots directory**: `snapshots/YYYY-MM-DD.json`
+- **Session Logs**: `snapshots/session_logs.json`
+- **Dataset metadata**: `data/metadata.json`
 
 ## SQLite Schema Details
 
@@ -40,6 +43,6 @@ Key-value storage for schema configurations.
 - `key` (TEXT, Primary Key)
 - `value` (TEXT)
 
-## Database Backups
-- Automatically saved under `backups/` directory.
-- File naming format: `player_backup_YYYYMMDD_HHMMSS.sqlite`.
+## Database Backups & Snapshots
+- **Backups**: Automatically saved under `backups/` directory. File naming format: `player_backup_YYYYMMDD_HHMMSS.sqlite`.
+- **Progress Snapshots**: Daily state captures are recorded in the `snapshots/` folder in structured JSON formatting, supporting historical timeline reconstructs and progress comparisons.

@@ -1,0 +1,20 @@
+{
+    "name": "Vitus Essence Arbitration Run",
+    "zone": "Arbitration",
+    "reward": "Vitus Essence & Galvanized Mods",
+    "efficiency_score": 8.0,
+    "estimated_duration_mins": 20.0,
+    "recommended_loadout": "Wisp (Haste/Vitality Reservoirs) or Revenant (Mesmer Skin)",
+    "node_directions": [
+        "Locate active Arbitration node on Star Chart",
+        "Ensure you have a self-revive setup or high durability",
+        "Target Arbitration Drones first to remove enemy invulnerability",
+        "Collect Vitus Essence drops from drones and rotation rewards",
+        "Purchase Galvanized mods from the Arbiters of Hexis in Relays"
+    ],
+    "requirements": {
+        "mastery_rank": 8,
+        "completed_quests": ["The War Within"],
+        "arbitrations_unlocked": true
+    }
+}

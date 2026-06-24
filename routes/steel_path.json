@@ -1,0 +1,20 @@
+{
+    "name": "Steel Path Essence Farm",
+    "zone": "Steel Path",
+    "reward": "Steel Essence & Primary/Secondary Arcanes",
+    "efficiency_score": 8.5,
+    "estimated_duration_mins": 25.0,
+    "recommended_loadout": "Khora (Pilfering Strangledome) or Nekros (Desecrate)",
+    "node_directions": [
+        "Select Taveuni (Kuva Fortress, Survival) on Steel Path difficulty",
+        "Find a choke point room to drop Strangledome or Desecrate",
+        "Keep life support activated via capsule drops and towers",
+        "Kill Steel Path Acolytes when they spawn (every 3-6 minutes)",
+        "Collect Steel Essence and Arcane drops"
+    ],
+    "requirements": {
+        "mastery_rank": 12,
+        "completed_quests": ["The New War"],
+        "steel_path_unlocked": true
+    }
+}

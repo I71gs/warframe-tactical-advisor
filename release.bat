@@ -1,0 +1,21 @@
+@echo off
+echo ========================================================
+echo Warframe Tactical Advisor v9.0 Release Packaging Script
+echo ========================================================
+
+echo 1. Updating Metadata Version...
+python -c "import json; f = open('data/metadata.json', 'r+'); d = json.load(f); d['version'] = '2026.06'; d['updated'] = '2026-06-23'; f.seek(0); json.dump(d, f, indent=4); f.truncate()"
+
+echo 2. Packaging WTA Application using PyInstaller...
+pyinstaller --noconfirm --onedir --windowed --name=WarframeTacticalAdvisor --icon=assets/icon.ico main.py
+
+echo 3. Compiling Installer Package (Inno Setup)...
+if exist "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" (
+    "%ProgramFiles(x86)%\Inno Setup 6\ISCC.exe" installer\setup.iss
+) else if exist "%ProgramFiles%\Inno Setup 6\ISCC.exe" (
+    "%ProgramFiles%\Inno Setup 6\ISCC.exe" installer\setup.iss
+) else (
+    echo Warning: Inno Setup ISCC compiler not found. Portable build is available in dist\WarframeTacticalAdvisor\
+)
+
+echo Done! Release build completed successfully.

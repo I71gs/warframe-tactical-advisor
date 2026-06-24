@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0] - Ecosystem, Analytics & Multi-Platform Edition (v8.0)
+
+### Added
+- **Data Versioning System**: Integrated `DataVersionService` to manage database schema updates, verify file dependencies, and track data integrity versioning.
+- **Progress Snapshotting**: Snapshot repository serialization for saving daily states as JSON; computes differences between historical snapshots.
+- **Progression Timeline Replays**: Historical replay engine reconstructing milestones unlock speeds and velocity telemetries.
+- **Statistics Engine v2**: Advanced analytics compiling growth curves, story and weapon clearance stats, and mod/build scores.
+- **Goal History & Session Analytics**: Logged session durations, task completions, resource yields, and daily productivity efficiency.
+- **Search Engine v4**: Custom synonym lookup (`aliases.json`) and category tag index (`tags.json`) integration with relevance rank boosts.
+- **Wiki Launcher**: Browser automation opening warframe.wiki.gg and fandom.com entries.
+- **Detached Multi-Windows**: `WindowManager` ensuring zero-duplicate sub-window frames for Dashboard, Codex, Charts, and Graphs.
+- **Import/Export Service**: Standardized profile data exports to JSON and CSV formats, profile merge/union logic, and db restorations.
+- **FastAPI Endpoint Extensions**: Added `/charts`, `/codex`, and `/statistics` REST API routes.
+- **Flutter Companion Stub**: Flutter companion skeleton displaying progress metrics, daily checklist tasks, and session duration selections.
+
 ## [7.0.0] - Stage 2: Intelligent Progression Coach & Plugins Ecosystem
 
 ### Added

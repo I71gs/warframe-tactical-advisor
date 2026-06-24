@@ -23,7 +23,10 @@ class ChartsTab(QWidget):
         self.chart_selector.addItems([
             "Radar Chart: Progression Sub-scores",
             "Line Chart: Historical Account Strength",
-            "Pie Chart: Weapon Inventory Collections"
+            "Pie Chart: Weapon Inventory Collections",
+            "Line Chart: Mastery Rank Growth",
+            "Bar Chart: Daily Quest Activity",
+            "Line Chart: Relic Unlocks & Crafting"
         ])
         self.chart_selector.currentTextChanged.connect(self.render_selected_chart)
         self.layout.addWidget(self.chart_selector)
@@ -53,8 +56,14 @@ class ChartsTab(QWidget):
         
         if "Radar Chart" in selected:
             fig = self._draw_radar_chart(player, pe)
-        elif "Line Chart" in selected:
+        elif "Historical Account Strength" in selected:
             fig = self._draw_line_chart()
+        elif "Mastery Rank Growth" in selected:
+            fig = self._draw_mr_growth_chart()
+        elif "Daily Quest Activity" in selected:
+            fig = self._draw_quest_activity_chart()
+        elif "Relic Unlocks" in selected:
+            fig = self._draw_relic_crafting_chart()
         else:
             fig = self._draw_pie_chart(player)
             
@@ -97,21 +106,22 @@ class ChartsTab(QWidget):
         return fig
 
     def _draw_line_chart(self) -> Figure:
-        cm = CacheManager()
-        history = cm.load_cache("history").get("data", {})
-        snapshots = history.get("snapshots", [])
+        from src.core.statistics_engine_v2 import StatisticsEngineV2
+        stats_engine = StatisticsEngineV2()
+        player = PlayerLoader().load_player()
+        growth_data = stats_engine.get_growth_data(player)
         
         fig = Figure(facecolor='#0b1220')
         ax = fig.add_subplot(111)
         ax.set_facecolor('#0f1724')
         
-        if not snapshots:
+        if not growth_data:
             ax.text(0.5, 0.5, "No history snapshots saved yet.", color='#9fb6c8', ha='center', va='center')
             ax.set_axis_off()
             return fig
             
-        dates = [s["date"] for s in snapshots]
-        scores = [s["readiness"] for s in snapshots]
+        dates = [s["date"] for s in growth_data]
+        scores = [s["readiness"] for s in growth_data]
         
         # Style grid & labels
         ax.plot(dates, scores, marker='o', color='#caa3ff', linewidth=2, label="Historical Strength")
@@ -119,7 +129,6 @@ class ChartsTab(QWidget):
         # Growth Curve Projection
         try:
             from src.core.prediction_engine import PredictionEngine
-            from src.core.player_loader import PlayerLoader
             pe = PredictionEngine()
             player = PlayerLoader().load_player()
             pred = pe.predict_milestones(player)
@@ -186,4 +195,98 @@ class ChartsTab(QWidget):
             text.set_color('#9fb6c8')
             
         ax.set_title("Meta Weapons Collection Status", color='#e6eef6')
+        return fig
+
+    def _draw_mr_growth_chart(self) -> Figure:
+        from src.core.history_engine import HistoryEngine
+        engine = HistoryEngine()
+        trends = engine.get_growth_trends()
+        mr_data = trends.get("mr", [])
+        
+        fig = Figure(facecolor='#0b1220')
+        ax = fig.add_subplot(111)
+        ax.set_facecolor('#0f1724')
+        
+        if not mr_data:
+            ax.text(0.5, 0.5, "No history snapshots saved yet.", color='#9fb6c8', ha='center', va='center')
+            ax.set_axis_off()
+            return fig
+            
+        dates = [item["date"] for item in mr_data]
+        values = [item["value"] for item in mr_data]
+        
+        ax.plot(dates, values, marker='s', color='#00a3cc', linewidth=2, label="Mastery Rank")
+        ax.set_title("Mastery Rank Growth Trend", color='#e6eef6')
+        ax.set_ylabel("Mastery Rank", color='#9fb6c8')
+        ax.set_ylim(0, 32)
+        ax.legend(facecolor='#0f1724', edgecolor='#2a384e', labelcolor='#e6eef6')
+        
+        fig.autofmt_xdate()
+        ax.tick_params(colors='#9fb6c8')
+        ax.grid(True, color='#2a384e', linestyle='--')
+        for side in ['top', 'right', 'bottom', 'left']:
+            ax.spines[side].set_color('#2a384e')
+        return fig
+
+    def _draw_quest_activity_chart(self) -> Figure:
+        from src.core.history_engine import HistoryEngine
+        engine = HistoryEngine()
+        trends = engine.get_growth_trends()
+        quest_data = trends.get("quest_activity", [])
+        
+        fig = Figure(facecolor='#0b1220')
+        ax = fig.add_subplot(111)
+        ax.set_facecolor('#0f1724')
+        
+        if not quest_data:
+            ax.text(0.5, 0.5, "No history snapshots saved yet.", color='#9fb6c8', ha='center', va='center')
+            ax.set_axis_off()
+            return fig
+            
+        dates = [item["date"] for item in quest_data]
+        values = [item["value"] for item in quest_data]
+        
+        ax.bar(dates, values, color='#caa3ff', alpha=0.8, label="Quests Completed")
+        ax.set_title("Daily Quest Activity", color='#e6eef6')
+        ax.set_ylabel("Quests Count", color='#9fb6c8')
+        ax.legend(facecolor='#0f1724', edgecolor='#2a384e', labelcolor='#e6eef6')
+        
+        fig.autofmt_xdate()
+        ax.tick_params(colors='#9fb6c8')
+        ax.grid(True, color='#2a384e', linestyle='--')
+        for side in ['top', 'right', 'bottom', 'left']:
+            ax.spines[side].set_color('#2a384e')
+        return fig
+
+    def _draw_relic_crafting_chart(self) -> Figure:
+        from src.core.history_engine import HistoryEngine
+        engine = HistoryEngine()
+        trends = engine.get_growth_trends()
+        relic_data = trends.get("relic_unlocks", [])
+        crafting_data = trends.get("build_crafting", [])
+        
+        fig = Figure(facecolor='#0b1220')
+        ax = fig.add_subplot(111)
+        ax.set_facecolor('#0f1724')
+        
+        if not relic_data or not crafting_data:
+            ax.text(0.5, 0.5, "No history snapshots saved yet.", color='#9fb6c8', ha='center', va='center')
+            ax.set_axis_off()
+            return fig
+            
+        dates = [item["date"] for item in relic_data]
+        relic_vals = [item["value"] for item in relic_data]
+        craft_vals = [item["value"] for item in crafting_data]
+        
+        ax.plot(dates, relic_vals, marker='o', color='#22c55e', linewidth=2, label="Relic Unlocks")
+        ax.plot(dates, craft_vals, marker='x', color='#eab308', linewidth=2, label="Build Crafting (Mods)")
+        ax.set_title("Relic Unlocks & Crafting Activity", color='#e6eef6')
+        ax.set_ylabel("Activity Count", color='#9fb6c8')
+        ax.legend(facecolor='#0f1724', edgecolor='#2a384e', labelcolor='#e6eef6')
+        
+        fig.autofmt_xdate()
+        ax.tick_params(colors='#9fb6c8')
+        ax.grid(True, color='#2a384e', linestyle='--')
+        for side in ['top', 'right', 'bottom', 'left']:
+            ax.spines[side].set_color('#2a384e')
         return fig

@@ -25,6 +25,9 @@ class PluginRegistry:
             cls._instance.loaded_manifests = []
             cls._instance.routes = []
             cls._instance.themes = {}
+            cls._instance.menus = []
+            cls._instance.settings_sections = []
+            cls._instance.context_hooks = {}
         return cls._instance
 
     def register_weapon(self, weapon_data: dict[str, Any]) -> None:
@@ -174,3 +177,20 @@ class PluginRegistry:
         self.commands.clear()
         self.tabs.clear()
         self.loaded_manifests.clear()
+        self.menus.clear()
+        self.settings_sections.clear()
+        self.context_hooks.clear()
+
+    def register_menu(self, menu_title: str, actions: list[dict[str, Any]]) -> None:
+        """Register a custom window menu header with item actions."""
+        self.menus.append({"title": menu_title, "actions": actions})
+
+    def register_settings_section(self, section_name: str, schema: dict[str, Any]) -> None:
+        """Register custom settings parameters."""
+        self.settings_sections.append({"section": section_name, "schema": schema})
+
+    def register_context_hook(self, hook_name: str, callback: Callable[[Any], Any]) -> None:
+        """Register a context middleware lifecycle hook callback."""
+        if hook_name not in self.context_hooks:
+            self.context_hooks[hook_name] = []
+        self.context_hooks[hook_name].append(callback)

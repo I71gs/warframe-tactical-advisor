@@ -55,17 +55,20 @@ class ThemeManager:
                 pass
 
     def load_themes_from_files(self) -> None:
-        """Scan THEMES_DIR for any json theme configuration files."""
+        """Scan THEMES_DIR and themes/custom/ for any json theme configuration files."""
         self.themes.clear()
         
-        # Load any json files in themes/
-        for p in THEMES_DIR.glob("*.json"):
+        paths = list(THEMES_DIR.glob("*.json"))
+        custom_dir = THEMES_DIR / "custom"
+        if custom_dir.exists():
+            paths.extend(custom_dir.glob("*.json"))
+
+        for p in paths:
             try:
                 with open(p, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     if isinstance(data, dict) and "PRIMARY" in data:
                         name = data.get("name") or p.stem.capitalize()
-                        # If it is custom_theme.json, name it "Custom Theme" to match GUI
                         if p.name == "custom_theme.json":
                             name = "Custom Theme"
                         self.themes[name] = data

@@ -1,0 +1,19 @@
+{
+    "name": "Weekly Archon Hunt Run",
+    "zone": "Archon Hunt",
+    "reward": "Archon Shards (Crimson/Amber/Azure)",
+    "efficiency_score": 9.5,
+    "estimated_duration_mins": 30.0,
+    "recommended_loadout": "Mesa (for Phase 1/2) or Felarx/Phenmor Devastating Attrition (for Archon fight)",
+    "node_directions": [
+        "Mission 1: Complete the Exterminate or Mobile Defense node",
+        "Mission 2: Complete the Interception or Defense node",
+        "Mission 3 (Assassination): Navigate to the Archon arena",
+        "Phase 1: Deplete first half of Archon health while ignoring damage attenuation",
+        "Phase 2: Defeat the summoned Deacon enemies and complete the hunt"
+    ],
+    "requirements": {
+        "mastery_rank": 15,
+        "completed_quests": ["The New War", "Veilbreaker"]
+    }
+}

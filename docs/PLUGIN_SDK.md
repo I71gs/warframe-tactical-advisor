@@ -1,7 +1,7 @@
-# Plugin SDK Developer Guide (v7.0)
+# Plugin SDK Developer Guide (v9.0)
 
 ## Overview
-The WTA Plugin SDK 2.0 allows developers to extend the application's capabilities by writing plugins located under the root `plugins/` folder.
+The WTA Plugin SDK 3.0 allows developers to extend the application's capabilities by writing plugins located under the root `plugins/` folder. It provides a public API to dynamically inject weapons, builds, routes, custom themes, custom command palette entries, custom GUI tabs, custom window menus, custom settings sections, and context lifecycle hooks.
 
 ## Folder Directory Structure
 ```
@@ -23,9 +23,9 @@ Specifies name, author, version, dependencies, and target compatibility limits.
 {
   "name": "My Custom Plugin",
   "author": "Developer Name",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "dependencies": [],
-  "minimum_wta_version": "7.0"
+  "minimum_wta_version": "9.0"
 }
 ```
 
@@ -84,20 +84,38 @@ Defines a custom theme.
 ```
 
 ### 6. `commands.py`
-Executes Python scripts. Must contain a `register_plugin(registry)` callback function.
+Executes Python scripts. Must contain a `register_plugin(registry)` callback function. It leverages new Plugin SDK v3 features.
 ```python
 import PySide6.QtWidgets as QtWidgets
 
 def register_plugin(registry) -> None:
-    # Register custom action command in VSCode command palette
+    # 1. Register custom action command in VSCode command palette
     def my_action():
         print("Hello from plugin script!")
     registry.register_command("Custom: Run Plugin Script", my_action)
 
-    # Register a new custom GUI tab
+    # 2. Register a new custom GUI tab
     class CustomTab(QtWidgets.QWidget):
         def __init__(self):
             super().__init__()
             QtWidgets.QLabel("Sample Custom Tab Widget", self)
     registry.register_tab(CustomTab, "My Plugin Tab")
+
+    # 3. Register a custom window menu header (New in SDK v3)
+    registry.register_menu("My Plugin Menu", [
+        {"label": "Plugin Menu Action", "action": my_action}
+    ])
+
+    # 4. Register a custom settings section (New in SDK v3)
+    registry.register_settings_section("My Plugin Settings", {
+        "enable_feature": "bool",
+        "polling_interval": "int"
+    })
+
+    # 5. Register context lifecycle hooks (New in SDK v3)
+    def pre_load_profile_hook(context_data):
+        print("Intercepting profile loading process...")
+        return context_data
+
+    registry.register_context_hook("PRE_LOAD_PROFILE", pre_load_profile_hook)
 ```

@@ -78,15 +78,19 @@ CODEX_ENTRIES = [
 class CodexEngine:
     """Offline codex information compiler for weapons, frames, mods, and resources."""
 
+    def __init__(self) -> None:
+        from src.core.codex_database_v2 import CODEX_ENTRIES_V2
+        self.all_entries = CODEX_ENTRIES + CODEX_ENTRIES_V2
+
     def search(self, query: str) -> list[dict[str, Any]]:
         q = query.strip().lower()
         if not q:
-            return CODEX_ENTRIES
-        return [entry for entry in CODEX_ENTRIES if q in entry["name"].lower() or q in entry["category"].lower() or q in entry.get("details", "").lower()]
+            return self.all_entries
+        return [entry for entry in self.all_entries if q in entry["name"].lower() or q in entry["category"].lower() or q in entry.get("details", "").lower()]
 
     def get_details(self, name: str, player: Player) -> dict[str, Any] | None:
         name_lower = name.lower()
-        for entry in CODEX_ENTRIES:
+        for entry in self.all_entries:
             if entry["name"].lower() == name_lower:
                 details = entry.copy()
                 # Determine ownership based on player profile
@@ -102,6 +106,8 @@ class CodexEngine:
                     from src.core.resource_engine import ResourceEngine
                     res_owned = ResourceEngine().load_owned_resources()
                     owned = res_owned.get(name, 0) > 0
+                elif entry["category"] in ["FOCUS", "RAILJACK", "NECRAMECH", "COMPANION"]:
+                    owned = name_lower in {w.lower() for w in player.owned_weapons}
                 details["owned"] = owned
                 return details
         return None

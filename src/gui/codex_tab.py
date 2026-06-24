@@ -125,5 +125,25 @@ class CodexTab(QWidget):
                 <p><b>Uses in Crafting:</b><br>{details.get('uses', 'N/A')}</p>
                 <p><b>Best Farms:</b><br>{details.get('best_farms', 'N/A')}</p>
             """
+        elif category == "FOCUS":
+            html_content += f"""
+                <p><b>Key Skills/Abilities:</b><br>{details.get('skills', 'N/A')}</p>
+                <p><b>Unlock/Upgrade Method:</b><br>{details.get('acquisition', 'N/A')}</p>
+            """
+        elif category == "RAILJACK":
+            html_content += f"""
+                <p><b>Default/Available Weapons:</b><br>{details.get('weapons', 'N/A')}</p>
+                <p><b>Unlock Quest/Method:</b><br>{details.get('acquisition', 'N/A')}</p>
+            """
+        elif category == "NECRAMECH":
+            html_content += f"""
+                <p><b>Abilities:</b><br>{details.get('abilities', 'N/A')}</p>
+                <p><b>Farming & Assembly:</b><br>{details.get('acquisition', 'N/A')}</p>
+            """
+        elif category == "COMPANION":
+            html_content += f"""
+                <p><b>Unique Precept Mods/Abilities:</b><br>{details.get('abilities', 'N/A')}</p>
+                <p><b>Acquisition:</b><br>{details.get('acquisition', 'N/A')}</p>
+            """
             
         self.details_browser.setHtml(html_content)
