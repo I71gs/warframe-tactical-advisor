@@ -100,11 +100,21 @@ class AchievementsTab(QWidget):
             
             card_layout.addWidget(text_widget, 1)
             
-            # Status label
+            # Status layout
+            status_layout = QVBoxLayout()
+            status_layout.setContentsMargins(0, 0, 0, 0)
             status_lbl = QLabel(status_txt)
             status_lbl.setStyleSheet(status_style)
             status_lbl.setAlignment(Qt.AlignCenter)
-            card_layout.addWidget(status_lbl)
+            status_layout.addWidget(status_lbl)
+            
+            if is_unlocked and b.get("unlocked_at"):
+                date_lbl = QLabel(b["unlocked_at"])
+                date_lbl.setStyleSheet("font-size: 10px; color: #ffd700; border: none; background: transparent;")
+                date_lbl.setAlignment(Qt.AlignCenter)
+                status_layout.addWidget(date_lbl)
+                
+            card_layout.addLayout(status_layout)
             
             self.scroll_layout.addWidget(card)
             

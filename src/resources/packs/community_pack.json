@@ -1,0 +1,24 @@
+{
+    "id": "community_pack",
+    "name": "Community Pack",
+    "version": "1.0.0",
+    "dependencies": [],
+    "enabled": false,
+    "weapons": [
+        {
+            "name": "Orthos Prime",
+            "type": "Melee",
+            "acquisition": "Relics",
+            "meta_rating": 82,
+            "category": "Polearm"
+        }
+    ],
+    "mods": [
+        {
+            "name": "Primed Pressure Point",
+            "category": "Melee",
+            "source": "Baro Ki'Teer",
+            "importance": 9
+        }
+    ]
+}

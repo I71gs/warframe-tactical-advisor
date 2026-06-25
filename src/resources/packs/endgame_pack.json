@@ -1,0 +1,24 @@
+{
+    "id": "endgame_pack",
+    "name": "Endgame Pack",
+    "version": "1.0.0",
+    "dependencies": ["meta_pack"],
+    "enabled": false,
+    "weapons": [
+        {
+            "name": "Rubico Prime",
+            "type": "Primary",
+            "acquisition": "Relics",
+            "meta_rating": 85,
+            "category": "Sniper"
+        }
+    ],
+    "mods": [
+        {
+            "name": "Galvanized Chamber",
+            "category": "Rifle",
+            "source": "Arbitration Honors",
+            "importance": 10
+        }
+    ]
+}

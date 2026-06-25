@@ -1,0 +1,128 @@
+[
+    {
+        "name": "Wisp",
+        "acquisition": "Eidolons",
+        "synergies": "Phenmor, Laetum, Haste buffers",
+        "builds": "Strength and Duration focus for Reservoir buffs.",
+        "dependencies": "Requires Jupiter unlocked, Natah quest completed.",
+        "abilities": [
+            "Reservoirs",
+            "Wil-O-Wisp",
+            "Breach Surge",
+            "Sol Gate"
+        ],
+        "passive": "Flowing between dimensions Wisp becomes invisible to enemies while in the air.",
+        "subsumed": "Breach Surge",
+        "importance": 90,
+        "helminth": "Breach Surge",
+        "description": "Wisp floats between the material and the ethereal. She accesses multiple dimensions to support her allies. Her countenance is mysterious and enigmatic."
+    },
+    {
+        "name": "Saryn",
+        "acquisition": "Assassination: Kela De Thaym (Sedna)",
+        "synergies": "Torid, Status-based weapons",
+        "builds": "Range and Strength focus for Spore spread.",
+        "dependencies": "Requires Sedna unlocked.",
+        "abilities": [
+            "Spores",
+            "Molt",
+            "Toxic Lash",
+            "Miasma"
+        ],
+        "passive": "Status Effects inflicted upon enemies last 25% longer.",
+        "subsumed": "Molt",
+        "importance": 95,
+        "helminth": "Molt",
+        "description": "Toxicity is Saryn's strength. Her serpentine powers deal heavy damage. For Saryn, venom is a virtue."
+    },
+    {
+        "name": "Mesa",
+        "acquisition": "Assassination: Mutalist Alad V (Eris)",
+        "synergies": "Secondary weapon buffs, power strength",
+        "builds": "Duration and Efficiency focus for Peacemaker.",
+        "dependencies": "Requires Eris unlocked, Patient Zero quest completed.",
+        "abilities": [
+            "Ballistic Battery",
+            "Shooting Gallery",
+            "Shatter Shield",
+            "Peacemaker"
+        ],
+        "passive": "Shoot dual-wielded sidearms 15% faster and reload single-handed sidearms 25% more rapidly. Gain 50 Bonus Health when not using Melee Weapons.",
+        "subsumed": "Shooting Gallery",
+        "importance": 85,
+        "helminth": "Shooting Gallery",
+        "description": "The gunslinger has a steady deadly hand. Each shot deals high damage. Mesa is the fastest draw in the realm."
+    },
+    {
+        "name": "Volt",
+        "acquisition": "Clan Dojo (Tenno Lab)",
+        "synergies": "Crit-based weapons, speedrun builds",
+        "builds": "Duration and Strength focus for Speed and Electric Shield.",
+        "dependencies": "Requires Clan Dojo access.",
+        "abilities": [
+            "Shock",
+            "Speed",
+            "Electric Shield",
+            "Discharge"
+        ],
+        "passive": "Grounded movement generates an electrical charge building up 1000 Damage per meter that is unleashed with the next attack.",
+        "subsumed": "Shock",
+        "importance": 80,
+        "helminth": "Shock",
+        "description": "Electricity flows through Volt. His attacks deal high damage. Enemies will be shocked."
+    },
+    {
+        "name": "Mirage",
+        "acquisition": "Quest: Hidden Messages",
+        "synergies": "AoE explosive weapons, Hall of Mirrors",
+        "builds": "Strength and Duration focus for Eclipse and Hall of Mirrors.",
+        "dependencies": "Requires Hidden Messages quest completed.",
+        "abilities": [
+            "Hall of Mirrors",
+            "Sleight of Hand",
+            "Eclipse",
+            "Prism"
+        ],
+        "passive": "Sliding lasts 85% longer and acrobatic maneuvers are 50% faster.",
+        "subsumed": "Eclipse",
+        "importance": 75,
+        "helminth": "Eclipse",
+        "description": "Mirage's sleight of hand complements her might. Her dazzled foes take heavy damage. Doppelgangers, lasers, and traps are elements of her stagecraft."
+    },
+    {
+        "name": "Excalibur",
+        "acquisition": "Assassination: Lieutenant Lech Kril (War, Mars)",
+        "synergies": "Melee weapon synergy",
+        "builds": "Strength and Efficiency focus for Exalted Blade.",
+        "dependencies": "Starter Warframe option or Mars unlocked.",
+        "abilities": [
+            "Slash Dash",
+            "Radial Blind",
+            "Radial Javelin",
+            "Exalted Blade"
+        ],
+        "passive": "Excalibur deals 10% increased damage and attacks 10% faster when wielding swords.",
+        "subsumed": "Radial Blind",
+        "importance": 70,
+        "helminth": "Radial Blind",
+        "description": "Excalibur epitomizes the warrior spirit. His master swordsmanship deals high damage. He is the embodiment of martial excellence."
+    },
+    {
+        "name": "Rhino",
+        "acquisition": "Assassination: Jackal (Fossa, Venus)",
+        "synergies": "Roar damage buff, weapon buffers",
+        "builds": "Strength and Armor focus for Iron Skin and Roar.",
+        "dependencies": "Requires Venus unlocked.",
+        "abilities": [
+            "Rhino Charge",
+            "Iron Skin",
+            "Roar",
+            "Rhino Stomp"
+        ],
+        "passive": "Emit a shockwave dealing 100 damage after landing from a great height.",
+        "subsumed": "Roar",
+        "importance": 75,
+        "helminth": "Roar",
+        "description": "Rhino packs a punch. He boasts high survivability and crowd control. The wise would do well to stand clear when he charges."
+    }
+]

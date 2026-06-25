@@ -8,7 +8,7 @@ from src.core.build_database import BUILDS
 from src.core.farming_database import FARMING_DATA
 from src.utils.logger import logger
 
-APP_VERSION = "6.0.0"
+APP_VERSION = "7.0.0"
 
 class PluginRegistry:
     """Singleton registry holding references to dynamically registered items, plugin manifests, and script extensions."""
@@ -23,6 +23,11 @@ class PluginRegistry:
             cls._instance.commands = []
             cls._instance.tabs = []
             cls._instance.loaded_manifests = []
+            cls._instance.routes = []
+            cls._instance.themes = {}
+            cls._instance.menus = []
+            cls._instance.settings_sections = []
+            cls._instance.context_hooks = {}
         return cls._instance
 
     def register_weapon(self, weapon_data: dict[str, Any]) -> None:
@@ -57,6 +62,14 @@ class PluginRegistry:
         """Register a custom GUI tab extension."""
         self.tabs.append({"class": tab_class, "title": title})
 
+    def register_route(self, route_data: dict[str, Any]) -> None:
+        """Register a custom farming route."""
+        self.routes.append(route_data)
+
+    def register_theme(self, name: str, theme_colors: dict[str, str]) -> None:
+        """Register a custom theme from a plugin."""
+        self.themes[name] = theme_colors
+
     def load_plugin_from_directory(self, plugin_dir: Path) -> bool:
         """Loads a plugin folder using the marketplace manifest convention."""
         manifest_path = plugin_dir / "manifest.json"
@@ -68,7 +81,7 @@ class PluginRegistry:
                 manifest = json.load(f)
                 
             # Compatibility checks
-            min_ver = manifest.get("min_app_version", "1.0.0")
+            min_ver = manifest.get("minimum_wta_version") or manifest.get("min_app_version") or "1.0.0"
             if not self.is_compatible(min_ver):
                 logger.warning(
                     "Skipping plugin %s: Requires app version %s, current is %s",
@@ -99,6 +112,27 @@ class PluginRegistry:
                     if isinstance(bdata, list):
                         for b in bdata:
                             self.register_build(b)
+
+            # Load routes if exist
+            routes_file = plugin_dir / "routes.json"
+            if routes_file.exists():
+                with open(routes_file, 'r', encoding='utf-8') as rf:
+                    rdata = json.load(rf)
+                    if isinstance(rdata, list):
+                        for r in rdata:
+                            self.register_route(r)
+                            target_name = r.get("weapon") or r.get("item")
+                            if target_name:
+                                self.register_farming(target_name, r)
+
+            # Load theme if exist
+            theme_file = plugin_dir / "theme.json"
+            if theme_file.exists():
+                with open(theme_file, 'r', encoding='utf-8') as tf:
+                    tdata = json.load(tf)
+                    if isinstance(tdata, dict) and "PRIMARY" in tdata:
+                        tname = tdata.get("name") or plugin_dir.name.capitalize()
+                        self.register_theme(tname, tdata)
                             
             # Load python commands script if exists
             commands_script = plugin_dir / "commands.py"
@@ -143,3 +177,20 @@ class PluginRegistry:
         self.commands.clear()
         self.tabs.clear()
         self.loaded_manifests.clear()
+        self.menus.clear()
+        self.settings_sections.clear()
+        self.context_hooks.clear()
+
+    def register_menu(self, menu_title: str, actions: list[dict[str, Any]]) -> None:
+        """Register a custom window menu header with item actions."""
+        self.menus.append({"title": menu_title, "actions": actions})
+
+    def register_settings_section(self, section_name: str, schema: dict[str, Any]) -> None:
+        """Register custom settings parameters."""
+        self.settings_sections.append({"section": section_name, "schema": schema})
+
+    def register_context_hook(self, hook_name: str, callback: Callable[[Any], Any]) -> None:
+        """Register a context middleware lifecycle hook callback."""
+        if hook_name not in self.context_hooks:
+            self.context_hooks[hook_name] = []
+        self.context_hooks[hook_name].append(callback)

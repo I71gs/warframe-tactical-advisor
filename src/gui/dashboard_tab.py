@@ -86,9 +86,11 @@ class DashboardTab(QWidget):
         self.daily_status = QLabel("Daily Objectives: -")
         self.weekly_status = QLabel("Weekly Goals: -")
         self.long_term_status = QLabel("30-Day Roadmap: -")
+        self.economy_status = QLabel("Economy Bottleneck: -")
         right_layout.addWidget(self.daily_status)
         right_layout.addWidget(self.weekly_status)
         right_layout.addWidget(self.long_term_status)
+        right_layout.addWidget(self.economy_status)
         
         self.priority_layout.addWidget(left_widget, 1)
         self.priority_layout.addWidget(right_widget, 1)
@@ -218,6 +220,20 @@ class DashboardTab(QWidget):
             self.long_term_status.setText(f"🚀 30-Day Milestone: {timeline['target_milestone']} (Est. {timeline['estimated_time']})")
         except Exception:
             self.long_term_status.setText("🚀 30-Day Milestone: Unavailable")
+
+        try:
+            from src.core.economy_engine import EconomyEngine
+            ee = EconomyEngine()
+            plan = ee.get_economy_plan()
+            bottlenecks = [item for item in plan if item["missing"] > 0]
+            if bottlenecks:
+                bottlenecks.sort(key=lambda x: -x["farm_hours"])
+                top_b = bottlenecks[0]
+                self.economy_status.setText(f"💎 Economy Deficit: Need {top_b['missing']:,} {top_b['currency']} ({top_b['farm_hours']}h farm)")
+            else:
+                self.economy_status.setText("💎 Economy Deficit: None ✓")
+        except Exception:
+            self.economy_status.setText("💎 Economy Deficit: Unavailable")
 
         recs = rec_engine.generate_recommendations(player)
         top = recs[0].action if recs else 'No recommendations'

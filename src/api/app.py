@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from src.core.app_context import AppContext
@@ -81,3 +82,56 @@ def get_projection_simulation() -> dict:
     """Runs a future projection simulation on readiness outcomes."""
     player = context.player_service.get_player()
     return projection_engine.simulate(player)
+
+@app.get("/charts")
+def get_charts_data() -> dict:
+    """Returns the historical growth timeline data and radar categories."""
+    from src.core.statistics_engine_v2 import StatisticsEngineV2
+    stats_engine = StatisticsEngineV2()
+    player = context.player_service.get_player()
+    return {
+        "growth_data": stats_engine.get_growth_data(player),
+        "radar_categories": ['Story', 'Mods', 'Arcanes', 'Weapons', 'Mastery', 'Unlocks', 'Builds']
+    }
+
+@app.get("/codex")
+def get_codex_data() -> dict:
+    """Returns lists of weapons, arcanes, and warframes in the advisor database."""
+    from src.core.weapon_database import WEAPONS
+    from src.core.arcane_database import ARCANES
+    from src.core.collection_engine import CORE_WARFRAMES
+    return {
+        "weapons": WEAPONS,
+        "arcanes": ARCANES,
+        "warframes": CORE_WARFRAMES
+    }
+
+@app.get("/statistics")
+def get_statistics_data() -> dict:
+    """Returns clearance statistics and progress score breakdowns."""
+    from src.core.statistics_engine_v2 import StatisticsEngineV2
+    stats_engine = StatisticsEngineV2()
+    player = context.player_service.get_player()
+    return {
+        "clearance": stats_engine.get_clearance_statistics(player),
+        "scores_breakdown": stats_engine.get_scores_breakdown(player)
+    }
+
+@app.get("/packs")
+def get_packs() -> dict:
+    """Returns all data packs list and unmet dependencies metadata."""
+    from src.core.pack_manager import PackManager
+    pm = PackManager()
+    return {
+        "packs": pm.get_all_packs(),
+        "unmet_dependencies": pm.validate_dependencies()
+    }
+
+@app.post("/packs/{pack_id}/toggle")
+def toggle_pack(pack_id: str, enabled: bool) -> dict:
+    """Enable or disable a specific data pack."""
+    from src.core.pack_manager import PackManager
+    pm = PackManager()
+    success = pm.set_pack_enabled(pack_id, enabled)
+    return {"success": success, "pack_id": pack_id, "enabled": enabled}
+

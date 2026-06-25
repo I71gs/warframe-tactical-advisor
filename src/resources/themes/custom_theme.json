@@ -1,0 +1,9 @@
+{
+    "name": "Custom Theme",
+    "PRIMARY": "#05111a",
+    "SECONDARY": "#0c1e2d",
+    "ACCENT": "#33ffaa",
+    "TEXT": "#dcfce7",
+    "MUTED": "#86efac",
+    "CARD": "#0f273c"
+}

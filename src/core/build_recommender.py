@@ -51,4 +51,14 @@ class BuildRecommender:
             "gain": f"+{round(gain, 1)}%",
             "element": build["element"]
         }
+
+    def recommend_builds(self, player: Player) -> list[dict[str, Any]]:
+        """Return recommendations for all configured database builds."""
+        results = []
+        for build in self.db.get_all_builds():
+            rec = self.recommend_build(player, build["weapon"])
+            if rec:
+                results.append(rec)
+        return results
+
 export_recommender = BuildRecommender()

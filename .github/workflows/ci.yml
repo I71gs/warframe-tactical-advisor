@@ -40,10 +40,17 @@ jobs:
 
     - name: Build Standalone Executable (PyInstaller)
       run: |
-        pyinstaller --onefile --windowed --name="WarframeTacticalAdvisor" src/gui/main_window.py
+        pyinstaller --onefile --windowed --name="WarframeTacticalAdvisor" main.py
 
-    - name: Upload Windows Executable Artifact
+    - name: Compile Inno Setup Installer
+      run: |
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/setup.iss
+      shell: powershell
+
+    - name: Upload Windows Executable & Installer Artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: Warframe-Tactical-Advisor-v6.0
-        path: dist/WarframeTacticalAdvisor.exe
+        name: Warframe-Tactical-Advisor-v9.0
+        path: |
+          dist/WarframeTacticalAdvisor.exe
+          dist/Warframe Tactical Advisor Setup.exe

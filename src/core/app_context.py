@@ -23,6 +23,7 @@ class AppContext:
         from src.services.cache_service import CacheService
         from src.services.analytics_service import AnalyticsService
         from src.services.llm_service import LLMService
+        from src.services.data_version_service import DataVersionService
         
         self.player_service = PlayerService(self)
         self.progression_service = ProgressionService(self)
@@ -33,3 +34,4 @@ class AppContext:
         self.cache_service = CacheService(self)
         self.analytics_service = AnalyticsService()
         self.llm_service = LLMService(self)
+        self.data_version_service = DataVersionService(self)

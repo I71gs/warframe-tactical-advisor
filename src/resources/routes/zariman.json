@@ -1,0 +1,19 @@
+{
+    "name": "Zariman Voidplume Farm",
+    "zone": "Zariman",
+    "reward": "Voidplume Pinions & Quills",
+    "efficiency_score": 9.2,
+    "estimated_duration_mins": 12.0,
+    "recommended_loadout": "Xaku (Max Range Box-Breaker) or Limbo",
+    "node_directions": [
+        "Select Halako Perimeter (Exterminate)",
+        "Equip Golden Instinct / Orokin Eye",
+        "Clear enemies to unlock extraction early",
+        "Search side rooms for Voidplumes and Melica consoles",
+        "Defeat the Void Angel for a guaranteed Pinion"
+    ],
+    "requirements": {
+        "mastery_rank": 10,
+        "completed_quests": ["Angels of the Zariman"]
+    }
+}

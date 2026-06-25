@@ -46,6 +46,14 @@ from src.gui.duviri_tab import DuviriTab
 from src.gui.companion_tab import CompanionTab
 from src.gui.economy_tab import EconomyTab
 from src.gui.session_tab import SessionTab
+from src.gui.codex_tab import CodexTab
+from src.gui.benchmark_tab import BenchmarkTab
+from src.gui.replay_tab import ReplayTab
+from src.gui.window_manager import WindowManager
+from src.gui.comparison_tab import ComparisonTab
+from src.gui.route_tab import RouteTab
+from src.gui.build_library_tab import BuildLibraryTab
+from src.gui.theme_editor_tab import ThemeEditorTab
 
 class MainWindow(QMainWindow):
     """Class MainWindow documentation."""
@@ -61,6 +69,8 @@ class MainWindow(QMainWindow):
         self.context.event_bus.subscribe("STATUS_MESSAGE", lambda data: self.show_status(data.get("message", "")))
         self.context.event_bus.subscribe("NOTIFICATION", lambda data: self.show_status(data.get("message", "")))
         self.context.event_bus.subscribe("PLUGINS_LOADED", lambda data: self.load_registered_tabs())
+
+        self.window_manager = WindowManager(self)
 
         self.settings = SettingsManager()
         self.refresh_timer = QTimer(self)
@@ -152,8 +162,12 @@ class MainWindow(QMainWindow):
         self.companion_tab = CompanionTab()
         self.economy_tab = EconomyTab()
         self.session_tab = SessionTab()
+        self.codex_tab = CodexTab()
+        self.benchmark_tab = BenchmarkTab()
+        self.replay_tab = ReplayTab(self)
 
         self.tabs.addTab(self.encyclopedia_tab, 'Encyclopedia')
+        self.tabs.addTab(self.codex_tab, 'Codex')
         self.tabs.addTab(self.collection_tab, 'Collection Tracker')
         self.tabs.addTab(self.mastery_tab, 'Mastery Rank Planner')
         self.tabs.addTab(self.relic_tab, 'Relic Planner')
@@ -163,10 +177,22 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.companion_tab, 'Companion Synergy')
         self.tabs.addTab(self.economy_tab, 'Economy Deficits')
         self.tabs.addTab(self.session_tab, 'Session Planner')
+        self.tabs.addTab(self.benchmark_tab, 'Benchmark Engine')
+        self.tabs.addTab(self.replay_tab, 'Progression Replay')
+        self.comparison_tab = ComparisonTab()
+        self.tabs.addTab(self.comparison_tab, 'Account Comparison')
+        self.route_tab = RouteTab()
+        self.tabs.addTab(self.route_tab, 'Tactical Routes')
+        self.build_library_tab = BuildLibraryTab()
+        self.tabs.addTab(self.build_library_tab, 'Build Library')
+        self.theme_editor_tab = ThemeEditorTab(self)
+        self.tabs.addTab(self.theme_editor_tab, 'Theme Studio')
         self.load_registered_tabs()
 
     def refresh_everything(self) -> None:
         """Refresh all application tabs and data sources."""
+        import time
+        start_time = time.perf_counter()
         self.profile_tab.load_profile()
         self.recommendations_tab.load_recommendations()
         self.progression_tab.load_progress()
@@ -250,6 +276,10 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
         try:
+            self.codex_tab.load_items()
+        except Exception:
+            pass
+        try:
             self.collection_tab.load_collections()
         except Exception:
             pass
@@ -285,6 +315,39 @@ class MainWindow(QMainWindow):
             self.session_tab.load_session()
         except Exception:
             pass
+        try:
+            self.benchmark_tab.load_benchmarks()
+        except Exception:
+            pass
+        try:
+            self.replay_tab.load_timeline()
+        except Exception:
+            pass
+        try:
+            self.comparison_tab.populate_dropdowns()
+        except Exception:
+            pass
+        try:
+            self.route_tab.load_routes()
+        except Exception:
+            pass
+        try:
+            self.build_library_tab.refresh_list()
+        except Exception:
+            pass
+        try:
+            self.theme_editor_tab.preset_combo.clear()
+            self.theme_editor_tab.preset_combo.addItems(self.theme_editor_tab.tm.get_themes())
+        except Exception:
+            pass
+
+        # Record latency in profiler
+        try:
+            from src.core.profiler import Profiler
+            refresh_duration_ms = (time.perf_counter() - start_time) * 1000
+            Profiler.record_refresh_duration(refresh_duration_ms)
+        except Exception:
+            pass
 
     def show_status(self, message: str, timeout: int = 5000) -> None:
         """Display a message in the status bar."""
@@ -301,13 +364,24 @@ class MainWindow(QMainWindow):
 
     def apply_settings(self) -> None:
         """Apply persisted user settings to the window and auto-refresh timer."""
-        if self.settings.get('dark_mode', True):
-            try:
-                self.setStyleSheet(SHEET)
-            except Exception:
-                pass
-        else:
-            self.setStyleSheet('')
+        try:
+            from src.core.theme_manager import ThemeManager
+            from src.core.theme_engine import ThemeEngine
+            tm = ThemeManager()
+            te = ThemeEngine()
+            active_theme = tm.get_active_theme_name()
+            colors = tm.get_theme_colors(active_theme)
+            stylesheet = te.compile_stylesheet(colors)
+            self.setStyleSheet(stylesheet)
+        except Exception as exc:
+            logger.warning('Failed to apply dynamic stylesheet, falling back: %s', exc)
+            if self.settings.get('dark_mode', True):
+                try:
+                    self.setStyleSheet(SHEET)
+                except Exception:
+                    pass
+            else:
+                self.setStyleSheet('')
         if self.settings.get('remember_size', True):
             size = self.settings.get('window_size', {})
             width = size.get('width', 1000)
@@ -347,6 +421,13 @@ class MainWindow(QMainWindow):
         if self.settings.get('remember_size', True):
             self.settings.update(window_size={'width': self.width(), 'height': self.height()})
         self.settings.save()
+        try:
+            from src.core.player_loader import PlayerLoader
+            from src.core.snapshot_repository import SnapshotRepository
+            player = PlayerLoader().load_player()
+            SnapshotRepository().save_snapshot(player)
+        except Exception as exc:
+            logger.error("Failed to auto-save daily snapshot on close: %s", exc)
         super().closeEvent(event)
 
     def setup_shortcuts(self) -> None:
@@ -390,10 +471,40 @@ class MainWindow(QMainWindow):
     def setup_menu_bar(self) -> None:
         """Create the application menu bar."""
         menu_bar = self.menuBar()
+        
+        # Windows menu for detached sub-windows
+        windows_menu = menu_bar.addMenu('Windows')
+        
+        dash_action = QAction('Detached Dashboard', self)
+        dash_action.triggered.connect(lambda: self.window_manager.open_window("Dashboard", DashboardTab))
+        windows_menu.addAction(dash_action)
+        
+        codex_action = QAction('Detached Codex', self)
+        codex_action.triggered.connect(lambda: self.window_manager.open_window("Codex", CodexTab))
+        windows_menu.addAction(codex_action)
+        
+        charts_action = QAction('Detached Charts', self)
+        charts_action.triggered.connect(lambda: self.window_manager.open_window("Progression Charts", ChartsTab))
+        windows_menu.addAction(charts_action)
+        
+        graph_action = QAction('Detached Interactive Graph', self)
+        graph_action.triggered.connect(lambda: self.window_manager.open_window("Interactive Graph", GraphTab))
+        windows_menu.addAction(graph_action)
+
+        perf_action = QAction('Performance Telemetry', self)
+        perf_action.triggered.connect(self.open_performance_dashboard)
+        windows_menu.addAction(perf_action)
+
         help_menu = menu_bar.addMenu('Help')
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about_dialog)
         help_menu.addAction(about_action)
+
+    def open_performance_dashboard(self) -> None:
+        """Instantiate and show the performance dashboard overlay."""
+        from src.gui.performance_dashboard import PerformanceDashboard
+        db = PerformanceDashboard(self)
+        db.exec()
 
     def show_about_dialog(self) -> None:
         """Display the application's about dialog."""

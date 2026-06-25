@@ -1,0 +1,24 @@
+{
+    "id": "base_pack",
+    "name": "Base Pack",
+    "version": "1.0.0",
+    "dependencies": [],
+    "enabled": true,
+    "weapons": [
+        {
+            "name": "Braton Prime",
+            "type": "Primary",
+            "acquisition": "Relics",
+            "meta_rating": 70,
+            "category": "Rifle"
+        }
+    ],
+    "mods": [
+        {
+            "name": "Serration",
+            "category": "Rifle",
+            "source": "Star Chart Nodes",
+            "importance": 10
+        }
+    ]
+}

@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-SDK_DIR = ROOT / "SDK"
+SDK_DIR = ROOT / "docs" / "SDK"
 
 README_CONTENT = """# Warframe Tactical Advisor Developer SDK
 

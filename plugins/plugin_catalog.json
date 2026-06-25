@@ -1,0 +1,32 @@
+{
+    "version": "1.0",
+    "catalog": [
+        {
+            "id": "theme_pack_v1",
+            "name": "Orokin & Zariman Theme Pack",
+            "author": "TennoForge",
+            "version": "1.2.0",
+            "type": "theme",
+            "description": "Includes dark, light, lotus, corpus, orokin, and zariman themes.",
+            "unlocked": true
+        },
+        {
+            "id": "prime_routes_v2",
+            "name": "Prime Farming Routes v2",
+            "author": "LootGoblin",
+            "version": "2.0.1",
+            "type": "commands",
+            "description": "Exposes optimized prime parts capture routes commands.",
+            "unlocked": true
+        },
+        {
+            "id": "mobile_companion_connector",
+            "name": "Mobile Companion Sync",
+            "author": "TacticalDev",
+            "version": "3.0.0",
+            "type": "api",
+            "description": "Provides sync backend integration interface with companion app.",
+            "unlocked": true
+        }
+    ]
+}

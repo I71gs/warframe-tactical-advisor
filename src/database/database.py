@@ -20,10 +20,11 @@ class DatabaseManager:
         else:
             from src.core.settings_manager import SettingsManager
             profile = SettingsManager().get('current_profile', 'default')
-            if profile == 'default':
-                self.db_path = DB_PATH
-            else:
-                self.db_path = ROOT / f'player_{profile}.db'
+            from src.core.save_manager import SaveManager
+            sm = SaveManager()
+            sm.create_profile(profile)
+            self.db_path = sm.get_profile_db_path(profile)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(str(self.db_path), timeout=timeout)
         self.cursor = self.connection.cursor()
         self.create_tables()

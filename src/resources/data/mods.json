@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Galvanized Chamber",
+        "category": "Rifle Mod",
+        "source": "Arbitrations",
+        "importance": 95,
+        "class": "Galvanized"
+    },
+    {
+        "name": "Galvanized Aptitude",
+        "category": "Rifle Mod",
+        "source": "Arbitrations",
+        "importance": 90,
+        "class": "Galvanized"
+    }
+]

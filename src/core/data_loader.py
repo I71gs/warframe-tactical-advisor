@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import json
 import sys
@@ -20,11 +20,11 @@ def load_json(path: Path | str) -> Any:
     file_path = Path(path)
 
     if not file_path.is_absolute():
-
-        file_path = (
-            get_root()
-            / file_path
-        )
+        parts = file_path.parts
+        if parts and parts[0] == "data":
+            file_path = get_root() / "src" / "resources" / file_path
+        else:
+            file_path = get_root() / file_path
 
     with open(
         file_path,

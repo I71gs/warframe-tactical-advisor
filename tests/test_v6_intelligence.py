@@ -84,7 +84,9 @@ def test_future_projection_engine() -> None:
         assert "readiness" in proj
         assert "gain" in proj
 
-def test_timeline_replay_engine() -> None:
+def test_timeline_replay_engine(monkeypatch) -> None:
+    # 1. Test fallback simulation checklist (empty cache)
+    monkeypatch.setattr("src.core.cache_manager.CacheManager.load_cache", lambda self, name: {})
     player = Player(mastery_rank=14)
     tre = TimelineReplayEngine()
     steps = tre.get_replay_data(player)
@@ -95,6 +97,22 @@ def test_timeline_replay_engine() -> None:
         assert "mastery_rank" in s
         assert "readiness" in s
         assert "milestone" in s
+
+    # 2. Test formatting real snapshots (populated cache)
+    mock_snapshots = {
+        "data": {
+            "snapshots": [
+                {"date": "2026-06-22", "readiness": 50.0, "story": 80.0, "builds": 90.0},
+                {"date": "2026-06-23", "readiness": 55.0, "story": 82.0, "builds": 91.0},
+                {"date": "2026-06-24", "readiness": 60.0, "story": 85.0, "builds": 92.0},
+            ]
+        }
+    }
+    monkeypatch.setattr("src.core.cache_manager.CacheManager.load_cache", lambda self, name: mock_snapshots)
+    steps_cached = tre.get_replay_data(player)
+    assert len(steps_cached) == 3
+    assert steps_cached[0]["step_name"] == "Day 1"
+    assert steps_cached[0]["milestone"] == "Custom Snapshot"
 
 def test_session_optimizer() -> None:
     player = Player(

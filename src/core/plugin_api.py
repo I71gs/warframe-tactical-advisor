@@ -41,3 +41,15 @@ class PluginAPI:
     def get_player(self) -> Any:
         """Get the current Player model instance."""
         return self.context.player_service.get_player()
+
+    def register_menu(self, menu_title: str, actions: list[dict[str, Any]]) -> None:
+        """Register a custom window menu header with item actions."""
+        self.registry.register_menu(menu_title, actions)
+
+    def register_settings_section(self, section_name: str, schema: dict[str, Any]) -> None:
+        """Register custom settings parameters."""
+        self.registry.register_settings_section(section_name, schema)
+
+    def register_context_hook(self, hook_name: str, callback: Callable[[Any], Any]) -> None:
+        """Register a context middleware lifecycle hook callback."""
+        self.registry.register_context_hook(hook_name, callback)

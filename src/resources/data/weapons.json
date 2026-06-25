@@ -1,0 +1,18 @@
+[
+    {
+        "name": "Torid",
+        "type": "Primary",
+        "importance": 95,
+        "mastery_required": 4,
+        "category": "Launcher",
+        "acquisition": "Clan Dojo (Bio Lab)"
+    },
+    {
+        "name": "Phenmor",
+        "type": "Primary",
+        "importance": 100,
+        "mastery_required": 14,
+        "category": "Rifle",
+        "acquisition": "Cavalero Vendor (Zariman)"
+    }
+]

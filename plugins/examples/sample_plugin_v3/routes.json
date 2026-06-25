@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Orthos Prime Blade Relic Run",
+    "zone": "Arbitration",
+    "reward": "Orthos Prime Blade Relic",
+    "efficiency_score": 8.2,
+    "estimated_duration_mins": 15.0,
+    "recommended_loadout": "Wisp",
+    "node_directions": [
+        "Go to Hepit (Void) or active Relic Fissure",
+        "Run Exterminate or Capture quickly under 2 minutes"
+    ],
+    "requirements": {
+        "mastery_rank": 4
+    }
+  }
+]

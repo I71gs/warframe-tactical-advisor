@@ -1,0 +1,50 @@
+[
+    {
+        "name": "Panzer Vulpaphyla",
+        "synergy": "95%",
+        "survivability": "100% (Infinite Revives)",
+        "utility": "98% (Viral Spreading)",
+        "rationale": "Uses Viral Quills to spread status stacks. Devolution mod ensures it revives itself automatically after dying, providing permanent radar and item vacuum.",
+        "acquisition": "Eidolons",
+        "type": "Vulpaphyla"
+    },
+    {
+        "name": "Nautilus",
+        "synergy": "90%",
+        "survivability": "75%",
+        "utility": "92% (Grouping CC)",
+        "rationale": "Cordon pulls enemies together in a tight cluster, synergizing perfectly with AoE explosive weapons (Kuva Bramma) or high-punch through rifles (Phenmor).",
+        "acquisition": "Baro Ki'Teer",
+        "type": "Sentinel",
+        "description": "With 'Auto Omni' and 'Cordon' as default Precepts, this Sentinel is the ideal companion for long voyages aboard a Railjack. Note: This item requires two open slots."
+    },
+    {
+        "name": "Carrier Prime",
+        "synergy": "80%",
+        "survivability": "85%",
+        "utility": "80% (Ammo Case)",
+        "rationale": "Converts unused ammo drops into active primary weapon ammo. Essential for ammo-hungry weapons like Kuva Bramma or heavy machineguns.",
+        "acquisition": "Void Relics",
+        "type": "Sentinel",
+        "description": "This ornate sentinel is an excellent example of late Orokin craftsmanship and styling."
+    },
+    {
+        "name": "Diriga",
+        "synergy": "85%",
+        "survivability": "70%",
+        "utility": "85% (Status Spreader)",
+        "rationale": "Arc Coil shocks multiple nearby targets, enabling rapid status application to trigger weapon damage multipliers (Galvanized Aptitude).",
+        "acquisition": "Market Blueprint",
+        "type": "Sentinel",
+        "description": "Carbon steel plates used to reinforce Grineer armor.Locations: Venus, Phobos, Ceres, Jupiter, Pluto, and Sedna."
+    },
+    {
+        "name": "Smeeta Kavat",
+        "synergy": "90%",
+        "survivability": "75%",
+        "utility": "95% (Resource Booster)",
+        "rationale": "Charm buff provides double resource drops periodically. Excellent for farming rare resources.",
+        "acquisition": "Clan Dojo (Bio Lab)",
+        "type": "Kavat"
+    }
+]
