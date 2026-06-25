@@ -1,0 +1,32 @@
+[
+    {
+        "name": "The Second Dream",
+        "importance": 80,
+        "requires": [],
+        "acquisition": "Inbox Message"
+    },
+    {
+        "name": "The War Within",
+        "importance": 95,
+        "requires": [
+            "The Second Dream"
+        ],
+        "acquisition": "Inbox Message"
+    },
+    {
+        "name": "The Sacrifice",
+        "importance": 90,
+        "requires": [
+            "The War Within"
+        ],
+        "acquisition": "Inbox Message"
+    },
+    {
+        "name": "The New War",
+        "importance": 100,
+        "requires": [
+            "The Sacrifice"
+        ],
+        "acquisition": "Teshin (Relay)"
+    }
+]

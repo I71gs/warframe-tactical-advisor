@@ -4,7 +4,7 @@ echo Warframe Tactical Advisor v9.0 Release Packaging Script
 echo ========================================================
 
 echo 1. Updating Metadata Version...
-python -c "import json; f = open('data/metadata.json', 'r+'); d = json.load(f); d['version'] = '2026.06'; d['updated'] = '2026-06-23'; f.seek(0); json.dump(d, f, indent=4); f.truncate()"
+python -c "import json; f = open('src/resources/data/metadata.json', 'r+'); d = json.load(f); d['version'] = '2026.06'; d['updated'] = '2026-06-23'; f.seek(0); json.dump(d, f, indent=4); f.truncate()"
 
 echo 2. Packaging WTA Application using PyInstaller...
 pyinstaller --noconfirm --onedir --windowed --name=WarframeTacticalAdvisor --icon=assets/icon.ico main.py

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any
 from src.models.player import Player
 
-ITEMS = [
+FALLBACK_ITEMS = [
     {
         "name": "Wisp",
         "category": "WARFRAME",
@@ -61,19 +61,110 @@ ITEMS = [
     }
 ]
 
+def load_encyclopedia_items() -> list[dict[str, Any]]:
+    from src.core.data_loader import load_json
+    from src.core.weapon_database import WEAPONS
+    from src.core.arcane_database import ARCANES
+    items = []
+    
+    # 1. Warframes
+    try:
+        wfs = load_json('data/warframes.json')
+        for w in wfs:
+            items.append({
+                "name": w["name"],
+                "category": "WARFRAME",
+                "acquisition": w.get("acquisition", "Unknown"),
+                "synergies": w.get("synergies", ""),
+                "builds": w.get("builds", ""),
+                "dependencies": w.get("dependencies", "")
+            })
+    except Exception:
+        pass
+        
+    # 2. Weapons
+    for w in WEAPONS:
+        items.append({
+            "name": w["name"],
+            "category": "WEAPON",
+            "acquisition": w.get("acquisition", "Unknown"),
+            "synergies": w.get("synergies", ""),
+            "builds": w.get("builds", ""),
+            "dependencies": w.get("dependencies", "")
+        })
+        
+    # 3. Mods
+    try:
+        mods = load_json('data/mods.json')
+        for m in mods:
+            items.append({
+                "name": m["name"],
+                "category": "MOD",
+                "acquisition": m.get("source", "Unknown"),
+                "synergies": m.get("synergies", ""),
+                "builds": m.get("builds", ""),
+                "dependencies": m.get("dependencies", "")
+            })
+    except Exception:
+        pass
+        
+    # 4. Arcanes
+    for a in ARCANES:
+        items.append({
+            "name": a["name"],
+            "category": "ARCANE",
+            "acquisition": a.get("source") or a.get("acquisition") or "Unknown",
+            "synergies": a.get("synergies", ""),
+            "builds": a.get("builds", ""),
+            "dependencies": a.get("dependencies", "")
+        })
+        
+    # 5. Resources / Others
+    items.append({
+        "name": "Entrati Lanthorn",
+        "category": "RESOURCE",
+        "acquisition": "Zariman missions, bounties, and extractors",
+        "synergies": "Zariman weapon crafting",
+        "builds": "Crafting material, farm with resource boosters.",
+        "dependencies": "Requires Zariman unlocked."
+    })
+    
+    # 6. Companions
+    try:
+        companions = load_json('data/companions.json')
+        for c in companions:
+            items.append({
+                "name": c["name"],
+                "category": "COMPANION",
+                "acquisition": c.get("acquisition", "Unknown"),
+                "synergies": c.get("synergy", ""),
+                "builds": c.get("rationale", ""),
+                "dependencies": c.get("utility", "")
+            })
+    except Exception:
+        pass
+        
+    return items
+
 class EncyclopediaEngine:
     """Offline encyclopedia lookup compiler for Warframe codex assets."""
 
     def search(self, query: str) -> list[dict[str, Any]]:
         """Search encyclopedia items matching query."""
+        items = load_encyclopedia_items()
+        if not items:
+            items = FALLBACK_ITEMS
         q = query.strip().lower()
         if not q:
-            return ITEMS
-        return [item for item in ITEMS if q in item["name"].lower() or q in item["category"].lower()]
+            return items
+        return [item for item in items if q in item["name"].lower() or q in item["category"].lower()]
 
     def get_details(self, name: str, player: Player) -> dict[str, Any] | None:
         """Fetch item details and overlay player's ownership status."""
-        for item in ITEMS:
+        items = load_encyclopedia_items()
+        if not items:
+            items = FALLBACK_ITEMS
+        for item in items:
             if item["name"].lower() == name.lower():
                 # Verify status
                 owned = False

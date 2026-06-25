@@ -5,7 +5,11 @@ from src.core.weapon_database import WEAPONS
 from src.core.arcane_database import ARCANES
 from src.core.knowledge_base import KnowledgeBase
 
-CORE_WARFRAMES = ["Wisp", "Saryn", "Mesa", "Volt", "Mirage", "Excalibur", "Rhino"]
+try:
+    from src.core.data_loader import load_json
+    CORE_WARFRAMES = [w["name"] for w in load_json('data/warframes.json')]
+except Exception:
+    CORE_WARFRAMES = ["Wisp", "Saryn", "Mesa", "Volt", "Mirage", "Excalibur", "Rhino"]
 
 class CollectionEngine:
     """Calculates inventory coverage metrics across Warframes, weapons, mods, and arcanes."""

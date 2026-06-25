@@ -5,7 +5,7 @@ from typing import Any
 from src.utils.logger import logger
 
 ROOT = Path(__file__).resolve().parents[2]
-PACKS_DIR = ROOT / "packs"
+PACKS_DIR = ROOT / "src" / "resources" / "packs"
 
 class PackManager:
     """Manages enabling/disabling data packs, version requirements, dependencies, and merges."""

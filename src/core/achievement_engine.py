@@ -6,7 +6,7 @@ from typing import Any
 from src.models.player import Player
 
 ROOT = Path(__file__).resolve().parents[2]
-HISTORY_FILE = ROOT / "data" / "achievement_history.json"
+HISTORY_FILE = ROOT / "src" / "resources" / "data" / "achievement_history.json"
 
 class AchievementEngine:
     """Evaluates player achievements dynamically and persists unlock history on disk."""

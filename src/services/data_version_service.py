@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from src.core.app_context import AppContext
 
 ROOT = Path(__file__).resolve().parents[2]
-METADATA_PATH = ROOT / "data" / "metadata.json"
+METADATA_PATH = ROOT / "src" / "resources" / "data" / "metadata.json"
 
 class DataVersionService:
     """Tracks database versions, handles compatibility, and validates local datasets."""
@@ -40,7 +40,7 @@ class DataVersionService:
     def validate_datasets(self) -> bool:
         """Confirms that essential data JSON files exist and are well-formed."""
         required = ["arcanes.json", "mods.json", "quests.json", "weapons.json", "warframes.json"]
-        data_dir = ROOT / "data"
+        data_dir = ROOT / "src" / "resources" / "data"
         
         for name in required:
             path = data_dir / name

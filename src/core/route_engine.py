@@ -6,7 +6,7 @@ from src.models.player import Player
 from src.utils.logger import logger
 
 ROOT = Path(__file__).resolve().parents[2]
-ROUTES_DIR = ROOT / "routes"
+ROUTES_DIR = ROOT / "src" / "resources" / "routes"
 
 class RouteEngine:
     """Loads and evaluates preset JSON routes against player progression states."""

@@ -8,3 +8,10 @@ cache/
 crash.log
 daily_state.json
 performance_report.json
+backups/
+logs/
+snapshots/
+profiles/
+build_library/
+build/
+dist/

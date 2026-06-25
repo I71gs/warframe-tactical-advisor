@@ -20,7 +20,7 @@ class SearchEngineV3(SearchEngineV2):
 
     def load_metadata(self) -> None:
         try:
-            alias_path = ROOT / "data" / "aliases.json"
+            alias_path = ROOT / "src" / "resources" / "data" / "aliases.json"
             if alias_path.exists():
                 with open(alias_path, "r", encoding="utf-8") as f:
                     self.aliases = json.load(f)
@@ -28,7 +28,7 @@ class SearchEngineV3(SearchEngineV2):
             pass
             
         try:
-            tag_path = ROOT / "data" / "tags.json"
+            tag_path = ROOT / "src" / "resources" / "data" / "tags.json"
             if tag_path.exists():
                 with open(tag_path, "r", encoding="utf-8") as f:
                     self.tags = json.load(f)

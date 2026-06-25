@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Any
 from src.models.player import Player
 
-CODEX_ENTRIES = [
+FALLBACK_CODEX_ENTRIES = [
     {
         "name": "Phenmor",
         "category": "WEAPON",
@@ -75,12 +75,112 @@ CODEX_ENTRIES = [
     }
 ]
 
+def load_codex_entries() -> list[dict[str, Any]]:
+    from src.core.data_loader import load_json
+    from src.core.weapon_database import WEAPONS
+    entries = []
+    
+    # 1. Warframes
+    try:
+        wfs = load_json('data/warframes.json')
+        for w in wfs:
+            abs_str = ", ".join(w["abilities"]) if isinstance(w.get("abilities"), list) else w.get("abilities", "")
+            entries.append({
+                "name": w["name"],
+                "category": "WARFRAME",
+                "abilities": abs_str or "Unknown",
+                "passive": w.get("passive", "Unknown"),
+                "helminth": w.get("subsumed") or w.get("helminth") or "Unknown",
+                "acquisition": w.get("acquisition", "Unknown"),
+                "details": w.get("description") or f"A battle-ready Warframe: {w['name']}."
+            })
+    except Exception:
+        pass
+        
+    # 2. Weapons
+    for w in WEAPONS:
+        has_inc = "Incarnon" in w.get("acquisition", "") or "Cavalero" in w.get("acquisition", "")
+        entries.append({
+            "name": w["name"],
+            "category": "WEAPON",
+            "variants": f"{w['name']}, {w['name']} Prime" + (f", {w['name']} Incarnon" if has_inc else ""),
+            "incarnons": "Incarnon Form and Evolutions supported." if has_inc else "None",
+            "acquisition": w.get("acquisition", "Unknown"),
+            "details": f"High performance {w.get('category', 'weapon')} category weapon."
+        })
+        
+    # 3. Mods
+    try:
+        mods = load_json('data/mods.json')
+        for m in mods:
+            entries.append({
+                "name": m["name"],
+                "category": "MOD",
+                "effects": m.get("effects", "Standard mod effects."),
+                "farming": m.get("source", "Unknown"),
+                "details": m.get("details") or f"Mod category: {m.get('category')}."
+            })
+    except Exception:
+        pass
+        
+    # 4. Resources
+    resources = [
+        {
+            "name": "Entrati Lanthorn",
+            "category": "RESOURCE",
+            "uses": "Crafting Zariman weapons (Phenmor, Laetum, Felarx) and Gyre warframe parts.",
+            "best_farms": "Zariman Chrysalith Bounties, extraction containers, or deploying resource extractors on Zariman.",
+            "details": "A rare glowing lantern used for Zariman void engineering recipes."
+        },
+        {
+            "name": "Credits",
+            "category": "RESOURCE",
+            "uses": "Mod upgrades, weapon blueprint purchases, crafting costs, and trade tax.",
+            "best_farms": "The Index (Neptune), Profit-Taker Orb (Fortuna), or Dark Sector missions.",
+            "details": "The universal primary currency used throughout the Origin System."
+        }
+    ]
+    entries.extend(resources)
+    
+    # 5. Companions
+    try:
+        companions = load_json('data/companions.json')
+        for c in companions:
+            entries.append({
+                "name": c["name"],
+                "category": "COMPANION",
+                "abilities": c.get("utility", "Standard companion abilities."),
+                "acquisition": c.get("acquisition", "Unknown"),
+                "details": c.get("rationale") or f"A loyal companion of type {c.get('type')}."
+            })
+    except Exception:
+        pass
+        
+    # 6. Quests
+    try:
+        quests = load_json('data/quests.json')
+        for q in quests:
+            reqs = ", ".join(q.get("requires", [])) if isinstance(q.get("requires"), list) else q.get("requires", "")
+            entries.append({
+                "name": q["name"],
+                "category": "QUEST",
+                "details": f"Main story quest node. Prerequisite: {reqs or 'None'}",
+                "acquisition": "Quest Log"
+            })
+    except Exception:
+        pass
+        
+    return entries
+
 class CodexEngine:
     """Offline codex information compiler for weapons, frames, mods, and resources."""
 
     def __init__(self) -> None:
         from src.core.codex_database_v2 import CODEX_ENTRIES_V2
-        self.all_entries = CODEX_ENTRIES + CODEX_ENTRIES_V2
+        entries = load_codex_entries()
+        if not entries:
+            entries = FALLBACK_CODEX_ENTRIES
+        self.all_entries = entries + CODEX_ENTRIES_V2
 
     def search(self, query: str) -> list[dict[str, Any]]:
         q = query.strip().lower()

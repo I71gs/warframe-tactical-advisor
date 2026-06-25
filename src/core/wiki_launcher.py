@@ -6,8 +6,15 @@ from src.utils.logger import logger
 class WikiLauncher:
     """Directly launches default OS web browsers to warframe.wiki.gg or fandom.com for queried items."""
 
-    def __init__(self, use_wiki_gg: bool = True) -> None:
-        self.use_wiki_gg = use_wiki_gg
+    def __init__(self, use_wiki_gg: bool | None = None) -> None:
+        if use_wiki_gg is not None:
+            self.use_wiki_gg = use_wiki_gg
+        else:
+            try:
+                from src.core.settings_manager import SettingsManager
+                self.use_wiki_gg = SettingsManager().get('use_wiki_gg', True)
+            except Exception:
+                self.use_wiki_gg = True
 
     def get_url(self, item_name: str) -> str:
         safe_name = quote(item_name.replace(" ", "_"))

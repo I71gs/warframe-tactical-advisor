@@ -5,7 +5,7 @@ from typing import Any
 from src.core.settings_manager import SettingsManager
 
 ROOT = Path(__file__).resolve().parents[2]
-THEMES_DIR = ROOT / "themes"
+THEMES_DIR = ROOT / "src" / "resources" / "themes"
 THEMES_DIR.mkdir(parents=True, exist_ok=True)
 CUSTOM_THEME_FILE = THEMES_DIR / "custom_theme.json"
 

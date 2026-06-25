@@ -5,7 +5,7 @@ from typing import Any
 from src.utils.logger import logger
 
 ROOT = Path(__file__).resolve().parents[2]
-BUILDS_DIR = ROOT / "data" / "builds"
+BUILDS_DIR = ROOT / "src" / "resources" / "data" / "builds"
 
 STATIC_BUILDS = [
     {

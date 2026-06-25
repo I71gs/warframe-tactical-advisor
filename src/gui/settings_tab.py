@@ -1,8 +1,20 @@
-from typing import Any
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QPushButton, QMessageBox, QComboBox, QFileDialog
 from src.core.profile_manager import ProfileManager
 from src.core.settings_manager import SettingsManager
 from src.core.report_engine import ReportEngine
+
+class WikiSyncWorker(QThread):
+    finished = Signal(dict)
+    error = Signal(str)
+
+    def run(self) -> None:
+        try:
+            from tools.sync_wiki import sync_all_wiki
+            results = sync_all_wiki()
+            self.finished.emit(results)
+        except Exception as e:
+            self.error.emit(str(e))
 
 class SettingsTab(QWidget):
     """GUI tab managing application settings and multi-account switches."""
@@ -37,6 +49,17 @@ class SettingsTab(QWidget):
         self.layout.addWidget(self.remember_size)
         self.layout.addWidget(self.remember_tab)
         
+        # Wiki Settings Row
+        wiki_layout = QHBoxLayout()
+        wiki_layout.addWidget(QLabel("Default Warframe Wiki:"))
+        self.wiki_combo = QComboBox()
+        self.wiki_combo.addItems(["Wiki.gg", "Fandom.com"])
+        wiki_layout.addWidget(self.wiki_combo)
+        self.layout.addLayout(wiki_layout)
+        
+        self.sync_wiki_btn = QPushButton('Sync Database with Wiki')
+        self.layout.addWidget(self.sync_wiki_btn)
+
         self.backup_button = QPushButton('Backup Data')
         self.save_btn = QPushButton('Save Settings')
         
@@ -65,6 +88,7 @@ class SettingsTab(QWidget):
         
         self.save_btn.clicked.connect(self.save)
         self.backup_button.clicked.connect(self.backup_data)
+        self.sync_wiki_btn.clicked.connect(self.sync_wiki_data)
         self.export_json_btn.clicked.connect(self.export_json)
         self.export_csv_btn.clicked.connect(self.export_csv)
         self.export_txt_btn.clicked.connect(self.export_txt)
@@ -82,17 +106,25 @@ class SettingsTab(QWidget):
             self.profile_combo.setCurrentText("Alt Account")
         else:
             self.profile_combo.setCurrentText("Default Account")
+            
+        use_wiki_gg = self.settings_manager.get('use_wiki_gg', True)
+        if use_wiki_gg:
+            self.wiki_combo.setCurrentText("Wiki.gg")
+        else:
+            self.wiki_combo.setCurrentText("Fandom.com")
 
     def save(self) -> Any:
         """Update and save settings to disk."""
         profile_val = 'alt' if self.profile_combo.currentText() == "Alt Account" else 'default'
+        use_wiki_gg_val = self.wiki_combo.currentText() == "Wiki.gg"
         
         self.settings_manager.update(
             dark_mode=bool(self.dark_mode.isChecked()), 
             auto_refresh=bool(self.auto_refresh.isChecked()), 
             remember_size=bool(self.remember_size.isChecked()), 
             remember_tab=bool(self.remember_tab.isChecked()),
-            current_profile=profile_val
+            current_profile=profile_val,
+            use_wiki_gg=use_wiki_gg_val
         )
         if not self.settings_manager.save():
             QMessageBox.critical(self, 'Error', 'Failed to save settings.')
@@ -143,4 +175,45 @@ class SettingsTab(QWidget):
                 self.report_engine.export_text(filename)
                 QMessageBox.information(self, "Success", f"Text Report exported to: {filename}")
             except Exception as exc:
-                QMessageBox.critical(self, "Error", f"Failed to export report: {exc}")
+                QMessageBox.critical(self, "Error", f"Failed to export report: {exc}")
+
+    def sync_wiki_data(self) -> None:
+        """Starts background synchronization thread."""
+        self.sync_wiki_btn.setEnabled(False)
+        self.sync_wiki_btn.setText("Syncing with Wiki...")
+        if self.main_window and hasattr(self.main_window, 'show_status'):
+            self.main_window.show_status('Syncing with Warframe Wiki...')
+            
+        self.sync_worker = WikiSyncWorker()
+        self.sync_worker.finished.connect(self.on_sync_finished)
+        self.sync_worker.error.connect(self.on_sync_error)
+        self.sync_worker.start()
+        
+    def on_sync_finished(self, results: dict) -> None:
+        self.sync_wiki_btn.setEnabled(True)
+        self.sync_wiki_btn.setText("Sync Database with Wiki")
+        if self.main_window and hasattr(self.main_window, 'show_status'):
+            self.main_window.show_status('Wiki sync complete')
+            
+        msg = (
+            f"Database sync successful!\n\n"
+            f"Updated:\n"
+            f"- {results.get('weapons', 0)} Weapons\n"
+            f"- {results.get('mods', 0)} Mods\n"
+            f"- {results.get('arcanes', 0)} Arcanes\n"
+            f"- {results.get('warframes', 0)} Warframes\n"
+            f"- {results.get('companions', 0)} Companions\n"
+            f"- {results.get('quests', 0)} Quests"
+        )
+        QMessageBox.information(self, "Synchronization Complete", msg)
+        
+        # Trigger reload of local datastores if needed
+        if self.main_window and hasattr(self.main_window, 'refresh_everything'):
+            self.main_window.refresh_everything()
+        
+    def on_sync_error(self, err: str) -> None:
+        self.sync_wiki_btn.setEnabled(True)
+        self.sync_wiki_btn.setText("Sync Database with Wiki")
+        if self.main_window and hasattr(self.main_window, 'show_status'):
+            self.main_window.show_status('Wiki sync failed')
+        QMessageBox.critical(self, "Sync Failed", f"Error syncing with Wiki:\n{err}")

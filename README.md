@@ -16,6 +16,11 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
 - **Farming Routes Planner**: Recommends mathematically optimized progression loops and farming order to minimize grinding efficiency gaps.
 - **Intelligent Build Analysis**: Highlights missing core mods/arcanes and outlines upgrade priorities.
 
+### 🔄 Live Wiki Database Synchronization
+- **Live Sync Engine (`tools/sync_wiki.py`)**: Fetches stats, classifications, passive text, and Helminth skills from live Fandom Wiki Scribunto Lua data modules (`Module:Weapons/data`, `Module:Mods/data`, `Module:Warframes/data`, `Module:Companions/data`).
+- **HTML Acquisition Scraper**: Dynamically scans Fandom page parsed HTML for quests, warframes, companions, arcanes, and weapons to verify and import exact drop locations.
+- **Background GUI Worker**: Integrates "Sync Database with Wiki" controls in the desktop app's Settings Tab using `QThread` async signals to prevent UI freezes.
+
 ### 🎨 Premium Visual Theme System
 - **Real-Time Theme Engine**: Compiles and updates stylesheet parameters on the fly without restarts.
 - **Built-in Styling presets**:
@@ -25,13 +30,13 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
   - `Corpus` (Deep space blue & amber accents)
   - `Orokin` (Elegant marble white & gold filigree)
   - `Zariman` (Dark emerald & void-teal glow)
-- **Custom Theme Extensibility**: Supports loading a customized palette definition file at `themes/custom_theme.json`.
+- **Custom Theme Extensibility**: Supports loading a customized palette definition file at `src/resources/themes/custom_theme.json`.
 
 ### 🌐 Multi-Platform & Extensibility Ecosystem
 - **Local REST API**: Hosted at `src/api/app.py` for integration with external tools and third-party dashboards.
-- **Web App Interface**: Web client skeleton located in `web/index.html`.
-- **Mobile Frontend**: Flutter-based mobile layout in `mobile/lib/main.dart`.
-- **Extensible Plugin SDK**: Write custom plugins, add custom weapon/build data, or register custom command scripts using the template folder in `SDK/examples/sample_plugin/`. Refer to documentation in `SDK/`.
+- **Web App Interface**: Web client skeleton located in `frontend/web/index.html`.
+- **Mobile Frontend**: Flutter-based mobile layout in `frontend/mobile/lib/main.dart`.
+- **Extensible Plugin SDK**: Write custom plugins, add custom weapon/build data, or register custom command scripts using the template folder in `plugins/examples/sample_plugin_v3/`. Refer to documentation in `docs/SDK/`.
 
 ---
 
@@ -43,11 +48,20 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
   - `src/api/` — Local Flask/FastAPI backend API interface
   - `src/services/` — Middleware & orchestrator services (LLM, Cache, Notification, Player context)
   - `src/database/` — SQLite connectivity layer
-- `SDK/` — Development kit containing plugin manifests, examples, and API guides
-- `mobile/` — Flutter-based mobile configuration and source scripts
-- `web/` — Web application components
-- `data/` — Local JSON databases for offline weapons, mods, arcanes, and progression metrics
-- `tests/` — Automated test suite with 60+ test cases covering the entire coaching ecosystem
+  - `src/resources/` — Consolidated application resources
+    - `src/resources/data/` — Local JSON databases for offline weapons, mods, arcanes, warframes, and quests
+    - `src/resources/packs/` — Core progression gear packs
+    - `src/resources/routes/` — Farming routes definition JSONs
+    - `src/resources/themes/` — Styling JSON stylesheets
+- `docs/` — Documentation site and SDK guides
+  - `docs/SDK/` — Development kit containing plugin manifests, examples, and API guides
+- `frontend/` — Frontend companions
+  - `frontend/mobile/` — Flutter-based mobile configuration and source scripts
+  - `frontend/web/` — Web application components
+- `plugins/` — Custom plugin implementations and templates
+  - `plugins/examples/` — Consolidated example plugin files
+- `tests/` — Automated test suite with 150+ test cases covering the entire coaching ecosystem
+- `tools/` — Developer CLI tools (Wiki Sync engine, theme checkers, build helpers)
 
 ---
 
@@ -93,6 +107,7 @@ A complete test suite is available under `tests/` to guarantee execution correct
 - Relic, economy, and weekly objective planners
 - Theme manager stylesheet compilation
 - Gap analyzers, milestones, and achievements
+- MediaWiki queries and sync engine mocking
 
 To run with summary reports:
 ```bash
