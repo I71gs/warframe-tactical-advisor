@@ -658,3 +658,33 @@ class DashboardTab(QWidget):
                 pixmap.save(path, "PNG")
             except Exception:
                 pass
+
+    def show_onboarding_tooltips(self) -> None:
+        """Highlight the tactical directive step and show contextual tooltips explaining key dashboard areas."""
+        from PySide6.QtWidgets import QToolTip
+        
+        # Highlight card
+        self.directive_card.setStyleSheet("""
+            QGroupBox {
+                background-color: #1f183a;
+                border: 2px solid #cfad64;
+                border-radius: 8px;
+                margin-top: 8px;
+                font-weight: bold;
+                color: #cfad64;
+                padding: 6px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                color: #cfad64;
+            }
+        """)
+        
+        QTimer.singleShot(1000, lambda: QToolTip.showText(
+            self.next_step_lbl.mapToGlobal(self.next_step_lbl.rect().center()),
+            "<b>🎯 TACTICAL DIRECTIVE</b><br>"
+            "This is your primary next action! The advisor analyzed your inventory<br>"
+            "and quest logs to compute the most optimal path here.",
+            self.next_step_lbl
+        ))

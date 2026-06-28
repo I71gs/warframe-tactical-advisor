@@ -419,6 +419,24 @@ class MainWindow(QMainWindow):
                     self.bottom_sidebar.setCurrentItem(item)
                 self.bottom_sidebar.blockSignals(False)
 
+    def showEvent(self, event: Any) -> None:
+        super().showEvent(event)
+        if not hasattr(self, "_onboarding_checked"):
+            self._onboarding_checked = True
+            from PySide6.QtCore import QTimer
+            QTimer.singleShot(100, self.check_onboarding)
+
+    def check_onboarding(self) -> None:
+        if not self.settings.get('onboarding_completed', False):
+            from src.gui.widgets.onboarding_wizard import OnboardingWizard
+            from PySide6.QtWidgets import QDialog
+            wizard = OnboardingWizard(self)
+            if wizard.exec() == QDialog.Accepted:
+                self.refresh_everything()
+                self.tabs.setCurrentIndex(0)
+                self._sync_tabs_to_sidebar(0)
+                self.dashboard_tab.show_onboarding_tooltips()
+
 
 
     def refresh_everything(self) -> None:
