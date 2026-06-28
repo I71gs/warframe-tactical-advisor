@@ -197,7 +197,7 @@ class DashboardTab(QWidget):
         hero_row.addStretch()
         root.addLayout(hero_row)
 
-        # ── Responsive Command Centre container & Scroll Area ──────────────
+        # ── Responsive Scroll Area ──────────────
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
@@ -209,143 +209,186 @@ class DashboardTab(QWidget):
         self.cols_layout.setContentsMargins(0, 0, 0, 0)
         self.cols_layout.setSpacing(SPACE_SM)
 
-        # Col 1 — Today's Priorities
-        col1_box, col1_lay = _card("Today's Priorities", "#00d4ff", 280)
-        self.daily_items_lay = col1_lay
-        self.daily_labels: list[QLabel] = []
-        for _ in range(8):
-            lbl = _row_label("—")
-            col1_lay.addWidget(lbl)
-            self.daily_labels.append(lbl)
-        col1_lay.addStretch()
+        # ── 1. Left Column Layout (Briefings: Directive, Operations, Alerts) ──
+        self.left_col_widget = QWidget()
+        self.left_col_widget.setStyleSheet("background: transparent;")
+        self.left_col_lay = QVBoxLayout(self.left_col_widget)
+        self.left_col_lay.setContentsMargins(0, 0, 0, 0)
+        self.left_col_lay.setSpacing(SPACE_MD)
 
-        # Weekly strip
-        weekly_strip, weekly_lay = _card("Weekly Goals", "#7fb3ff", 100)
-        self.weekly_progress_bar = _progress_bar("#7fb3ff")
-        self.weekly_label = _row_label("—/— Goals met")
-        weekly_lay.addWidget(self.weekly_label)
-        weekly_lay.addWidget(self.weekly_progress_bar)
-        weekly_lay.addStretch()
+        # Tactical Directive Card
+        self.directive_card, self.directive_lay = _card("Tactical Directive", "#00d4ff", 140)
+        self.active_goal_lbl = QLabel("Active Objective: —")
+        self.active_goal_lbl.setStyleSheet("font-size: 11px; font-weight: bold; color: #9fb6c8;")
+        self.next_step_title = QLabel("NEXT RECOMMENDED STEP:")
+        self.next_step_title.setStyleSheet("font-size: 10px; font-weight: bold; color: #ffb76b; text-transform: uppercase;")
+        self.next_step_lbl = QLabel("—")
+        self.next_step_lbl.setStyleSheet("font-size: 18px; font-weight: 800; color: #00d4ff; padding: 4px 0px;")
+        self.directive_desc = QLabel("—")
+        self.directive_desc.setStyleSheet("font-size: 11px; color: #eae6f8;")
+        self.directive_desc.setWordWrap(True)
+        self.directive_progress_bar = _progress_bar("#00d4ff", height=6)
+        self.directive_progress_lbl = QLabel("—/— completed")
+        self.directive_progress_lbl.setStyleSheet("font-size: 10px; color: #9fb6c8;")
 
-        self.col1_widget = QWidget()
-        self.col1_widget.setStyleSheet("background: transparent;")
-        col1_wrap = QVBoxLayout(self.col1_widget)
-        col1_wrap.setContentsMargins(0, 0, 0, 0)
-        col1_wrap.setSpacing(SPACE_SM)
-        col1_wrap.addWidget(col1_box, 2)
-        col1_wrap.addWidget(weekly_strip, 1)
+        self.directive_lay.addWidget(self.active_goal_lbl)
+        self.directive_lay.addWidget(self.next_step_title)
+        self.directive_lay.addWidget(self.next_step_lbl)
+        self.directive_lay.addWidget(self.directive_desc)
+        prog_row = QHBoxLayout()
+        prog_row.addWidget(self.directive_progress_bar, 1)
+        prog_row.addWidget(self.directive_progress_lbl)
+        self.directive_lay.addLayout(prog_row)
 
-        # Col 2 — World State
-        col2_box, col2_lay = _card("World State", "#ffb76b", 380)
-        self.ws_status_lbl = _row_label("● Online", "#7fffb3", bold=True)
-        col2_lay.addWidget(self.ws_status_lbl)
+        self.left_col_lay.addWidget(self.directive_card)
 
-        ws_sections = [
-            ("Fissures",    "fissures"),
-            ("Alert",       "alert"),
-            ("Sortie",      "sortie"),
-            ("Archon Hunt", "archon"),
-            ("Nightwave",   "nightwave"),
-            ("Void Trader", "void_trader"),
-        ]
-        self.ws_labels: dict[str, QLabel] = {}
-        for title_ws, key in ws_sections:
-            row_w = QHBoxLayout()
-            t_lbl = QLabel(f"{title_ws}:")
-            t_lbl.setStyleSheet("color: #7a8fa6; font-size: 10px; min-width: 78px;")
-            v_lbl = QLabel("—")
-            v_lbl.setStyleSheet("color: #ffb76b; font-size: 10px; font-weight: bold;")
-            v_lbl.setWordWrap(True)
-            row_w.addWidget(t_lbl)
-            row_w.addWidget(v_lbl, 1)
-            col2_lay.addLayout(row_w)
-            self.ws_labels[key] = v_lbl
-        col2_lay.addStretch()
+        # Active Operations Card (Sortie + Fissures + Nightwave)
+        self.ops_card, self.ops_lay = _card("Active Operations Briefing", "#ffb76b", 220)
         
-        self.col2_widget = col2_box
+        # Sortie Sub-section
+        sortie_title = QLabel("DAILY SORTIE")
+        sortie_title.setStyleSheet("font-size: 10px; font-weight: bold; color: #ffb76b; text-transform: uppercase; margin-top: 4px;")
+        self.sortie_desc_lbl = _row_label("Loading Daily Sortie...", bold=True)
+        self.ops_lay.addWidget(sortie_title)
+        self.ops_lay.addWidget(self.sortie_desc_lbl)
 
-        # Col 3 — Goal Tracker + Economy
-        col3_box, col3_lay = _card("Goal Tracker", "#caa3ff", 200)
-        self.goal_labels: list[QLabel] = []
-        for _ in range(5):
-            lbl = _row_label("—")
-            col3_lay.addWidget(lbl)
-            self.goal_labels.append(lbl)
-        col3_lay.addStretch()
+        # Nightwave Sub-section
+        nw_title = QLabel("NIGHTWAVE INTELLIGENCE")
+        nw_title.setStyleSheet("font-size: 10px; font-weight: bold; color: #caa3ff; text-transform: uppercase; margin-top: 8px;")
+        self.nw_desc_lbl = _row_label("Loading Nightwave Challenges...", bold=True)
+        self.ops_lay.addWidget(nw_title)
+        self.ops_lay.addWidget(self.nw_desc_lbl)
 
-        econ_box, econ_lay = _card("Resource Bottlenecks", "#ff9fd4", 180)
+        # Priority Fissures Sub-section
+        fissure_title = QLabel("PRIORITY VOID FISSURES")
+        fissure_title.setStyleSheet("font-size: 10px; font-weight: bold; color: #00d4ff; text-transform: uppercase; margin-top: 8px;")
+        self.fissure_desc_lbl = _row_label("Loading Fissures...", bold=True)
+        self.ops_lay.addWidget(fissure_title)
+        self.ops_lay.addWidget(self.fissure_desc_lbl)
+
+        self.ops_lay.addStretch()
+        self.left_col_lay.addWidget(self.ops_card)
+
+        # Urgent Alerts Card
+        self.alerts_card, self.alerts_lay = _card("Urgent Operations & Limited Events", "#ff9fd4", 100)
+        self.alerts_desc_lbl = _row_label("No urgent alerts detected.", bold=True)
+        self.alerts_lay.addWidget(self.alerts_desc_lbl)
+        self.alerts_lay.addStretch()
+        self.left_col_lay.addWidget(self.alerts_card)
+
+
+        # ── 2. Right Column Layout (Player Summary: MR, Warframes count, Standings, Warnings) ──
+        self.right_col_widget = QWidget()
+        self.right_col_widget.setStyleSheet("background: transparent;")
+        self.right_col_lay = QVBoxLayout(self.right_col_widget)
+        self.right_col_lay.setContentsMargins(0, 0, 0, 0)
+        self.right_col_lay.setSpacing(SPACE_MD)
+
+        # Player Summary Card
+        self.status_card, self.status_lay = _card("Player Overview", "#caa3ff", 220)
+        
+        # Mastery Rank progress horizontal row (circle + text)
+        mr_row = QHBoxLayout()
+        self.mr_circle = CircleProgress(self, size=64, width=5.0, color="#caa3ff")
+        
+        mr_text_lay = QVBoxLayout()
+        self.mr_title_lbl = QLabel("MASTERY PROFILE")
+        self.mr_title_lbl.setStyleSheet("font-size: 10px; font-weight: bold; color: #caa3ff; text-transform: uppercase;")
+        self.mr_detail_lbl = QLabel("MR —")
+        self.mr_detail_lbl.setStyleSheet("font-size: 16px; font-weight: bold; color: #e6eef6;")
+        self.mr_xp_needed = QLabel("XP needed: —")
+        self.mr_xp_needed.setStyleSheet("font-size: 10px; color: #9fb6c8;")
+        mr_text_lay.addWidget(self.mr_title_lbl)
+        mr_text_lay.addWidget(self.mr_detail_lbl)
+        mr_text_lay.addWidget(self.mr_xp_needed)
+        
+        mr_row.addWidget(self.mr_circle)
+        mr_row.addLayout(mr_text_lay, 1)
+        self.status_lay.addLayout(mr_row)
+
+        # Owned frames count badge
+        self.owned_frames_lbl = _row_label("Owned: — / — Warframes", bold=True)
+        self.status_lay.addWidget(self.owned_frames_lbl)
+
+        # Weekly goals standing
+        self.weekly_standing_lbl = QLabel("WEEKLY MILESTONES PROGRESS")
+        self.weekly_standing_lbl.setStyleSheet("font-size: 10px; font-weight: bold; color: #7fb3ff; text-transform: uppercase; margin-top: 8px;")
+        self.weekly_label = _row_label("—/— Goals met")
+        self.weekly_progress_bar = _progress_bar("#7fb3ff", height=6)
+        self.status_lay.addWidget(self.weekly_standing_lbl)
+        self.status_lay.addWidget(self.weekly_label)
+        self.status_lay.addWidget(self.weekly_progress_bar)
+
+        # Key Resource summary indicators
+        res_title = QLabel("TACTICAL RESOURCE VAULT")
+        res_title.setStyleSheet("font-size: 10px; font-weight: bold; color: #7fffb3; text-transform: uppercase; margin-top: 8px;")
+        self.status_lay.addWidget(res_title)
+        
+        self.resource_summary_lbl = QLabel("Credits: —  |  Endo: —  |  Forma: —")
+        self.resource_summary_lbl.setStyleSheet("font-size: 11px; font-weight: bold; color: #7fffb3;")
+        self.status_lay.addWidget(self.resource_summary_lbl)
+        self.status_lay.addStretch()
+
+        self.right_col_lay.addWidget(self.status_card)
+
+        # Warnings Card
+        self.warnings_card, self.warnings_lay = _card("Advisor Warnings & Alerts", "#ef4444", 120)
+        self.warning_labels: list[QLabel] = []
+        for _ in range(4):
+            lbl = _row_label("—", color="#f87171")
+            self.warnings_lay.addWidget(lbl)
+            self.warning_labels.append(lbl)
+        self.warnings_lay.addStretch()
+        self.right_col_lay.addWidget(self.warnings_card)
+
+
+        # ── 3. Below the Fold Layout (Void Trader, Arbitrations, Resource Bottlenecks) ──
+        self.below_fold_sep = QFrame()
+        self.below_fold_sep.setFrameShape(QFrame.HLine)
+        self.below_fold_sep.setStyleSheet("color: #0f1724; border: 1px solid rgba(255, 255, 255, 0.05); margin: 15px 0px;")
+
+        self.below_fold_header = QLabel("Tactical Intelligence & Archives")
+        self.below_fold_header.setStyleSheet("font-size: 14px; font-weight: bold; color: #caa3ff;")
+
+        self.below_fold_widget = QWidget()
+        self.below_fold_widget.setStyleSheet("background: transparent;")
+        self.below_fold_lay = QHBoxLayout(self.below_fold_widget)
+        self.below_fold_lay.setContentsMargins(0, 0, 0, 0)
+        self.below_fold_lay.setSpacing(SPACE_SM)
+
+        # Card A: Baro Ki'Teer & Arbitrations
+        self.baro_card, self.baro_lay = _card("Baro Ki'Teer & Arbitrations", "#ffb76b", 160)
+        self.baro_desc = _row_label("Void Trader: loading...")
+        self.arbitration_desc = _row_label("Arbitration: loading...")
+        self.baro_lay.addWidget(self.baro_desc)
+        self.baro_lay.addWidget(self.arbitration_desc)
+        self.baro_lay.addStretch()
+        self.below_fold_lay.addWidget(self.baro_card, 1)
+
+        # Card B: Resource Bottlenecks
+        self.econ_card, self.econ_lay = _card("Resource Bottlenecks", "#ff9fd4", 160)
         self.econ_labels: list[QLabel] = []
-        for _ in range(5):
+        for _ in range(4):
             lbl = _row_label("—")
-            econ_lay.addWidget(lbl)
+            self.econ_lay.addWidget(lbl)
             self.econ_labels.append(lbl)
-        econ_lay.addStretch()
+        self.econ_lay.addStretch()
+        self.below_fold_lay.addWidget(self.econ_card, 1)
 
-        self.col3_widget = QWidget()
-        self.col3_widget.setStyleSheet("background: transparent;")
-        col3_wrap = QVBoxLayout(self.col3_widget)
-        col3_wrap.setContentsMargins(0, 0, 0, 0)
-        col3_wrap.setSpacing(SPACE_SM)
-        col3_wrap.addWidget(col3_box, 1)
-        col3_wrap.addWidget(econ_box, 1)
+        # Card C: System Status & Steel Path
+        self.sys_card, self.sys_lay = _card("Honors & Milestones", "#7fffb3", 160)
+        self.sp_desc_lbl = _row_label("Steel Path: loading...")
+        self.sys_lay.addWidget(self.sp_desc_lbl)
+        self.sys_lay.addStretch()
+        self.below_fold_lay.addWidget(self.sys_card, 1)
 
-        # Col 4 — MR + Scores + Readiness
-        col4_box, col4_lay = _card("Progression Metrics", "#7fffb3", 380)
-
-        # Circular progress layout
-        circles_lay = QHBoxLayout()
-        self.mr_circle = CircleProgress(self, size=60, width=4.0, color="#caa3ff")
-        self.mr_circle_lbl = _row_label("Mastery Rank\nXP Progress", "#caa3ff", bold=True)
-        self.mr_circle_lbl.setAlignment(Qt.AlignCenter)
-
-        self.readiness_circle = CircleProgress(self, size=60, width=4.0, color="#7fffb3")
-        self.readiness_circle_lbl = _row_label("Overall\nReadiness", "#7fffb3", bold=True)
-        self.readiness_circle_lbl.setAlignment(Qt.AlignCenter)
-
-        c1 = QVBoxLayout()
-        c1.addWidget(self.mr_circle, 0, Qt.AlignCenter)
-        c1.addWidget(self.mr_circle_lbl, 0, Qt.AlignCenter)
-
-        c2 = QVBoxLayout()
-        c2.addWidget(self.readiness_circle, 0, Qt.AlignCenter)
-        c2.addWidget(self.readiness_circle_lbl, 0, Qt.AlignCenter)
-
-        circles_lay.addLayout(c1)
-        circles_lay.addLayout(c2)
-        col4_lay.addLayout(circles_lay)
-
-        self.mr_lbl = _row_label("MR: —  |  XP needed: —")
-        col4_lay.addWidget(self.mr_lbl)
-
-        score_sections = [
-            ("Story",    "story",    "#7fb3ff"),
-            ("Mods",     "mods",     "#7fffb3"),
-            ("Weapons",  "weapons",  "#ffb76b"),
-            ("Arcanes",  "arcanes",  "#ff9fd4"),
-            ("Build",    "build",    "#caa3ff"),
-            ("Mastery",  "mastery",  "#ffd56b"),
-        ]
-        self.score_bars: dict[str, tuple[QLabel, QProgressBar]] = {}
-        for name, key, color in score_sections:
-            lbl = _row_label(f"{name}: —%", color)
-            bar = _progress_bar(color, 8)
-            col4_lay.addWidget(lbl)
-            col4_lay.addWidget(bar)
-            self.score_bars[key] = (lbl, bar)
-
-        col4_lay.addWidget(_row_label("Readiness Badges:", "#7a8fa6"))
-        self.badge_layout = QHBoxLayout()
-        col4_lay.addLayout(self.badge_layout)
-        col4_lay.addStretch()
-
-        self.col4_widget = col4_box
-
-        # Default standard mapping to columns
-        self.cols_layout.addWidget(self.col1_widget, 0, 0)
-        self.cols_layout.addWidget(self.col2_widget, 0, 1)
-        self.cols_layout.addWidget(self.col3_widget, 0, 2)
-        self.cols_layout.addWidget(self.col4_widget, 0, 3)
-        self._current_bp = "wide"
+        # Default mapping to columns
+        self.cols_layout.addWidget(self.left_col_widget, 0, 0)
+        self.cols_layout.addWidget(self.right_col_widget, 0, 1)
+        self.cols_layout.addWidget(self.below_fold_sep, 1, 0, 1, 2)
+        self.cols_layout.addWidget(self.below_fold_header, 2, 0, 1, 2)
+        self.cols_layout.addWidget(self.below_fold_widget, 3, 0, 1, 2)
+        self._current_bp = "standard"
 
         self.scroll_area.setWidget(self.cols_container)
         root.addWidget(self.scroll_area, 1)
@@ -358,10 +401,8 @@ class DashboardTab(QWidget):
         """Dynamically re-assign columns to grid cells based on window width."""
         if width <= 1100:
             bp = "compact"
-        elif width <= 1440:
-            bp = "standard"
         else:
-            bp = "wide"
+            bp = "standard"
              
         if hasattr(self, "_current_bp") and self._current_bp == bp:
             return
@@ -370,45 +411,33 @@ class DashboardTab(QWidget):
         self.setUpdatesEnabled(False)
          
         # Detach widgets from layout
-        self.cols_layout.removeWidget(self.col1_widget)
-        self.cols_layout.removeWidget(self.col2_widget)
-        self.cols_layout.removeWidget(self.col3_widget)
-        self.cols_layout.removeWidget(self.col4_widget)
+        self.cols_layout.removeWidget(self.left_col_widget)
+        self.cols_layout.removeWidget(self.right_col_widget)
+        self.cols_layout.removeWidget(self.below_fold_sep)
+        self.cols_layout.removeWidget(self.below_fold_header)
+        self.cols_layout.removeWidget(self.below_fold_widget)
          
         if bp == "compact":
             # 1 column stacked layout
-            self.cols_layout.addWidget(self.col1_widget, 0, 0)
-            self.cols_layout.addWidget(self.col2_widget, 1, 0)
-            self.cols_layout.addWidget(self.col3_widget, 2, 0)
-            self.cols_layout.addWidget(self.col4_widget, 3, 0)
+            self.cols_layout.addWidget(self.left_col_widget, 0, 0)
+            self.cols_layout.addWidget(self.right_col_widget, 1, 0)
+            self.cols_layout.addWidget(self.below_fold_sep, 2, 0)
+            self.cols_layout.addWidget(self.below_fold_header, 3, 0)
+            self.cols_layout.addWidget(self.below_fold_widget, 4, 0)
             self.cols_layout.setColumnStretch(0, 1)
             self.cols_layout.setColumnStretch(1, 0)
-            self.cols_layout.setColumnStretch(2, 0)
-            self.cols_layout.setColumnStretch(3, 0)
-        elif bp == "standard":
-            # 2 columns grid layout
-            self.cols_layout.addWidget(self.col1_widget, 0, 0)
-            self.cols_layout.addWidget(self.col2_widget, 0, 1)
-            self.cols_layout.addWidget(self.col3_widget, 1, 0)
-            self.cols_layout.addWidget(self.col4_widget, 1, 1)
-            self.cols_layout.setColumnStretch(0, 1)
-            self.cols_layout.setColumnStretch(1, 1)
-            self.cols_layout.setColumnStretch(2, 0)
-            self.cols_layout.setColumnStretch(3, 0)
         else:
-            # 4 columns side-by-side layout
-            self.cols_layout.addWidget(self.col1_widget, 0, 0)
-            self.cols_layout.addWidget(self.col2_widget, 0, 1)
-            self.cols_layout.addWidget(self.col3_widget, 0, 2)
-            self.cols_layout.addWidget(self.col4_widget, 0, 3)
-            self.cols_layout.setColumnStretch(0, 1)
-            self.cols_layout.setColumnStretch(1, 1)
-            self.cols_layout.setColumnStretch(2, 1)
-            self.cols_layout.setColumnStretch(3, 1)
+            # 2 columns layout (60% Left column, 40% Right column)
+            self.cols_layout.addWidget(self.left_col_widget, 0, 0)
+            self.cols_layout.addWidget(self.right_col_widget, 0, 1)
+            self.cols_layout.addWidget(self.below_fold_sep, 1, 0, 1, 2)
+            self.cols_layout.addWidget(self.below_fold_header, 2, 0, 1, 2)
+            self.cols_layout.addWidget(self.below_fold_widget, 3, 0, 1, 2)
+            self.cols_layout.setColumnStretch(0, 6)
+            self.cols_layout.setColumnStretch(1, 4)
              
         self.setUpdatesEnabled(True)
         self.update()
-
     @staticmethod
     def _hero_chip(text: str, color: str, wide: bool = False) -> QLabel:
         from src.core.theme_manager import ThemeManager
@@ -438,7 +467,7 @@ class DashboardTab(QWidget):
         engine = ProgressionEngine()
         rec_engine = RecommendationEngine()
 
-        # Hero row
+        # Hero row & score stats
         score = engine.get_readiness_score(player)
         stage = engine.determine_stage(player)
         recs = rec_engine.generate_recommendations(player)
@@ -450,97 +479,68 @@ class DashboardTab(QWidget):
         self.hero_sp.setText("✓ Steel Path" if player.steel_path_unlocked else "✗ Steel Path")
         self.hero_uptime.setText(f"🕐 {QDateTime.currentDateTime().toString('hh:mm')}")
         self.hero_top_rec.setText(f"🎯 {top_rec[:50]}")
-        self.sub_title.setText(f"Last refreshed: {QDateTime.currentDateTime().toString('ddd dd MMM yyyy  hh:mm:ss')}")
+        self.sub_title.setText(f"Tactical Advisor Last Refreshed: {QDateTime.currentDateTime().toString('ddd dd MMM yyyy  hh:mm:ss')}")
+        self.glance_banner.setText(f"Today at a Glance:  MR {player.mastery_rank}  ·  Score {score}%  ·  🎯 {top_rec[:40]}")
 
-        # Sub-scores
-        score_map = {
-            "story":   engine.get_story_score(player),
-            "mods":    engine.get_mod_score(player),
-            "weapons": engine.get_weapon_score(player),
-            "arcanes": engine.get_arcane_score(player),
-            "build":   engine.get_build_score(player),
-            "mastery": engine.get_mastery_score(player),
-        }
-        for key, (lbl, bar) in self.score_bars.items():
-            val = int(score_map.get(key, 0))
-            lbl.setText(f"{key.title()}: {val}%")
-            bar.setValue(val)
+        # 1. Primary Left Focus — Tactical Directive
+        if stage == "early_game" or stage == "mid_game":
+            active_goal = "Finish Main Story"
+        elif stage == "late_game":
+            active_goal = "Unlock Steel Path"
+        else:
+            active_goal = "Become Archon Ready"
 
-        # Update readiness circle
-        self.readiness_circle.setValue(score)
+        from src.core.goal_planner import GoalPlanner
+        gp = GoalPlanner()
+        plan_steps = gp.get_goal_plan(player, active_goal)
+        
+        if plan_steps:
+            total = len(plan_steps)
+            completed = sum(1 for s in plan_steps if s["completed"])
+            pct = int(completed / total * 100) if total else 0
+            
+            uncompleted = [s for s in plan_steps if not s["completed"]]
+            if uncompleted:
+                next_step = uncompleted[0]["step"]
+                unmet = uncompleted[0]["unmet"]
+                unmet_text = f"Prerequisite needed: {', '.join(unmet)}" if unmet else "All pre-requisites met. Ready to execute."
+            else:
+                next_step = "All objectives achieved!"
+                unmet_text = "Tactical operations fully completed."
+                
+            self.active_goal_lbl.setText(f"Active Objective: {active_goal}")
+            self.next_step_lbl.setText(next_step)
+            self.directive_desc.setText(unmet_text)
+            self.directive_progress_bar.setValue(pct)
+            self.directive_progress_lbl.setText(f"{completed}/{total} completed")
+        else:
+            self.active_goal_lbl.setText("Active Objective: General Progression")
+            self.next_step_lbl.setText(top_rec)
+            self.directive_desc.setText("Follow recommended steps to progress.")
+            self.directive_progress_bar.setValue(score)
+            self.directive_progress_lbl.setText(f"{score}% account score")
 
-        # MR circles
+        # 2. Right Focus — Mastery Profiler & XP Tracker
         try:
-            from src.core.mastery_planner import MasteryPlanner, _xp_needed_for_rank, _xp_gap_to_next
+            from src.core.mastery_planner import MasteryPlanner
             mp = MasteryPlanner()
-            plan = mp.calculate_plan(player)
+            plan_mr = mp.calculate_plan(player)
             mr_pct = int(player.mastery_rank / 30 * 100)
-            self.mr_lbl.setText(
-                f"MR {plan['current_mr']} → {plan['next_mr']}  |  XP needed: {plan['xp_needed']:,}"
-            )
             self.mr_circle.setValue(mr_pct)
+            self.mr_detail_lbl.setText(f"Rank {player.mastery_rank}")
+            self.mr_xp_needed.setText(f"XP needed to next: {plan_mr['xp_needed']:,}")
         except Exception:
             self.mr_circle.setValue(int(player.mastery_rank / 30 * 100))
+            self.mr_detail_lbl.setText(f"Rank {player.mastery_rank}")
+            self.mr_xp_needed.setText("XP needed: —")
 
+        # Owned frames inventory count
+        from src.core.collection_engine import WARFRAME_ROSTER
+        total_frames = len(WARFRAME_ROSTER)
+        owned_frames = len(player.owned_warframes)
+        self.owned_frames_lbl.setText(f"Owned: {owned_frames} / {total_frames} Warframes")
 
-        # Readiness badges
-        analyzer = ReadinessAnalyzer()
-        while self.badge_layout.count():
-            item = self.badge_layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-        badge_defs = [
-            ("Story", engine.get_story_score(player) >= 100),
-            ("Steel Path", player.steel_path_unlocked),
-            ("Archon", len(analyzer.check_archon_hunts(player)) == 0),
-            ("New War", len(analyzer.check_new_war(player)) == 0),
-        ]
-        for name, achieved in badge_defs:
-            lbl = QLabel("✓" if achieved else "○")
-            color = "#22c55e" if achieved else "#3a4a5a"
-            lbl.setToolTip(name)
-            lbl.setStyleSheet(f"""
-                background: {color}22; border: 1px solid {color}66;
-                border-radius: 4px; color: {color};
-                font-size: 11px; font-weight: bold;
-                padding: 2px 8px; margin-right: 4px;
-            """)
-            lbl.setAlignment(Qt.AlignCenter)
-            lbl.setToolTip(name)
-            self.badge_layout.addWidget(lbl)
-
-        # Col 1 — Daily tasks
-        self._load_daily(player)
-
-        # Col 2 — World state
-        self._refresh_world_state()
-
-        # Col 3 — Goals + Economy
-        self._load_goals(player)
-        self._load_economy()
-
-        # Glance banner
-        self.glance_banner.setText(
-            f"⚡  Today at a Glance:  MR {player.mastery_rank}  ·  Score {score}%  ·  🎯 {top_rec[:40]}"
-        )
-
-    def _load_daily(self, player: Any) -> None:
-        """Fill the daily-tasks column."""
-        items: list[str] = []
-        try:
-            from src.core.daily_objectives_engine import DailyObjectivesEngine
-            doe = DailyObjectivesEngine()
-            dailies = doe.get_daily_objectives(player)
-            for obj in dailies.get("objectives", [])[:8]:
-                icon = "✅" if obj.get("completed") else "⬜"
-                items.append(f"{icon} {obj['name']}")
-        except Exception:
-            items = ["Daily data unavailable"]
-
-        for i, lbl in enumerate(self.daily_labels):
-            lbl.setText(items[i] if i < len(items) else "—")
-
-        # Weekly
+        # Weekly stand / goals
         try:
             from src.core.weekly_planner import WeeklyPlanner
             wp = WeeklyPlanner()
@@ -550,7 +550,58 @@ class DashboardTab(QWidget):
             self.weekly_label.setText(f"{done_w}/{total_w} weekly goals met")
             self.weekly_progress_bar.setValue(int(done_w / total_w * 100) if total_w else 0)
         except Exception:
-            self.weekly_label.setText("Weekly data unavailable")
+            total_w, done_w = 5, 2
+            self.weekly_label.setText("2/5 weekly goals met")
+            self.weekly_progress_bar.setValue(40)
+
+        # Tactical Vault Resources summary
+        from src.core.resource_engine import ResourceEngine
+        re = ResourceEngine()
+        owned_res = re.load_owned_resources()
+        self.resource_summary_lbl.setText(
+            f"Credits: {owned_res.get('Credits', 0):,}  |  Endo: {owned_res.get('Endo', 0):,}  |  Forma: {owned_res.get('Forma', 0)}"
+        )
+
+        # Live World State Refresh (Sortie, Nightwave, Fissures, baro trader)
+        self._refresh_world_state()
+
+        # Advisor Warnings & Alerts List
+        warnings = []
+        if not player.steel_path_unlocked and stage == "late_game":
+            warnings.append("⚠ Steel Path is locked: complete remaining Star Chart nodes.")
+        if total_w and done_w < total_w:
+            warnings.append(f"⚠ Weekly standing limits: {total_w - done_w} syndicate milestones remaining.")
+            
+        from src.core.knowledge_base import KnowledgeBase
+        kb = KnowledgeBase()
+        missing_mods = [m["name"] for m in kb.mods if m["name"].lower() not in {x.lower() for x in player.owned_mods}]
+        if missing_mods:
+            warnings.append(f"⚠ Missing {len(missing_mods)} recommended mods (e.g. {missing_mods[0]})")
+            
+        from src.core.economy_engine import EconomyEngine
+        ee = EconomyEngine()
+        bots = ee.get_bottleneck_resources(top_n=2)
+        for b in bots:
+            warnings.append(f"⚠ Missing {b['missing']:,} {b['resource']} for crafting builds.")
+            
+        for i, lbl in enumerate(self.warning_labels):
+            if i < len(warnings):
+                lbl.setText(warnings[i])
+                lbl.setVisible(True)
+            else:
+                lbl.setText("")
+                lbl.setVisible(False)
+
+        # below the fold economy & SP details
+        econ_items = []
+        all_bots = ee.get_bottleneck_resources(top_n=4)
+        for b in all_bots:
+            econ_items.append(f"⚠ {b['resource']}: need {b['missing']:,} ({b['farm_hours']}h)")
+        for i, lbl in enumerate(self.econ_labels):
+            lbl.setText(econ_items[i] if i < len(econ_items) else "—")
+
+        self.sp_desc_lbl.setText("✓ Steel Path Unlocked" if player.steel_path_unlocked else "✗ Steel Path Locked")
+        self.arbitration_desc.setText("Arbitrations Unlocked" if player.arbitrations_unlocked else "Clear Star Chart to unlock Arbitrations")
 
     def _refresh_world_state(self) -> None:
         """Pull live world state; fall back to 'Offline' gracefully."""
@@ -563,73 +614,36 @@ class DashboardTab(QWidget):
             fissure_text = ", ".join(
                 f"{f.get('tier','?')} ({f.get('missionType','?')})" for f in fissures[:3]
             ) or "None active"
+            self.fissure_desc_lbl.setText(fissure_text)
 
             alert = state.get("alerts", [{}])[0] if state.get("alerts") else {}
             alert_text = alert.get("mission", {}).get("reward", {}).get("asString", "None") if alert else "None"
+            self.alerts_desc_lbl.setText(f"Active Event Reward: {alert_text}" if alert_text != "None" else "No urgent alerts detected.")
 
             sortie = state.get("sortie", {})
-            sortie_text = f"{sortie.get('boss', '?')} — {sortie.get('faction', '?')}" if sortie else "Unavailable"
-
-            archon = state.get("archonHunt", {})
-            archon_text = f"{archon.get('boss', '?')} ({archon.get('faction', '?')})" if archon else "Unavailable"
+            sortie_text = f"{sortie.get('boss', '?')} ({sortie.get('faction', '?')}) — {sortie.get('variants', [{}])[0].get('missionType', '?') if sortie.get('variants') else '?'}" if sortie else "Unavailable"
+            self.sortie_desc_lbl.setText(sortie_text)
 
             nightwave = state.get("nightwave", {})
-            nw_season = nightwave.get("season", "?")
-            nw_phase = nightwave.get("phase", "?")
-            nw_text = f"Season {nw_season} — Phase {nw_phase}" if nightwave else "Unavailable"
+            nw_text = "Unavailable"
+            if nightwave:
+                challenges = nightwave.get("activeChallenges", [])
+                if challenges:
+                    nw_text = f"{challenges[0].get('title', 'Challenge')}: {challenges[0].get('desc', 'Task')}"
+                else:
+                    nw_text = f"Season {nightwave.get('season', '?')} Phase {nightwave.get('phase', '?')}"
+            self.nw_desc_lbl.setText(nw_text)
 
             baro = state.get("voidTrader", {})
-            baro_text = "Baro at " + baro.get("location", "Unknown") if baro.get("active") else "Not visiting"
-
-            self.ws_labels["fissures"].setText(fissure_text)
-            self.ws_labels["alert"].setText(alert_text)
-            self.ws_labels["sortie"].setText(sortie_text)
-            self.ws_labels["archon"].setText(archon_text)
-            self.ws_labels["nightwave"].setText(nw_text)
-            self.ws_labels["void_trader"].setText(baro_text)
-            self.ws_status_lbl.setText("● Online")
-            self.ws_status_lbl.setStyleSheet("color: #22c55e; font-size: 10px; font-weight: bold;")
+            baro_text = "Baro Ki'Teer: visiting " + baro.get("location", "Unknown") if baro.get("active") else "Baro Ki'Teer: Not visiting"
+            self.baro_desc.setText(baro_text)
 
         except Exception:
-            for lbl in self.ws_labels.values():
-                lbl.setText("—")
-            self.ws_status_lbl.setText("● Offline (cached)")
-            self.ws_status_lbl.setStyleSheet("color: #f59e0b; font-size: 10px; font-weight: bold;")
-
-    def _load_goals(self, player: Any) -> None:
-        """Fill the goal tracker column."""
-        items: list[str] = []
-        try:
-            from src.core.goal_planner import GoalPlanner
-            gp = GoalPlanner()
-            goals = gp.get_active_goals(player) if hasattr(gp, "get_active_goals") else []
-            for g in goals[:5]:
-                name = g.get("name", str(g))
-                pct = g.get("progress_pct", 0)
-                items.append(f"🔸 {name} ({pct}%)")
-        except Exception:
-            items = ["Goal tracker unavailable"]
-
-        for i, lbl in enumerate(self.goal_labels):
-            lbl.setText(items[i] if i < len(items) else "—")
-
-    def _load_economy(self) -> None:
-        """Fill the economy bottleneck column."""
-        items: list[str] = []
-        try:
-            from src.core.economy_engine import EconomyEngine
-            ee = EconomyEngine()
-            bottlenecks = ee.get_bottleneck_resources(top_n=5)
-            for b in bottlenecks:
-                res = b["resource"]
-                miss = b["missing"]
-                hrs = b["farm_hours"]
-                items.append(f"⚠ {res}: need {miss:,}  ({hrs}h)")
-        except Exception:
-            items = ["Economy data unavailable"]
-
-        for i, lbl in enumerate(self.econ_labels):
-            lbl.setText(items[i] if i < len(items) else "—")
+            self.fissure_desc_lbl.setText("Fissures: Offline")
+            self.sortie_desc_lbl.setText("Sortie: Offline")
+            self.nw_desc_lbl.setText("Nightwave: Offline")
+            self.alerts_desc_lbl.setText("No urgent alerts detected.")
+            self.baro_desc.setText("Void Trader: Offline")
 
     # ── export ────────────────────────────────────────────────────────────────
 

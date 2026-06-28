@@ -38,6 +38,13 @@ class PlayerLoader:
             owned_mods=db.get_owned_mods(),
             owned_arcanes=db.get_owned_arcanes(),
             owned_weapons=db.get_owned_weapons(),
+            warframe_inventory=db.get_collection_table("warframe_inventory"),
+            companion_inventory=db.get_collection_table("companion_inventory"),
+            archwing_inventory=db.get_collection_table("archwing_inventory"),
+            necramech_inventory=db.get_collection_table("necramech_inventory"),
+            amp_inventory=db.get_collection_table("amp_inventory"),
+            focus_schools=db.get_focus_schools() if hasattr(db, "get_focus_schools") else [],
+            intrinsics=db.get_intrinsics() if hasattr(db, "get_intrinsics") else {},
         )
         qc.set("player_profile", player, ttl=3.0)
         return player
