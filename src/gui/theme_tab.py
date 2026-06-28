@@ -6,7 +6,7 @@ from PySide6.QtGui import QColor
 from src.core.theme_manager import ThemeManager
 
 class ThemeTab(QWidget):
-    """GUI tab providing real-time theme selector and CSS preview cards."""
+    """GUI tab providing real-time base theme & accent pack selector and CSS preview cards."""
 
     def __init__(self, main_window: Any = None) -> None:
         super().__init__()
@@ -22,11 +22,18 @@ class ThemeTab(QWidget):
         
         # Selector Layout
         select_layout = QHBoxLayout()
-        select_layout.addWidget(QLabel("Select Interface Theme:"))
-        self.theme_combo = QComboBox()
-        self.theme_combo.addItems(self.theme_manager.get_themes())
-        self.theme_combo.currentTextChanged.connect(self.update_preview)
-        select_layout.addWidget(self.theme_combo)
+        select_layout.addWidget(QLabel("Base Theme:"))
+        self.base_combo = QComboBox()
+        self.base_combo.addItems(["Dark", "Light"])
+        self.base_combo.currentTextChanged.connect(self.on_selection_changed)
+        select_layout.addWidget(self.base_combo)
+        
+        select_layout.addWidget(QLabel("Accent Pack:"))
+        self.accent_combo = QComboBox()
+        self.accent_combo.addItems(["None", "Lotus", "Corpus", "Orokin", "Zariman", "Grineer", "Cosmic Twilight"])
+        self.accent_combo.currentTextChanged.connect(self.on_selection_changed)
+        select_layout.addWidget(self.accent_combo)
+        
         self.layout.addLayout(select_layout)
         
         # Preview Panel
@@ -55,22 +62,42 @@ class ThemeTab(QWidget):
         
         # Initialize values
         active_theme = self.theme_manager.get_active_theme_name()
-        self.theme_combo.setCurrentText(active_theme)
-        self.update_preview(active_theme)
+        base_val = "Dark"
+        accent_val = "None"
+        if " (" in active_theme and active_theme.endswith(")"):
+            base_val, rest = active_theme.split(" (", 1)
+            accent_val = rest[:-1]
+        elif active_theme in ["Dark", "Light"]:
+            base_val = active_theme
+            accent_val = "None"
+            
+        self.base_combo.setCurrentText(base_val)
+        self.accent_combo.setCurrentText(accent_val)
+        self.update_preview()
 
-    def update_preview(self, theme_name: str) -> None:
+    def get_selected_theme_name(self) -> str:
+        base = self.base_combo.currentText()
+        accent = self.accent_combo.currentText()
+        if accent == "None":
+            return base
+        return f"{base} ({accent})"
+
+    def on_selection_changed(self, text: str) -> None:
+        self.update_preview()
+
+    def update_preview(self) -> None:
         """Update color block previews when selection changes."""
+        theme_name = self.get_selected_theme_name()
         colors = self.theme_manager.get_theme_colors(theme_name)
         for key, lbl in self.color_labels.items():
             color = colors.get(key, "#ffffff")
             lbl.setText(color)
-            # Find a readable text color matching contrast
             txt_color = "#000000" if key in ["ACCENT", "TEXT", "MUTED"] else "#ffffff"
             lbl.setStyleSheet(f"background-color: {color}; color: {txt_color}; font-weight: bold; border-radius: 4px; padding: 2px;")
 
     def apply_theme(self) -> None:
         """Saves selected theme selection and publishes to the system."""
-        theme_name = self.theme_combo.currentText()
+        theme_name = self.get_selected_theme_name()
         self.theme_manager.save_active_theme(theme_name)
         
         # Publish event

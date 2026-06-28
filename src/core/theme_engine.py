@@ -319,16 +319,49 @@ QFrame#sidebarSeparator {{
 class ThemeEngine:
     """Compiles template stylesheet parameters into PySide6 stylesheets."""
 
-    def compile_stylesheet(self, theme_data: dict[str, str]) -> str:
+    def compile_stylesheet(self, theme_data: dict[str, str], theme_name: str = "") -> str:
         """Substitute theme colors and design tokens into structural template CSS."""
-        font_family = theme_data.get("FONT_FAMILY", '"Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", Arial, sans-serif')
-        border_radius_card = theme_data.get("BORDER_RADIUS_CARD", "8px")
-        border_radius_widget = theme_data.get("BORDER_RADIUS_WIDGET", "6px")
-        border_radius_tab = theme_data.get("BORDER_RADIUS_TAB", "6px")
-        border_style_card = theme_data.get("BORDER_STYLE_CARD", "1px solid rgba(255, 255, 255, 0.05)")
-        border_style_button = theme_data.get("BORDER_STYLE_BUTTON", "1px solid rgba(188, 163, 255, 0.15)")
-        padding_card = theme_data.get("PADDING_CARD", "16px")
-        button_hover_bg = theme_data.get("BUTTON_HOVER_BG", "rgba(188, 163, 255, 0.1)")
+        font_family = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        border_radius_card = "8px"
+        border_radius_widget = "6px"
+        border_radius_tab = "6px"
+        border_style_card = "1px solid rgba(255, 255, 255, 0.05)"
+        border_style_button = "1px solid rgba(255, 255, 255, 0.15)"
+        padding_card = "16px"
+        
+        # Determine styling properties based on theme name (base / accent)
+        if "Lotus" in theme_name:
+            border_radius_card = "16px"
+            border_radius_widget = "10px"
+            border_radius_tab = "10px"
+            padding_card = "20px"
+        elif "Orokin" in theme_name:
+            border_radius_card = "0px"
+            border_radius_widget = "0px"
+            border_radius_tab = "0px"
+            border_style_card = f"2px double {theme_data.get('ACCENT', '#cfad64')}"
+            border_style_button = f"1px solid {theme_data.get('ACCENT', '#cfad64')}"
+            padding_card = "14px"
+        elif "Corpus" in theme_name:
+            border_radius_card = "3px"
+            border_radius_widget = "2px"
+            border_radius_tab = "2px"
+            border_style_card = f"1px solid {theme_data.get('ACCENT', '#00a3cc')}"
+            padding_card = "10px"
+        elif "Grineer" in theme_name:
+            border_radius_card = "6px"
+            border_radius_widget = "4px"
+            border_radius_tab = "4px"
+            border_style_card = f"2px solid {theme_data.get('ACCENT', '#a35d3d')}"
+            padding_card = "12px"
+        elif "Zariman" in theme_name:
+            border_radius_card = "8px"
+            border_radius_widget = "4px"
+            border_radius_tab = "4px"
+            border_style_card = f"1px dashed {theme_data.get('ACCENT', '#6fffe8')}55"
+            padding_card = "16px"
+
+        button_hover_bg = theme_data.get("BUTTON_HOVER_BG", "rgba(255, 255, 255, 0.05)")
         widget_border = theme_data.get("WIDGET_BORDER", "1px solid rgba(255, 255, 255, 0.08)")
         scrollbar_accent = theme_data.get("ACCENT", "#00a3cc")
 

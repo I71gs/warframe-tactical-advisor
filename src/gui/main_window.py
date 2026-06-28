@@ -222,39 +222,42 @@ class MainWindow(QMainWindow):
         self.bottom_sidebar.setAnimated(True)
         self.bottom_sidebar.setFixedHeight(72) # Fits Settings and About perfectly
 
-        # Search bar button at the top
-        self.search_btn = QPushButton("🔍  Search Command Palette     [Ctrl+K]")
-        self.search_btn.setObjectName("sidebarSearchBtn")
-        self.search_btn.setFixedWidth(220)
-        self.search_btn.clicked.connect(self.open_command_palette)
-
         # Retrieve active theme ACCENT color for category labels
         from src.core.theme_manager import ThemeManager
         theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
         acc = theme_colors.get("ACCENT", "#00a3cc")
+        
+        from src.core.design_system import get_icon, FONT_H3, FONT_BODY
 
-        # Navigation structure mapping tab titles to categories
+        # Search bar button at the top
+        self.search_btn = QPushButton("  Search Command Palette     [Ctrl+K]")
+        self.search_btn.setIcon(get_icon("search", size=16, color=theme_colors.get("MUTED", "#8e85a6")))
+        self.search_btn.setObjectName("sidebarSearchBtn")
+        self.search_btn.setFixedWidth(220)
+        self.search_btn.clicked.connect(self.open_command_palette)
+
+        # Navigation structure mapping tab titles to categories with Tabler SVG icons
         categories = {
-            "🧭  Your Journey": [
+            "Your Journey": ("compass", [
                 'Dashboard', 'Profile', 'Recommendations', 'Progression', 'Readiness',
                 'Quest Planner', 'Progression Charts', 'Roadmap Milestones', 'Session Planner',
                 'Progression Replay', 'Statistics'
-            ],
-            "⚔️  Arsenal": [
+            ]),
+            "Arsenal": ("sword", [
                 'Build Advisor', 'Loadout Advisor', 'Build Simulator', 'Build Library',
                 'Weapon Tiers', 'Mastery Rank Planner', 'Incarnon Evolutions', 'Companion Synergy'
-            ],
-            "⛏️  Grind": [
+            ]),
+            "Grind": ("pick", [
                 'Daily Objectives', 'Weekly Planner', '30-Day Timeline', 'Farming Routes',
                 'Relic Planner', 'Collection Tracker', 'Resource Planner', 'Economy Deficits',
                 'Circuit Forecast', 'Duviri Upgrades', 'Tactical Routes', 'Team Synergy',
                 'Badges & Achievements'
-            ],
-            "📚  Reference": [
+            ]),
+            "Reference": ("book", [
                 'Encyclopedia', 'Codex', 'Knowledge Base', 'Global Search',
                 'Interactive Graph', 'Dependency Graph', 'Account Comparison', 'Benchmark Engine',
                 'Theme Studio', 'Patch Notes'
-            ]
+            ])
         }
 
         # Track categorized tabs and category items for dynamic repainting
@@ -264,11 +267,12 @@ class MainWindow(QMainWindow):
         self.category_items = []
 
         # Populate defined categories
-        for cat_name, tab_list in categories.items():
+        for cat_name, (icon_name, tab_list) in categories.items():
             cat_item = QTreeWidgetItem(self.sidebar)
             cat_item.setText(0, cat_name)
+            cat_item.setIcon(0, get_icon(icon_name, size=20, color=acc))
             cat_item.setFlags(cat_item.flags() & ~Qt.ItemIsSelectable) # Make category non-selectable
-            cat_item.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+            cat_item.setFont(0, QFont("Inter", 10, QFont.Bold))
             cat_item.setForeground(0, QColor(acc))
             self.category_items.append(cat_item)
             
@@ -281,7 +285,8 @@ class MainWindow(QMainWindow):
                         break
                 if idx != -1:
                     child_item = QTreeWidgetItem(cat_item)
-                    child_item.setText(0, f"  •  {tab_text}")
+                    child_item.setText(0, tab_text)
+                    child_item.setFont(0, QFont("Inter", 9))
                     child_item.setData(0, Qt.UserRole, idx)
                     self.item_to_tab_index[child_item] = idx
                     self.tab_index_to_item[idx] = child_item
@@ -301,16 +306,18 @@ class MainWindow(QMainWindow):
             if idx not in categorized_tabs:
                 if cat_uncategorized is None:
                     cat_uncategorized = QTreeWidgetItem(self.sidebar)
-                    cat_uncategorized.setText(0, "🔌  Extensions")
+                    cat_uncategorized.setText(0, "Extensions")
+                    cat_uncategorized.setIcon(0, get_icon("plug", size=20, color=acc))
                     cat_uncategorized.setFlags(cat_uncategorized.flags() & ~Qt.ItemIsSelectable)
-                    cat_uncategorized.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+                    cat_uncategorized.setFont(0, QFont("Inter", 10, QFont.Bold))
                     cat_uncategorized.setForeground(0, QColor(acc))
                     self.sidebar.expandItem(cat_uncategorized)
                     self.category_items.append(cat_uncategorized)
                 
                 tab_text = self.tabs.tabText(idx)
                 child_item = QTreeWidgetItem(cat_uncategorized)
-                child_item.setText(0, f"  •  {tab_text}")
+                child_item.setText(0, tab_text)
+                child_item.setFont(0, QFont("Inter", 9))
                 child_item.setData(0, Qt.UserRole, idx)
                 self.item_to_tab_index[child_item] = idx
                 self.tab_index_to_item[idx] = child_item
@@ -325,14 +332,18 @@ class MainWindow(QMainWindow):
         
         if settings_idx != -1:
             settings_item = QTreeWidgetItem(self.bottom_sidebar)
-            settings_item.setText(0, "⚙️  Settings")
+            settings_item.setText(0, "Settings")
+            settings_item.setIcon(0, get_icon("settings", size=20, color=acc))
+            settings_item.setFont(0, QFont("Inter", 10, QFont.Bold))
             settings_item.setData(0, Qt.UserRole, settings_idx)
             self.item_to_tab_index[settings_item] = settings_idx
             self.tab_index_to_item[settings_idx] = settings_item
             categorized_tabs.add(settings_idx)
             
         about_item = QTreeWidgetItem(self.bottom_sidebar)
-        about_item.setText(0, "ℹ️  About Advisor")
+        about_item.setText(0, "About Advisor")
+        about_item.setFont(0, QFont("Inter", 10, QFont.Bold))
+        about_item.setIcon(0, get_icon("info", size=20, color=acc))
 
         def on_sidebar_selection_changed():
             selected = self.sidebar.selectedItems()
@@ -355,7 +366,7 @@ class MainWindow(QMainWindow):
                 idx = item.data(0, Qt.UserRole)
                 if idx is not None:
                     self.tabs.setCurrentIndex(idx)
-                elif item.text(0) == "ℹ️  About Advisor":
+                elif item.text(0) == "About Advisor":
                     self.show_about_dialog()
                     self.bottom_sidebar.clearSelection()
                     self._sync_tabs_to_sidebar(self.tabs.currentIndex())
@@ -597,7 +608,7 @@ class MainWindow(QMainWindow):
             te = ThemeEngine()
             active_theme = tm.get_active_theme_name()
             colors = tm.get_theme_colors(active_theme)
-            stylesheet = te.compile_stylesheet(colors)
+            stylesheet = te.compile_stylesheet(colors, active_theme)
             self.setStyleSheet(stylesheet)
             
             # Dynamic category item color updates based on active theme
@@ -753,24 +764,27 @@ class MainWindow(QMainWindow):
                             cat_uncategorized = None
                             for i in range(self.sidebar.topLevelItemCount()):
                                 item = self.sidebar.topLevelItem(i)
-                                if item.text(0) == "🔌  Extensions":
+                                if item.text(0) == "Extensions":
                                     cat_uncategorized = item
                                     break
                             if cat_uncategorized is None:
                                 from src.core.theme_manager import ThemeManager
+                                from src.core.design_system import get_icon
                                 colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
                                 acc = colors.get("ACCENT", "#00a3cc")
                                 cat_uncategorized = QTreeWidgetItem(self.sidebar)
-                                cat_uncategorized.setText(0, "🔌  Extensions")
+                                cat_uncategorized.setText(0, "Extensions")
+                                cat_uncategorized.setIcon(0, get_icon("plug", size=20, color=acc))
                                 cat_uncategorized.setFlags(cat_uncategorized.flags() & ~Qt.ItemIsSelectable)
-                                cat_uncategorized.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+                                cat_uncategorized.setFont(0, QFont("Inter", 10, QFont.Bold))
                                 cat_uncategorized.setForeground(0, QColor(acc))
                                 self.sidebar.expandItem(cat_uncategorized)
                                 if hasattr(self, "category_items"):
                                     self.category_items.append(cat_uncategorized)
                             
                             child_item = QTreeWidgetItem(cat_uncategorized)
-                            child_item.setText(0, f"  •  {title}")
+                            child_item.setText(0, title)
+                            child_item.setFont(0, QFont("Inter", 9))
                             child_item.setData(0, Qt.UserRole, idx)
                             self.item_to_tab_index[child_item] = idx
                             self.tab_index_to_item[idx] = child_item
@@ -848,6 +862,9 @@ def main() -> Any:
     context = AppContext()
 
     app = QApplication(sys.argv)
+
+    from src.core.design_system import init_fonts
+    init_fonts()
 
 
     # Load plugins via background worker in QThreadPool

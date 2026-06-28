@@ -101,8 +101,10 @@ class DashboardTab(QWidget):
     # ── UI construction ───────────────────────────────────────────────────────
 
     def _setup_ui(self) -> None:
+        from src.core.design_system import get_icon, SPACE_XS, SPACE_SM, SPACE_MD, SPACE_LG, SPACE_XL
+        
         root = QVBoxLayout(self)
-        root.setSpacing(8)
+        root.setSpacing(SPACE_SM)
 
         # ── top header ─────────────────────────────────────────────────────
         header_row = QHBoxLayout()
@@ -140,7 +142,7 @@ class DashboardTab(QWidget):
         header_row.addStretch()
 
         # "Today at a Glance" banner
-        self.glance_banner = QLabel("⚡  Today at a Glance:  —")
+        self.glance_banner = QLabel("Today at a Glance:  —")
         self.glance_banner.setStyleSheet(f"""
             background: qlineargradient(x1:0,y1:0,x2:1,y2:0,stop:0 {card_bg},stop:1 {primary});
             border: 1px solid {accent}44;
@@ -152,7 +154,8 @@ class DashboardTab(QWidget):
         """)
         header_row.addWidget(self.glance_banner, 1)
 
-        screenshot_btn = QPushButton("📸 Export PNG")
+        screenshot_btn = QPushButton(" Export PNG")
+        screenshot_btn.setIcon(get_icon("camera", size=16, color=accent))
         screenshot_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {card_bg}; border: 1px solid {accent};
@@ -163,7 +166,8 @@ class DashboardTab(QWidget):
         screenshot_btn.clicked.connect(self.export_screenshot)
         header_row.addWidget(screenshot_btn)
 
-        refresh_btn = QPushButton("🔄 Refresh")
+        refresh_btn = QPushButton(" Refresh")
+        refresh_btn.setIcon(get_icon("refresh", size=16, color=accent))
         refresh_btn.setStyleSheet(screenshot_btn.styleSheet())
         refresh_btn.clicked.connect(self.load_dashboard)
         header_row.addWidget(refresh_btn)
@@ -185,7 +189,7 @@ class DashboardTab(QWidget):
         self.hero_score   = self._hero_chip("Score —%",   "#7fffb3")
         self.hero_sp      = self._hero_chip("SP: —",      "#ff9fd4")
         self.hero_uptime  = self._hero_chip("Session —",  "#7fb3ff")
-        self.hero_top_rec = self._hero_chip("🎯 —",       "#00d4ff", wide=True)
+        self.hero_top_rec = self._hero_chip("Recommendation: —", "#00d4ff", wide=True)
 
         for chip in (self.hero_mr, self.hero_stage, self.hero_score,
                      self.hero_sp, self.hero_uptime, self.hero_top_rec):
@@ -203,10 +207,10 @@ class DashboardTab(QWidget):
         self.cols_container.setStyleSheet("background: transparent;")
         self.cols_layout = QGridLayout(self.cols_container)
         self.cols_layout.setContentsMargins(0, 0, 0, 0)
-        self.cols_layout.setSpacing(10)
+        self.cols_layout.setSpacing(SPACE_SM)
 
         # Col 1 — Today's Priorities
-        col1_box, col1_lay = _card("📅  Today's Priorities", "#00d4ff", 280)
+        col1_box, col1_lay = _card("Today's Priorities", "#00d4ff", 280)
         self.daily_items_lay = col1_lay
         self.daily_labels: list[QLabel] = []
         for _ in range(8):
@@ -216,7 +220,7 @@ class DashboardTab(QWidget):
         col1_lay.addStretch()
 
         # Weekly strip
-        weekly_strip, weekly_lay = _card("📆  Weekly Goals", "#7fb3ff", 100)
+        weekly_strip, weekly_lay = _card("Weekly Goals", "#7fb3ff", 100)
         self.weekly_progress_bar = _progress_bar("#7fb3ff")
         self.weekly_label = _row_label("—/— Goals met")
         weekly_lay.addWidget(self.weekly_label)
@@ -227,12 +231,12 @@ class DashboardTab(QWidget):
         self.col1_widget.setStyleSheet("background: transparent;")
         col1_wrap = QVBoxLayout(self.col1_widget)
         col1_wrap.setContentsMargins(0, 0, 0, 0)
-        col1_wrap.setSpacing(10)
+        col1_wrap.setSpacing(SPACE_SM)
         col1_wrap.addWidget(col1_box, 2)
         col1_wrap.addWidget(weekly_strip, 1)
 
         # Col 2 — World State
-        col2_box, col2_lay = _card("🌍  World State", "#ffb76b", 380)
+        col2_box, col2_lay = _card("World State", "#ffb76b", 380)
         self.ws_status_lbl = _row_label("● Online", "#7fffb3", bold=True)
         col2_lay.addWidget(self.ws_status_lbl)
 
@@ -261,7 +265,7 @@ class DashboardTab(QWidget):
         self.col2_widget = col2_box
 
         # Col 3 — Goal Tracker + Economy
-        col3_box, col3_lay = _card("🎯  Goal Tracker", "#caa3ff", 200)
+        col3_box, col3_lay = _card("Goal Tracker", "#caa3ff", 200)
         self.goal_labels: list[QLabel] = []
         for _ in range(5):
             lbl = _row_label("—")
@@ -269,7 +273,7 @@ class DashboardTab(QWidget):
             self.goal_labels.append(lbl)
         col3_lay.addStretch()
 
-        econ_box, econ_lay = _card("💎  Resource Bottlenecks", "#ff9fd4", 180)
+        econ_box, econ_lay = _card("Resource Bottlenecks", "#ff9fd4", 180)
         self.econ_labels: list[QLabel] = []
         for _ in range(5):
             lbl = _row_label("—")
@@ -281,12 +285,12 @@ class DashboardTab(QWidget):
         self.col3_widget.setStyleSheet("background: transparent;")
         col3_wrap = QVBoxLayout(self.col3_widget)
         col3_wrap.setContentsMargins(0, 0, 0, 0)
-        col3_wrap.setSpacing(10)
+        col3_wrap.setSpacing(SPACE_SM)
         col3_wrap.addWidget(col3_box, 1)
         col3_wrap.addWidget(econ_box, 1)
 
         # Col 4 — MR + Scores + Readiness
-        col4_box, col4_lay = _card("📊  Progression Metrics", "#7fffb3", 380)
+        col4_box, col4_lay = _card("Progression Metrics", "#7fffb3", 380)
 
         # Circular progress layout
         circles_lay = QHBoxLayout()
