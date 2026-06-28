@@ -10,5 +10,6 @@
     "height": 700
   },
   "current_profile": "default",
-  "active_theme": "Dark"
+  "active_theme": "Dark",
+  "use_wiki_gg": true
 }

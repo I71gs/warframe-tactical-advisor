@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warframe Tactical Advisor — Companion Platform</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            prim: '#0c0919',
+                            sec: '#120d26',
+                            card: '#161030',
+                            accent: '#bb86fc',
+                            teal: '#00ccaa',
+                            glow: 'rgba(187, 134, 252, 0.15)',
+                        }
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080612;
+            color: #eae6f8;
+        }
+        .neon-glow {
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.5), 0 0 20px rgba(187, 134, 252, 0.2);
+        }
+        .neon-border {
+            box-shadow: 0 0 15px rgba(0, 204, 170, 0.1);
+            border: 1px solid rgba(0, 204, 170, 0.2);
+        }
+        .neon-border:hover {
+            box-shadow: 0 0 20px rgba(0, 204, 170, 0.25);
+            border-color: rgba(0, 204, 170, 0.5);
+        }
+        .accent-border {
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.1);
+            border: 1px solid rgba(187, 134, 252, 0.2);
+        }
+        .accent-border:hover {
+            box-shadow: 0 0 20px rgba(187, 134, 252, 0.25);
+            border-color: rgba(187, 134, 252, 0.5);
+        }
+    </style>
+</head>
+<body class="font-outfit antialiased selection:bg-brand-accent selection:text-brand-prim overflow-x-hidden">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-brand-sec bg-brand-prim/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-accent to-brand-teal flex items-center justify-center font-bold text-brand-prim">
+                    TA
+                </div>
+                <span class="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                    Warframe Tactical Advisor
+                </span>
+            </div>
+            
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#overlay" class="hover:text-white transition-colors">Overlay HUD</a>
+                <a href="#downloads" class="hover:text-white transition-colors">Downloads</a>
+                <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+            </nav>
+            
+            <div class="flex items-center gap-4">
+                <a href="https://github.com" target="_blank" class="text-sm font-semibold hover:text-brand-accent transition-colors flex items-center gap-2 border border-gray-800 rounded-lg px-4 py-2 bg-brand-sec/50">
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-24 pb-20 max-w-7xl mx-auto px-6 overflow-hidden">
+        <!-- Background Glowing Circles -->
+        <div class="absolute -top-40 left-1/4 w-[400px] h-[400px] bg-brand-accent/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute top-20 right-1/4 w-[350px] h-[350px] bg-brand-teal/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="text-center relative z-10 max-w-4xl mx-auto">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-accent/15 border border-brand-accent/30 text-xs font-semibold text-brand-accent tracking-wide mb-6 uppercase">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-accent animate-pulse"></span>
+                Version 1.0.0 Stable Now Live
+            </span>
+            
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                Optimize Your Tenno Progression with the <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-teal via-brand-accent to-brand-accent neon-glow">Tactical Advisor</span>
+            </h1>
+            
+            <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+                A localized companion dashboard for Warframe. Track your inventory mastery, simulate builds, customize visual themes, and run a stays-on-top transparent HUD overlay while playing.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="#downloads" class="w-full sm:w-auto px-8 py-4 bg-brand-accent text-brand-prim font-bold rounded-lg shadow-lg hover:shadow-brand-accent/25 transition-all text-center">
+                    Get Windows Installer
+                </a>
+                <a href="https://github.com" target="_blank" class="w-full sm:w-auto px-8 py-4 border border-gray-800 hover:border-gray-700 bg-brand-sec/35 hover:bg-brand-sec/75 font-semibold text-white rounded-lg transition-all text-center">
+                    Source Code
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Features Grid -->
+    <section id="features" class="py-20 bg-brand-prim border-y border-brand-sec">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Tactical Dashboard Capabilities</h2>
+                <p class="text-gray-400">Everything a Tenno needs to coordinate mastery ranks, farming nodes, and build calculations offline.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-teal/15 flex items-center justify-center text-brand-teal mb-6 font-bold text-xl">
+                        HUD
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Overlay HUD Mode</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Toggle a borderless stay-on-top overlay with `Ctrl+O`. Check active alerts, checklist targets, and Cetus cycles while actively executing missions.
+                    </p>
+                </div>
+                
+                <!-- Card 2 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-accent/15 flex items-center justify-center text-brand-accent mb-6 font-bold text-xl">
+                        CMP
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Unified Command Palette</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Search and filter weapons, arcanes, mods, and quests globally via `Ctrl+P`. Quickly jump between menus or switch profile scopes instantly.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-teal/15 flex items-center justify-center text-brand-teal mb-6 font-bold text-xl">
+                        SIM
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Build Simulator</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Configure mod slots, adjust polarities, and forecast sustained sustained DPS outputs before investing Formas.
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-accent/15 flex items-center justify-center text-brand-accent mb-6 font-bold text-xl">
+                        TRK
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Inventory Tracker</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Check off completed Warframes and items. Sync details directly with standard wiki databases for up-to-date droptables.
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-teal/15 flex items-center justify-center text-brand-teal mb-6 font-bold text-xl">
+                        WLD
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Live World Feeds</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Monitor active void fissures, weekly hunts, and visiting trader countdowns in real-time, integrated directly into your advisor recommendations list.
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="bg-brand-card p-8 rounded-xl border border-gray-800/80 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 rounded-lg bg-brand-accent/15 flex items-center justify-center text-brand-accent mb-6 font-bold text-xl">
+                        SDK
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Plugin Extensions</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Add personalized widgets, charts, and analysis tabs dynamically with Python scripts utilizing our standardized Plugin SDK.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overlay HUD Detail -->
+    <section id="overlay" class="py-24 max-w-7xl mx-auto px-6 relative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <span class="text-brand-accent text-sm font-semibold tracking-wider uppercase mb-3 block">Overlay HUD Mode</span>
+                <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight">In-Game Tracking Without Leaving the Action</h2>
+                <p class="text-gray-400 mb-8 leading-relaxed text-lg">
+                    Pressing `Ctrl+O` minimizes the primary application window and opens a floating, translucent HUD that sits directly on top of your Warframe game clients. Keep track of Cetus time cycles, alert coordinates, and your milestone checkboxes cleanly.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal font-semibold text-xs mt-1">✓</div>
+                        <div>
+                            <h4 class="font-bold text-white">Frameless & Draggable</h4>
+                            <p class="text-sm text-gray-400">Position the HUD anywhere on screen by clicking and dragging its header bar.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="w-6 h-6 rounded-full bg-brand-teal/10 flex items-center justify-center text-brand-teal font-semibold text-xs mt-1">✓</div>
+                        <div>
+                            <h4 class="font-bold text-white">Keyboard Driven Toggle</h4>
+                            <p class="text-sm text-gray-400">Instantly switch between HUD overlay and full dashboard with a single hotkey.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-brand-sec rounded-xl border border-gray-800/80 p-8 accent-border">
+                <!-- Mockup of Overlay Window -->
+                <div class="border-b border-gray-800 pb-4 mb-6 flex justify-between items-center text-xs">
+                    <span class="text-brand-teal font-bold tracking-widest uppercase">✦ WARFRAME HUD ADVISOR ✦</span>
+                    <span class="text-gray-500">Hold & Drag</span>
+                </div>
+                <div class="space-y-4">
+                    <!-- Section 1 -->
+                    <div>
+                        <span class="text-xs text-[#bb86fc] uppercase tracking-wider block mb-2 font-semibold">Goal Progress</span>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 text-sm text-gray-300">
+                                <input type="checkbox" checked class="rounded border-gray-800 text-brand-teal focus:ring-0 focus:ring-offset-0 bg-brand-prim">
+                                <span>Mastery Rank Upgrade (MR23)</span>
+                            </label>
+                            <label class="flex items-center gap-3 text-sm text-gray-300">
+                                <input type="checkbox" class="rounded border-gray-800 text-brand-teal focus:ring-0 focus:ring-offset-0 bg-brand-prim">
+                                <span>Whispers in the Walls Quest Chain</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Section 2 -->
+                    <div class="border-t border-gray-800/80 pt-4">
+                        <span class="text-xs text-brand-teal uppercase tracking-wider block mb-2 font-semibold font-semibold">World State</span>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="bg-brand-prim/50 p-2.5 rounded border border-gray-800/60">
+                                <span class="text-[10px] text-gray-500 block uppercase">Cetus Cycle</span>
+                                <span class="text-amber-400 font-semibold">☀️ Day (42m remaining)</span>
+                            </div>
+                            <div class="bg-brand-prim/50 p-2.5 rounded border border-gray-800/60">
+                                <span class="text-[10px] text-gray-500 block uppercase">Orb Vallis</span>
+                                <span class="text-[#00a3cc] font-semibold">❄️ Cold (12m remaining)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section id="downloads" class="py-20 bg-brand-sec/40 border-t border-brand-sec">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Official Downloads</h2>
+                <p class="text-gray-400">Select your preferred packaging format to launch the Companion tactical center.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Windows Installer Card -->
+                <div class="bg-brand-card/80 p-8 rounded-xl border border-brand-accent/20 hover:border-brand-accent/50 transition-colors flex flex-col justify-between">
+                    <div>
+                        <span class="text-brand-accent text-xs font-semibold tracking-wider uppercase block mb-2">Recommended</span>
+                        <h3 class="text-2xl font-bold text-white mb-4">Windows Setup Installer</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                            Installs standard desktop shortcuts, configures file path variables, and registers context launch entries automatically. Requires Windows 10/11.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="dist/WarframeTacticalAdvisor_v1.0.0_Setup.exe" class="w-full inline-block text-center py-3 bg-brand-accent hover:bg-brand-accent/90 text-brand-prim font-bold rounded-lg transition-colors">
+                            Download Installer
+                        </a>
+                        <span class="text-center block text-[10px] text-gray-500 mt-2">WarframeTacticalAdvisor_v1.0.0_Setup.exe</span>
+                    </div>
+                </div>
+                
+                <!-- Portable Zip Card -->
+                <div class="bg-brand-card/80 p-8 rounded-xl border border-gray-800/80 hover:border-gray-700/80 transition-colors flex flex-col justify-between">
+                    <div>
+                        <span class="text-gray-400 text-xs font-semibold tracking-wider uppercase block mb-2">Standalone</span>
+                        <h3 class="text-2xl font-bold text-white mb-4">Portable ZIP Directory</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                            Precompiled folder containing executable directories. Simply download, extract, and double-click `WarframeTacticalAdvisor.exe` to launch instantly.
+                        </p>
+                    </div>
+                    <div>
+                        <a href="dist/WarframeTacticalAdvisor_Portable.zip" class="w-full inline-block text-center py-3 border border-gray-800 hover:border-gray-700 bg-brand-prim text-white font-bold rounded-lg transition-colors">
+                            Download Portable ZIP
+                        </a>
+                        <span class="text-center block text-[10px] text-gray-500 mt-2">WarframeTacticalAdvisor_Portable.zip</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Checksums Info -->
+            <div class="max-w-4xl mx-auto mt-12 bg-brand-prim/60 p-6 rounded-lg border border-gray-800/60 text-xs">
+                <span class="font-bold text-white block mb-2">SHA256 File Verification</span>
+                <p class="text-gray-400 leading-relaxed mb-4">
+                    Verify file integrity checksums by loading the checksum descriptor file: <a href="dist/SHA256.txt" class="text-brand-accent hover:underline">SHA256.txt</a>. Alternatively, run the following PowerShell command inside your download folder:
+                </p>
+                <code class="block bg-brand-sec/80 p-3 rounded border border-gray-800/60 text-brand-teal font-mono overflow-x-auto">
+                    Get-FileHash .\WarframeTacticalAdvisor_v1.0.0_Setup.exe -Algorithm SHA256
+                </code>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 max-w-5xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-extrabold text-white mb-4">Frequently Asked Questions</h2>
+            <p class="text-gray-400 text-sm">Got questions? We have compiled solutions for setting up accounts, layouts, and configurations.</p>
+        </div>
+        
+        <div class="space-y-6">
+            <div class="bg-brand-card/50 p-6 rounded-lg border border-gray-800/50">
+                <h4 class="font-bold text-white mb-2">Q: How do I switch accounts?</h4>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    Open the Settings tab, select Alt Account from the Account Profile dropdown, and click Save Settings. This dispatches the switch account bus signals, resetting active data cache variables and reloading the UI instantly.
+                </p>
+            </div>
+            <div class="bg-brand-card/50 p-6 rounded-lg border border-gray-800/50">
+                <h4 class="font-bold text-white mb-2">Q: Does the application save login credentials?</h4>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    No. The advisor operates entirely offline using a local SQLite database file `player.db` to save mastery ranks and upgrade lists. It doesn't ask for or store your Warframe game credentials.
+                </p>
+            </div>
+            <div class="bg-brand-card/50 p-6 rounded-lg border border-gray-800/50">
+                <h4 class="font-bold text-white mb-2">Q: How do I add custom dashboards or features?</h4>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    Check out the Extensible Plugin SDK. You can author custom Python classes that inherit from `PluginBase` and register them on application launch.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-brand-sec bg-brand-prim py-12 text-center text-sm text-gray-500">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-accent to-brand-teal flex items-center justify-center font-bold text-brand-prim text-xs">
+                    TA
+                </div>
+                <span class="font-semibold text-gray-400">Warframe Tactical Advisor</span>
+            </div>
+            
+            <div class="flex gap-8">
+                <a href="https://github.com" target="_blank" class="hover:text-white transition-colors">GitHub</a>
+                <a href="#features" class="hover:text-white transition-colors">Features</a>
+                <a href="#downloads" class="hover:text-white transition-colors">Downloads</a>
+                <a href="docs/FAQ_TROUBLESHOOTING.md" class="hover:text-white transition-colors">Troubleshooting</a>
+            </div>
+            
+            <p class="text-xs">&copy; 2026 Companion Platform. Built with Python & PySide6.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

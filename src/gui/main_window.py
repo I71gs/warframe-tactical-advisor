@@ -1,10 +1,12 @@
 from typing import Any
 import sys
 from pathlib import Path
-from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QStatusBar, QMenu, QMessageBox, QListWidget, QHBoxLayout, QWidget
-
-from PySide6.QtGui import QAction, QIcon, QKeySequence, QShortcut
+from PySide6.QtCore import QTimer, Qt
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QTabWidget, QStatusBar, QMenu, QMessageBox,
+    QHBoxLayout, QWidget, QTreeWidget, QTreeWidgetItem
+)
+from PySide6.QtGui import QAction, QIcon, QKeySequence, QShortcut, QFont, QColor
 from src.core.settings_manager import SettingsManager
 from src.utils.logger import logger
 from src.gui.profile_tab import ProfileTab
@@ -56,6 +58,7 @@ from src.gui.route_tab import RouteTab
 from src.gui.build_library_tab import BuildLibraryTab
 from src.gui.theme_editor_tab import ThemeEditorTab
 from src.gui.patch_tab import PatchTab
+from src.gui.overlay import OverlayWindow
 
 
 class MainWindow(QMainWindow):
@@ -201,15 +204,107 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.patch_tab, 'Patch Notes')
         self.load_registered_tabs()
 
-        # Setup sidebar layout
-        self.sidebar = QListWidget()
+        # Setup hierarchical sidebar layout using QTreeWidget for enterprise-grade category nesting
+        self.sidebar = QTreeWidget()
         self.sidebar.setObjectName("sidebarNav")
-        self.sidebar.setFixedWidth(190)
-        
-        for idx in range(self.tabs.count()):
-            self.sidebar.addItem(self.tabs.tabText(idx))
+        self.sidebar.setFixedWidth(240)
+        self.sidebar.setHeaderHidden(True)
+        self.sidebar.setIndentation(12)
+        self.sidebar.setAnimated(True)
+
+        # Retrieve active theme ACCENT color for category labels
+        from src.core.theme_manager import ThemeManager
+        theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
+        acc = theme_colors.get("ACCENT", "#00a3cc")
+
+        # Navigation structure mapping tab titles to categories
+        categories = {
+            "📊  Monitoring": [
+                'Dashboard', 'Profile', 'Readiness', 'Progression Charts',
+                'Progression Curves', 'Session Planner', 'Telemetry Charts',
+                'Statistics', 'Benchmark Engine', 'Progression Replay'
+            ],
+            "🔍  Analysis & Planning": [
+                'Recommendations', 'Build Advisor', 'Loadout Advisor', 'Goal Planner',
+                'Gap Analyzer', 'Build Simulator', 'Weapon Tiers', 'Mastery Rank Planner',
+                'Relic Planner', 'Incarnon Evolutions', 'Circuit Forecast', 'Duviri Upgrades',
+                'Companion Synergy', 'Economy Deficits', 'Account Comparison'
+            ],
+            "🧬  Missions & Routes": [
+                'Daily Objectives', 'Weekly Planner', '30-Day Timeline', 'Roadmap Milestones',
+                'Dependency Graph', 'Interactive Graph', 'Resource Planner', 'Farming Routes',
+                'Team Synergy', 'Badges & Achievements', 'Tactical Routes', 'Build Library'
+            ],
+            "📚  Reference & Settings": [
+                'Encyclopedia', 'Codex', 'Knowledge Base', 'Global Search',
+                'Theme Studio', 'Patch Notes', 'Settings'
+            ]
+        }
+
+        # Track categorized tabs and category items for dynamic repainting
+        categorized_tabs = set()
+        self.item_to_tab_index = {}
+        self.tab_index_to_item = {}
+        self.category_items = []
+
+        # Populate defined categories
+        for cat_name, tab_list in categories.items():
+            cat_item = QTreeWidgetItem(self.sidebar)
+            cat_item.setText(0, cat_name)
+            cat_item.setFlags(cat_item.flags() & ~Qt.ItemIsSelectable) # Make category non-selectable
+            cat_item.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+            cat_item.setForeground(0, QColor(acc))
+            self.category_items.append(cat_item)
             
-        self.sidebar.currentRowChanged.connect(self.tabs.setCurrentIndex)
+            has_children = False
+            for tab_text in tab_list:
+                idx = -1
+                for i in range(self.tabs.count()):
+                    if self.tabs.tabText(i) == tab_text:
+                        idx = i
+                        break
+                if idx != -1:
+                    child_item = QTreeWidgetItem(cat_item)
+                    child_item.setText(0, f"  •  {tab_text}")
+                    child_item.setData(0, Qt.UserRole, idx)
+                    self.item_to_tab_index[child_item] = idx
+                    self.tab_index_to_item[idx] = child_item
+                    categorized_tabs.add(idx)
+                    has_children = True
+
+            # Expand categories by default
+            if has_children:
+                self.sidebar.expandItem(cat_item)
+
+        # Catch-all category for any remaining or plugin-loaded tabs
+        cat_uncategorized = None
+        for idx in range(self.tabs.count()):
+            if idx not in categorized_tabs:
+                if cat_uncategorized is None:
+                    cat_uncategorized = QTreeWidgetItem(self.sidebar)
+                    cat_uncategorized.setText(0, "🔌  Extensions")
+                    cat_uncategorized.setFlags(cat_uncategorized.flags() & ~Qt.ItemIsSelectable)
+                    cat_uncategorized.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+                    cat_uncategorized.setForeground(0, QColor(acc))
+                    self.sidebar.expandItem(cat_uncategorized)
+                    self.category_items.append(cat_uncategorized)
+                
+                tab_text = self.tabs.tabText(idx)
+                child_item = QTreeWidgetItem(cat_uncategorized)
+                child_item.setText(0, f"  •  {tab_text}")
+                child_item.setData(0, Qt.UserRole, idx)
+                self.item_to_tab_index[child_item] = idx
+                self.tab_index_to_item[idx] = child_item
+
+        def on_sidebar_selection_changed():
+            selected = self.sidebar.selectedItems()
+            if selected:
+                item = selected[0]
+                idx = item.data(0, Qt.UserRole)
+                if idx is not None:
+                    self.tabs.setCurrentIndex(idx)
+
+        self.sidebar.itemSelectionChanged.connect(on_sidebar_selection_changed)
         self.tabs.currentChanged.connect(self._sync_tabs_to_sidebar)
         self.tabs.tabBar().hide()
         
@@ -222,9 +317,9 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def _sync_tabs_to_sidebar(self, index: int) -> None:
-        if hasattr(self, "sidebar"):
+        if hasattr(self, "sidebar") and index in self.tab_index_to_item:
             self.sidebar.blockSignals(True)
-            self.sidebar.setCurrentRow(index)
+            self.sidebar.setCurrentItem(self.tab_index_to_item[index])
             self.sidebar.blockSignals(False)
 
 
@@ -418,6 +513,12 @@ class MainWindow(QMainWindow):
             colors = tm.get_theme_colors(active_theme)
             stylesheet = te.compile_stylesheet(colors)
             self.setStyleSheet(stylesheet)
+            
+            # Dynamic category item color updates based on active theme
+            if hasattr(self, "sidebar") and hasattr(self, "category_items"):
+                acc = colors.get("ACCENT", "#00a3cc")
+                for item in self.category_items:
+                    item.setForeground(0, QColor(acc))
         except Exception as exc:
             logger.warning('Failed to apply dynamic stylesheet, falling back: %s', exc)
             if self.settings.get('dark_mode', True):
@@ -496,6 +597,26 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence('Ctrl+I'), self, activated=self.profile_tab.import_profile)
         QShortcut(QKeySequence('Ctrl+F'), self, activated=lambda: self.profile_tab.quest_input.setFocus())
         QShortcut(QKeySequence('Ctrl+P'), self, activated=self.open_command_palette)
+        QShortcut(QKeySequence('Ctrl+O'), self, activated=self.toggle_overlay_mode)
+
+    def toggle_overlay_mode(self) -> None:
+        """Hide the main window and show the frameless overlay HUD."""
+        if not hasattr(self, "overlay_win") or self.overlay_win is None:
+            self.overlay_win = OverlayWindow(self)
+        
+        self.overlay_win.refresh_data()
+        self.overlay_win.apply_theme()
+        
+        # Position the overlay in the top-right corner of the parent's geometry
+        geom = self.geometry()
+        x = geom.x() + geom.width() - self.overlay_win.width() - 20
+        y = geom.y() + 40
+        self.overlay_win.move(max(0, x), max(0, y))
+        
+        self.hide()
+        self.overlay_win.show()
+        self.overlay_win.raise_()
+        self.overlay_win.activateWindow()
 
     def open_command_palette(self) -> None:
         """Instantiate and show the VSCode-style command palette dialog."""
@@ -530,9 +651,36 @@ class MainWindow(QMainWindow):
             if not already_added:
                 try:
                     tab_instance = tab_class()
-                    self.tabs.addTab(tab_instance, title)
+                    idx = self.tabs.addTab(tab_instance, title)
                     if hasattr(self, "sidebar"):
-                        self.sidebar.addItem(title)
+                        if isinstance(self.sidebar, QTreeWidget):
+                            # Find the "Extensions" category item
+                            cat_uncategorized = None
+                            for i in range(self.sidebar.topLevelItemCount()):
+                                item = self.sidebar.topLevelItem(i)
+                                if item.text(0) == "🔌  Extensions":
+                                    cat_uncategorized = item
+                                    break
+                            if cat_uncategorized is None:
+                                from src.core.theme_manager import ThemeManager
+                                colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
+                                acc = colors.get("ACCENT", "#00a3cc")
+                                cat_uncategorized = QTreeWidgetItem(self.sidebar)
+                                cat_uncategorized.setText(0, "🔌  Extensions")
+                                cat_uncategorized.setFlags(cat_uncategorized.flags() & ~Qt.ItemIsSelectable)
+                                cat_uncategorized.setFont(0, QFont("Segoe UI", 9, QFont.Bold))
+                                cat_uncategorized.setForeground(0, QColor(acc))
+                                self.sidebar.expandItem(cat_uncategorized)
+                                if hasattr(self, "category_items"):
+                                    self.category_items.append(cat_uncategorized)
+                            
+                            child_item = QTreeWidgetItem(cat_uncategorized)
+                            child_item.setText(0, f"  •  {title}")
+                            child_item.setData(0, Qt.UserRole, idx)
+                            self.item_to_tab_index[child_item] = idx
+                            self.tab_index_to_item[idx] = child_item
+                        else:
+                            self.sidebar.addItem(title)
                     logger.info("Dynamically registered tab '%s' added.", title)
 
                 except Exception as exc:
@@ -565,6 +713,10 @@ class MainWindow(QMainWindow):
         perf_action.triggered.connect(self.open_performance_dashboard)
         windows_menu.addAction(perf_action)
 
+        overlay_action = QAction('Overlay Mode (Ctrl+O)', self)
+        overlay_action.triggered.connect(self.toggle_overlay_mode)
+        windows_menu.addAction(overlay_action)
+
         help_menu = menu_bar.addMenu('Help')
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about_dialog)
@@ -581,14 +733,14 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             'About',
-            'Warframe Tactical Advisor\nVersion 11.0.0\nProfessional Companion Platform\n\nBuilt With:\nPython + PySide6\n\nAuthor:\nShubham Salunke'
+            'Warframe Tactical Advisor\nVersion 1.0.0\nProfessional Companion Platform\n\nBuilt With:\nPython + PySide6\n\nAuthor:\nShubham Salunke'
         )
 
 def main() -> Any:
     """Method main."""
     import sys
     if "--version" in sys.argv or "-v" in sys.argv:
-        print("Warframe Tactical Advisor v11.0.0")
+        print("Warframe Tactical Advisor v1.0.0")
         sys.exit(0)
 
 

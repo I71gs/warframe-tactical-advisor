@@ -262,6 +262,32 @@ QListWidget::item[recCategory="ARCANE"] {{ color: #caa3ff; }}
 QListWidget::item[recCategory="WEAPON"] {{ color: #ffb76b; }}
 QListWidget::item[recCategory="ENDGAME"] {{ color: #ff7b7b; }}
 QListWidget::item[recCategory="PROGRESSION"] {{ color: #6fffe8; }}
+
+/* Sidebar Nav Styles */
+QTreeWidget#sidebarNav {{
+  border: none;
+  background-color: {SECONDARY};
+  padding: 10px 4px;
+}}
+
+QTreeWidget#sidebarNav::item {{
+  padding: 8px 10px;
+  margin-bottom: 2px;
+  border-radius: 6px;
+  color: {MUTED};
+  font-weight: 500;
+}}
+
+QTreeWidget#sidebarNav::item:hover {{
+  background-color: rgba(255, 255, 255, 0.03);
+  color: {TEXT};
+}}
+
+QTreeWidget#sidebarNav::item:selected {{
+  background-color: {ACCENT};
+  color: {PRIMARY};
+  font-weight: bold;
+}}
 """
 
 

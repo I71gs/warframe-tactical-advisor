@@ -1,7 +1,7 @@
-; Inno Setup Script for Warframe Tactical Advisor v11.0
+; Inno Setup Script for Warframe Tactical Advisor v1.0
 [Setup]
 AppName=Warframe Tactical Advisor
-AppVersion=11.0.0
+AppVersion=1.0.0
 
 DefaultDirName={autopf}\Warframe Tactical Advisor
 DefaultGroupName=Warframe Tactical Advisor

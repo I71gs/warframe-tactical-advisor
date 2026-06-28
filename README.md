@@ -90,6 +90,12 @@ python main.py
 python -m src
 ```
 
+### 🎮 Overlay HUD Mode
+The advisor includes a stays-on-top gameplay HUD overlay designed to stay visible during play.
+- **Toggle Overlay**: Press `Ctrl+O` or select **Overlay Mode** from the **Windows** menu to enter Overlay Mode.
+- **Drag HUD**: Click and drag the top header bar of the overlay to move it anywhere on the screen.
+- **Exit Overlay**: Press `Ctrl+O`, `Esc`, or click the **Restore** button on the overlay to return to the main dashboard.
+
 ### Running the API Service
 To host the local API endpoint:
 ```bash
