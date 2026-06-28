@@ -118,6 +118,9 @@ class SettingsTab(QWidget):
         profile_val = 'alt' if self.profile_combo.currentText() == "Alt Account" else 'default'
         use_wiki_gg_val = self.wiki_combo.currentText() == "Wiki.gg"
         
+        old_profile = self.settings_manager.get('current_profile', 'default')
+        profile_changed = (old_profile != profile_val)
+        
         self.settings_manager.update(
             dark_mode=bool(self.dark_mode.isChecked()), 
             auto_refresh=bool(self.auto_refresh.isChecked()), 
@@ -129,6 +132,9 @@ class SettingsTab(QWidget):
         if not self.settings_manager.save():
             QMessageBox.critical(self, 'Error', 'Failed to save settings.')
             return
+            
+        if profile_changed and self.main_window and hasattr(self.main_window, 'context'):
+            self.main_window.context.event_bus.publish("ACCOUNT_SWITCHED", {"profile": profile_val})
             
         if self.main_window and hasattr(self.main_window, 'apply_settings'):
             self.main_window.apply_settings()

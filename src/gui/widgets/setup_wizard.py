@@ -16,13 +16,59 @@ class SetupWizard(QDialog):
         self.resize(460, 320)
         self.context = AppContext()
 
+        # Apply cohesive Cosmic Twilight / Active Theme styling
+        from src.core.theme_manager import ThemeManager
+        theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
+        prim = theme_colors.get("PRIMARY", "#0b1220")
+        sec = theme_colors.get("SECONDARY", "#0f1724")
+        acc = theme_colors.get("ACCENT", "#00a3cc")
+        txt = theme_colors.get("TEXT", "#e6eef6")
+        card = theme_colors.get("CARD", "#0f1a24")
+
+        self.setStyleSheet(f"""
+            QDialog {{
+                background-color: {prim};
+                border: 2px solid {acc};
+                border-radius: 8px;
+            }}
+            QLabel {{
+                color: {txt};
+            }}
+            QLineEdit {{
+                background-color: {sec};
+                color: {txt};
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 6px;
+                border-radius: 4px;
+            }}
+            QLineEdit:focus {{
+                border-color: {acc};
+            }}
+            QCheckBox {{
+                color: {txt};
+                spacing: 8px;
+            }}
+            QPushButton {{
+                background-color: {card};
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                color: {txt};
+                padding: 6px 14px;
+                border-radius: 4px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{
+                border-color: {acc};
+                background-color: rgba(255, 255, 255, 0.05);
+            }}
+        """)
+
         self.layout = QVBoxLayout(self)
         self.stacked = QStackedWidget()
 
         # Step 1: Welcome
         self.step1 = QWidget()
         s1_lay = QVBoxLayout(self.step1)
-        s1_lay.addWidget(QLabel("<h2>Welcome to Warframe Tactical Advisor v11.0</h2>"), 0, Qt.AlignCenter)
+        s1_lay.addWidget(QLabel(f"<h2 style='color: {acc};'>Welcome to Warframe Tactical Advisor</h2>"), 0, Qt.AlignCenter)
         desc = QLabel(
             "This wizard will guide you through setting up your offline profile "
             "database, mastery goals, and optional integration settings."
@@ -35,7 +81,7 @@ class SetupWizard(QDialog):
         # Step 2: Account details
         self.step2 = QWidget()
         s2_lay = QVBoxLayout(self.step2)
-        s2_lay.addWidget(QLabel("<h3>Configure Profile Identity</h3>"))
+        s2_lay.addWidget(QLabel(f"<h3 style='color: {acc};'>Configure Profile Identity</h3>"))
         s2_lay.addWidget(QLabel("Mastery Rank (0-33):"))
         self.mr_input = QLineEdit("0")
         s2_lay.addWidget(self.mr_input)
@@ -48,7 +94,7 @@ class SetupWizard(QDialog):
         # Step 3: Finish
         self.step3 = QWidget()
         s3_lay = QVBoxLayout(self.step3)
-        s3_lay.addWidget(QLabel("<h3>Setup Complete!</h3>"))
+        s3_lay.addWidget(QLabel(f"<h3 style='color: {acc};'>Setup Complete!</h3>"))
         finish_lbl = QLabel(
             "Your offline profile data structure is ready to be initialized.\n"
             "Click Finish to launch the companion command center."

@@ -18,6 +18,7 @@ DEFAULT_SETTINGS = {
     'window_size': {'width': 1000, 'height': 700},
     'current_profile': 'default',
     'active_theme': 'Cosmic Twilight',
+    'use_wiki_gg': True,
 }
 
 class SettingsManager:

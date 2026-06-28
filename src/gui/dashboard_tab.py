@@ -472,8 +472,8 @@ class DashboardTab(QWidget):
     def _refresh_world_state(self) -> None:
         """Pull live world state; fall back to 'Offline' gracefully."""
         try:
-            from src.services.world_state_service import WorldStateService
-            wss = WorldStateService()
+            from src.core.app_context import AppContext
+            wss = AppContext().world_state_service
             state = wss.get_world_state()
 
             fissures = state.get("fissures", [])
