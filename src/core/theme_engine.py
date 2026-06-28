@@ -264,13 +264,13 @@ QListWidget::item[recCategory="ENDGAME"] {{ color: #ff7b7b; }}
 QListWidget::item[recCategory="PROGRESSION"] {{ color: #6fffe8; }}
 
 /* Sidebar Nav Styles */
-QTreeWidget#sidebarNav {{
+QTreeWidget#sidebarNav, QTreeWidget#bottomSidebarNav {{
   border: none;
   background-color: {SECONDARY};
-  padding: 10px 4px;
+  padding: 6px 4px;
 }}
 
-QTreeWidget#sidebarNav::item {{
+QTreeWidget#sidebarNav::item, QTreeWidget#bottomSidebarNav::item {{
   padding: 8px 10px;
   margin-bottom: 2px;
   border-radius: {BORDER_RADIUS_WIDGET};
@@ -278,15 +278,40 @@ QTreeWidget#sidebarNav::item {{
   font-weight: 500;
 }}
 
-QTreeWidget#sidebarNav::item:hover {{
+QTreeWidget#sidebarNav::item:hover, QTreeWidget#bottomSidebarNav::item:hover {{
   background-color: rgba(255, 255, 255, 0.03);
   color: {TEXT};
 }}
 
-QTreeWidget#sidebarNav::item:selected {{
+QTreeWidget#sidebarNav::item:selected, QTreeWidget#bottomSidebarNav::item:selected {{
   background-color: {ACCENT};
   color: {PRIMARY};
   font-weight: bold;
+}}
+
+QPushButton#sidebarSearchBtn {{
+  background-color: {PRIMARY};
+  border: {WIDGET_BORDER};
+  border-radius: {BORDER_RADIUS_WIDGET};
+  color: {MUTED};
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 11px;
+  margin: 8px 10px;
+  font-weight: 500;
+}}
+
+QPushButton#sidebarSearchBtn:hover {{
+  background-color: {SECONDARY};
+  border-color: {ACCENT};
+  color: {TEXT};
+}}
+
+QFrame#sidebarSeparator {{
+  background-color: rgba(255, 255, 255, 0.08);
+  max-height: 1px;
+  border: none;
+  margin: 6px 10px;
 }}
 """
 

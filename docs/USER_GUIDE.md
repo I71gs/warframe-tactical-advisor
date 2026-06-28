@@ -5,7 +5,7 @@ Welcome to the Warframe Tactical Advisor v11.0 Companion Platform.
 ## Core Features
 
 - **Modern Navigation**: Navigate tabs using the clean left sidebar list.
-- **Unified Command Palette (Ctrl+P)**: Toggle the floating dialog to search all weapons, mods, arcanes, quests, and run setup tasks.
+- **Unified Command Palette (Ctrl+K)**: Toggle the floating dialog to search all weapons, mods, arcanes, quests, and run setup tasks.
 - **Build Planner & Simulator**: Simulate mods placement, view estimated sustained DPS, check missing upgrade requirements, and optimize polarities.
 - **Relic & Economy Planners**: Calculate drops, trace resource farming nodes, and set booster alerts.
 
@@ -15,7 +15,7 @@ Welcome to the Warframe Tactical Advisor v11.0 Companion Platform.
 
 | Shortcut | Action Description |
 |---|---|
-| `Ctrl+P` | Opens Unified Command Palette search dialog |
+| `Ctrl+K` or `Ctrl+P` | Opens Unified Command Palette search dialog |
 | `Ctrl+R` | Reloads / Refreshes all active dashboard panels |
 | `Ctrl+S` | Saves current profile modifications |
 | `Ctrl+I` | Opens Import Profile dialog wizard |

@@ -212,6 +212,21 @@ class MainWindow(QMainWindow):
         self.sidebar.setIndentation(12)
         self.sidebar.setAnimated(True)
 
+        # Bottom navigation list for Settings and About
+        self.bottom_sidebar = QTreeWidget()
+        self.bottom_sidebar.setObjectName("bottomSidebarNav")
+        self.bottom_sidebar.setFixedWidth(240)
+        self.bottom_sidebar.setHeaderHidden(True)
+        self.bottom_sidebar.setIndentation(12)
+        self.bottom_sidebar.setAnimated(True)
+        self.bottom_sidebar.setFixedHeight(72) # Fits Settings and About perfectly
+
+        # Search bar button at the top
+        self.search_btn = QPushButton("🔍  Search Command Palette     [Ctrl+K]")
+        self.search_btn.setObjectName("sidebarSearchBtn")
+        self.search_btn.setFixedWidth(220)
+        self.search_btn.clicked.connect(self.open_command_palette)
+
         # Retrieve active theme ACCENT color for category labels
         from src.core.theme_manager import ThemeManager
         theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
@@ -219,25 +234,25 @@ class MainWindow(QMainWindow):
 
         # Navigation structure mapping tab titles to categories
         categories = {
-            "📊  Monitoring": [
-                'Dashboard', 'Profile', 'Readiness', 'Progression Charts',
-                'Progression Curves', 'Session Planner', 'Telemetry Charts',
-                'Statistics', 'Benchmark Engine', 'Progression Replay'
+            "🧭  Your Journey": [
+                'Dashboard', 'Profile', 'Recommendations', 'Progression', 'Readiness',
+                'Quest Planner', 'Progression Charts', 'Roadmap Milestones', 'Session Planner',
+                'Progression Replay', 'Statistics'
             ],
-            "🔍  Analysis & Planning": [
-                'Recommendations', 'Build Advisor', 'Loadout Advisor', 'Goal Planner',
-                'Gap Analyzer', 'Build Simulator', 'Weapon Tiers', 'Mastery Rank Planner',
-                'Relic Planner', 'Incarnon Evolutions', 'Circuit Forecast', 'Duviri Upgrades',
-                'Companion Synergy', 'Economy Deficits', 'Account Comparison'
+            "⚔️  Arsenal": [
+                'Build Advisor', 'Loadout Advisor', 'Build Simulator', 'Build Library',
+                'Weapon Tiers', 'Mastery Rank Planner', 'Incarnon Evolutions', 'Companion Synergy'
             ],
-            "🧬  Missions & Routes": [
-                'Daily Objectives', 'Weekly Planner', '30-Day Timeline', 'Roadmap Milestones',
-                'Dependency Graph', 'Interactive Graph', 'Resource Planner', 'Farming Routes',
-                'Team Synergy', 'Badges & Achievements', 'Tactical Routes', 'Build Library'
+            "⛏️  Grind": [
+                'Daily Objectives', 'Weekly Planner', '30-Day Timeline', 'Farming Routes',
+                'Relic Planner', 'Collection Tracker', 'Resource Planner', 'Economy Deficits',
+                'Circuit Forecast', 'Duviri Upgrades', 'Tactical Routes', 'Team Synergy',
+                'Badges & Achievements'
             ],
-            "📚  Reference & Settings": [
+            "📚  Reference": [
                 'Encyclopedia', 'Codex', 'Knowledge Base', 'Global Search',
-                'Theme Studio', 'Patch Notes', 'Settings'
+                'Interactive Graph', 'Dependency Graph', 'Account Comparison', 'Benchmark Engine',
+                'Theme Studio', 'Patch Notes'
             ]
         }
 
@@ -279,6 +294,9 @@ class MainWindow(QMainWindow):
         # Catch-all category for any remaining or plugin-loaded tabs
         cat_uncategorized = None
         for idx in range(self.tabs.count()):
+            # Settings will be placed in the bottom tree specifically, don't put in Extensions
+            if self.tabs.tabText(idx) == "Settings":
+                continue
             if idx not in categorized_tabs:
                 if cat_uncategorized is None:
                     cat_uncategorized = QTreeWidgetItem(self.sidebar)
@@ -295,32 +313,99 @@ class MainWindow(QMainWindow):
                 child_item.setData(0, Qt.UserRole, idx)
                 self.item_to_tab_index[child_item] = idx
                 self.tab_index_to_item[idx] = child_item
+                categorized_tabs.add(idx)
+
+        # Populate bottom sidebar with Settings and About
+        settings_idx = -1
+        for i in range(self.tabs.count()):
+            if self.tabs.tabText(i) == "Settings":
+                settings_idx = i
+                break
+        
+        if settings_idx != -1:
+            settings_item = QTreeWidgetItem(self.bottom_sidebar)
+            settings_item.setText(0, "⚙️  Settings")
+            settings_item.setData(0, Qt.UserRole, settings_idx)
+            self.item_to_tab_index[settings_item] = settings_idx
+            self.tab_index_to_item[settings_idx] = settings_item
+            categorized_tabs.add(settings_idx)
+            
+        about_item = QTreeWidgetItem(self.bottom_sidebar)
+        about_item.setText(0, "ℹ️  About Advisor")
 
         def on_sidebar_selection_changed():
             selected = self.sidebar.selectedItems()
             if selected:
+                self.bottom_sidebar.blockSignals(True)
+                self.bottom_sidebar.clearSelection()
+                self.bottom_sidebar.blockSignals(False)
                 item = selected[0]
                 idx = item.data(0, Qt.UserRole)
                 if idx is not None:
                     self.tabs.setCurrentIndex(idx)
 
+        def on_bottom_sidebar_selection_changed():
+            selected = self.bottom_sidebar.selectedItems()
+            if selected:
+                self.sidebar.blockSignals(True)
+                self.sidebar.clearSelection()
+                self.sidebar.blockSignals(False)
+                item = selected[0]
+                idx = item.data(0, Qt.UserRole)
+                if idx is not None:
+                    self.tabs.setCurrentIndex(idx)
+                elif item.text(0) == "ℹ️  About Advisor":
+                    self.show_about_dialog()
+                    self.bottom_sidebar.clearSelection()
+                    self._sync_tabs_to_sidebar(self.tabs.currentIndex())
+
         self.sidebar.itemSelectionChanged.connect(on_sidebar_selection_changed)
+        self.bottom_sidebar.itemSelectionChanged.connect(on_bottom_sidebar_selection_changed)
         self.tabs.currentChanged.connect(self._sync_tabs_to_sidebar)
         self.tabs.tabBar().hide()
+        
+        # Sidebar layout panel grouping top search, sidebar lists, separator and settings
+        nav_panel = QWidget()
+        nav_panel.setObjectName("sidebarNavPanel")
+        nav_panel.setFixedWidth(240)
+        nav_panel_layout = QVBoxLayout(nav_panel)
+        nav_panel_layout.setContentsMargins(0, 0, 0, 0)
+        nav_panel_layout.setSpacing(0)
+        
+        nav_panel_layout.addWidget(self.search_btn, 0, Qt.AlignCenter)
+        nav_panel_layout.addWidget(self.sidebar, 1)
+        
+        separator = QFrame()
+        separator.setObjectName("sidebarSeparator")
+        separator.setFrameShape(QFrame.HLine)
+        separator.setFrameShadow(QFrame.Sunken)
+        nav_panel_layout.addWidget(separator)
+        
+        nav_panel_layout.addWidget(self.bottom_sidebar, 0)
         
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(self.sidebar)
+        layout.addWidget(nav_panel)
         layout.addWidget(self.tabs)
         self.setCentralWidget(container)
 
     def _sync_tabs_to_sidebar(self, index: int) -> None:
-        if hasattr(self, "sidebar") and index in self.tab_index_to_item:
-            self.sidebar.blockSignals(True)
-            self.sidebar.setCurrentItem(self.tab_index_to_item[index])
-            self.sidebar.blockSignals(False)
+        if index in self.tab_index_to_item:
+            item = self.tab_index_to_item[index]
+            if hasattr(self, "sidebar"):
+                self.sidebar.blockSignals(True)
+                self.sidebar.clearSelection()
+                if item.treeWidget() == self.sidebar:
+                    self.sidebar.setCurrentItem(item)
+                self.sidebar.blockSignals(False)
+            if hasattr(self, "bottom_sidebar"):
+                self.bottom_sidebar.blockSignals(True)
+                self.bottom_sidebar.clearSelection()
+                if item.treeWidget() == self.bottom_sidebar:
+                    self.bottom_sidebar.setCurrentItem(item)
+                self.bottom_sidebar.blockSignals(False)
 
 
 
@@ -596,6 +681,7 @@ class MainWindow(QMainWindow):
         QShortcut(QKeySequence('Ctrl+E'), self, activated=self.profile_tab.export_profile)
         QShortcut(QKeySequence('Ctrl+I'), self, activated=self.profile_tab.import_profile)
         QShortcut(QKeySequence('Ctrl+F'), self, activated=lambda: self.profile_tab.quest_input.setFocus())
+        QShortcut(QKeySequence('Ctrl+K'), self, activated=self.open_command_palette)
         QShortcut(QKeySequence('Ctrl+P'), self, activated=self.open_command_palette)
         QShortcut(QKeySequence('Ctrl+O'), self, activated=self.toggle_overlay_mode)
 
