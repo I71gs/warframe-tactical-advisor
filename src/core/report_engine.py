@@ -62,7 +62,7 @@ class ReportEngine:
             for item in data["economy_plan"]:
                 writer.writerow([
                     "Economy", 
-                    item["currency"], 
+                    item.get("resource", item.get("currency", "Unknown")), 
                     f"Owned: {item['owned']}, Required: {item['required']}, Missing: {item['missing']}, Farm Hours: {item['farm_hours']}"
                 ])
 
@@ -94,13 +94,16 @@ class ReportEngine:
             
         lines.append("")
         lines.append("ECONOMY TARGETS & FARMING FORECAST:")
-        lines.append(f"  {'Currency':<20} | {'Owned':<10} | {'Target':<10} | {'Missing':<10} | {'Hours':<8} | {'Primary Source'}")
+        lines.append(f"  {'Resource':<20} | {'Owned':<10} | {'Target':<10} | {'Missing':<10} | {'Hours':<8} | {'Primary Node'}")
         lines.append("-" * 80)
         for item in data["economy_plan"]:
+            res_name = item.get("resource", item.get("currency", "Unknown"))
+            node = item.get("best_node", item.get("source", "—"))
             lines.append(
-                f"  {item['currency']:<20} | {item['owned']:<10} | {item['required']:<10} | "
-                f"{item['missing']:<10} | {item['farm_hours']:<8} | {item['source']}"
+                f"  {res_name:<20} | {item['owned']:<10} | {item['required']:<10} | "
+                f"{item['missing']:<10} | {item['farm_hours']:<8} | {node}"
             )
+
         lines.append("")
         lines.append("==================================================")
         

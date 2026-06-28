@@ -1,0 +1,17 @@
+{
+    "week": "2026-W26",
+    "goals": [
+        {
+            "text": "Complete Angels of Zariman quest",
+            "completed": false
+        },
+        {
+            "text": "Unlock Steel Path difficulty",
+            "completed": false
+        },
+        {
+            "text": "Acquire Laetum meta pistol",
+            "completed": true
+        }
+    ]
+}

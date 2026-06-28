@@ -59,19 +59,29 @@ class SearchEngineV2(SearchEngine):
                     "wiki_url": self.wiki.get_article_url(wp_name)
                 })
 
-        # Add Relics
+        # Add Relics — new schema: {era, relic_name, rewards: [{item, rarity}], best_farm_node}
         for r in RELIC_DATA:
-            item = r.get("item", "")
-            relic = r.get("relic", "")
-            relevance = self._calc_relevance(q, f"{relic} Relic", item, relic)
-            if relevance > 0:
+            relic_name = r.get("relic_name", "")
+            era = r.get("era", "")
+            farm = r.get("best_farm_node", "")
+            full_name = f"{era} {relic_name}".strip()
+            # Check relic name match
+            relic_relevance = self._calc_relevance(q, full_name, era, relic_name)
+            # Check reward items match
+            reward_matches = [
+                rw["item"] for rw in r.get("rewards", [])
+                if self._calc_relevance(q, rw["item"]) > 0
+            ]
+            if relic_relevance > 0 or reward_matches:
+                drop_preview = ", ".join(rw["item"] for rw in r.get("rewards", [])[:3])
                 results.append({
                     "category": "RELIC",
-                    "name": f"{relic} Relic",
-                    "relevance": relevance,
-                    "details": f"Drops: {item} ({r.get('rarity')}) | Best farm: {r.get('best_farm')}",
-                    "wiki_url": self.wiki.get_article_url(relic)
+                    "name": f"{full_name} Relic",
+                    "relevance": max(relic_relevance, 1 if reward_matches else 0),
+                    "details": f"Drops: {drop_preview} | Best farm: {farm}",
+                    "wiki_url": self.wiki.get_article_url(relic_name),
                 })
+
 
         # Add Resources
         resources = [

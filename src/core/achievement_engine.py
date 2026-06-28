@@ -2,14 +2,17 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Any
+from typing import Any, Callable
 from src.models.player import Player
 
 ROOT = Path(__file__).resolve().parents[2]
 HISTORY_FILE = ROOT / "src" / "resources" / "data" / "achievement_history.json"
 
+
 class AchievementEngine:
-    """Evaluates player achievements dynamically and persists unlock history on disk."""
+    """Evaluates player achievements dynamically, tracks custom milestones, and persists unlock history."""
+
+    _custom_milestones: dict[str, Callable[[Player], bool]] = {}
 
     def __init__(self, history_file: Path | str | None = None) -> None:
         self.history_file = Path(history_file) if history_file else HISTORY_FILE
@@ -33,6 +36,16 @@ class AchievementEngine:
         except Exception:
             pass
 
+    def check_all_achievements(self, player: Player) -> dict[str, bool]:
+        """Convenience trigger to return a quick dict mapping badge ID to unlocked state."""
+        badges = self.get_badges(player)
+        return {b["id"]: b["unlocked"] for b in badges}
+
+    @classmethod
+    def custom_milestone_add(cls, name: str, condition_fn: Callable[[Player], bool]) -> None:
+        """Allows users/plugins to define custom achievements dynamically."""
+        cls._custom_milestones[name] = condition_fn
+
     def get_badges(self, player: Player) -> list[dict[str, Any]]:
         completed_quests = {q.lower() for q in player.completed_quests}
         owned_weapons = {w.lower() for w in player.owned_weapons}
@@ -45,6 +58,7 @@ class AchievementEngine:
         endo_count = res_owned.get("Endo", 0)
         forma_count = res_owned.get("Forma", 0)
 
+        # Basic badges
         badges = [
             {
                 "id": "story_master",
@@ -81,11 +95,10 @@ class AchievementEngine:
                 "requirement": "Own the 'Galvanized Chamber' and 'Galvanized Aptitude' mods.",
                 "unlocked": "galvanized chamber" in owned_mods and "galvanized aptitude" in owned_mods
             },
-            # Veteran Badges
             {
                 "id": "veteran_tactician",
                 "name": "Veteran Tactician",
-                "description": "Demonstrate long-term dedication and deep tactical understanding of the Origin System.",
+                "description": "Reach Mastery Rank 20+.",
                 "requirement": "Reach Mastery Rank 20+.",
                 "unlocked": player.mastery_rank >= 20
             },
@@ -117,8 +130,65 @@ class AchievementEngine:
                 "description": "Stockpile polar alignment catalysts for intensive weapon customization.",
                 "requirement": "Own 10+ Forma.",
                 "unlocked": forma_count >= 10
+            },
+            # v10 Veteran Badges
+            {
+                "id": "steel_path_complete",
+                "name": "Steel Path Complete",
+                "description": "Complete every node on the Steel Path Star Chart.",
+                "requirement": "Unlock Steel Path and reach Mastery Rank 15+.",
+                "unlocked": player.steel_path_unlocked and player.mastery_rank >= 15
+            },
+            {
+                "id": "all_incarnons",
+                "name": "Incarnon Master",
+                "description": "Master all standard evolving weapons.",
+                "requirement": "Own Phenmor, Laetum, and Praedos.",
+                "unlocked": "phenmor" in owned_weapons and "laetum" in owned_weapons and "praedos" in owned_weapons
+            },
+            {
+                "id": "every_prime",
+                "name": "Prime Collector",
+                "description": "Gather a massive arsenal of gilded primes.",
+                "requirement": "Own 15+ prime items.",
+                "unlocked": sum(1 for w in owned_weapons if "prime" in w.lower()) >= 15
+            },
+            {
+                "id": "every_companion",
+                "name": "Menagerie Keeper",
+                "description": "Collect companions, sentinels, and beasts.",
+                "requirement": "Own 5+ companions or sentinels.",
+                "unlocked": len(player.companion_inventory) >= 5 or sum(1 for w in owned_weapons if "taxon" in w.lower() or "carrier" in w.lower()) >= 3
+            },
+            {
+                "id": "mr30",
+                "name": "Grandmaster (MR30)",
+                "description": "Achieve the rank of Grandmaster.",
+                "requirement": "Reach Mastery Rank 30.",
+                "unlocked": player.mastery_rank >= 30
+            },
+            {
+                "id": "lr1_3",
+                "name": "Legendary Master (LR1-3)",
+                "description": "Surpass the Grandmaster rank to reach Legendary Master status.",
+                "requirement": "Reach Mastery Rank 31+.",
+                "unlocked": player.mastery_rank >= 31
             }
         ]
+
+        # Add custom milestones
+        for name, fn in self._custom_milestones.items():
+            try:
+                unlocked = fn(player)
+            except Exception:
+                unlocked = False
+            badges.append({
+                "id": f"custom_{name.lower().replace(' ', '_')}",
+                "name": name,
+                "description": "Custom user-defined milestone.",
+                "requirement": "Custom rule logic.",
+                "unlocked": unlocked
+            })
 
         # Update persistent history
         history = self.load_history()

@@ -1,22 +1,27 @@
 from __future__ import annotations
 import json
+import difflib
 from pathlib import Path
 from typing import Any
 from src.core.search_engine_v2 import SearchEngineV2
 from src.core.app_context import AppContext
 from src.core.plugin_registry import PluginRegistry
+from src.database.database import DatabaseManager
 
 ROOT = Path(__file__).resolve().parents[2]
 
+
 class SearchEngineV3(SearchEngineV2):
-    """Offline unified search engine 3.0 extending 2.0 to improve search ranking
-    and relevance for core milestones and terms using aliases and tags.
+    """Offline unified search engine 3.0 extending 2.0 to support fuzzy matching,
+    search history persistence, bookmark favorites, and tag-based filtering.
     """
+
     def __init__(self, context: AppContext | None = None) -> None:
         super().__init__(context)
         self.aliases = {}
         self.tags = {}
         self.load_metadata()
+        self.db = DatabaseManager()
 
     def load_metadata(self) -> None:
         try:
@@ -26,7 +31,7 @@ class SearchEngineV3(SearchEngineV2):
                     self.aliases = json.load(f)
         except Exception:
             pass
-            
+
         try:
             tag_path = ROOT / "src" / "resources" / "data" / "tags.json"
             if tag_path.exists():
@@ -39,6 +44,9 @@ class SearchEngineV3(SearchEngineV2):
         q = query.strip().lower()
         if not q:
             return []
+
+        # Persist query to SQLite history
+        self.db.add_search_history(query)
 
         expanded_queries = [q]
         # Expand query based on aliases
@@ -53,7 +61,7 @@ class SearchEngineV3(SearchEngineV2):
         for eq in set(expanded_queries):
             results.extend(super().search(eq))
 
-        # Check tags and add any items associated with that tag if not already in the search results
+        # Check tags and add associated items
         for tag_name, items_list in self.tags.items():
             if q == tag_name or tag_name in q:
                 for item_name in items_list:
@@ -64,7 +72,7 @@ class SearchEngineV3(SearchEngineV2):
                             results.append({
                                 "category": "WEAPON",
                                 "name": weapon_obj["name"],
-                                "relevance": 40,
+                                "relevance": 45,
                                 "details": f"Type: {weapon_obj.get('type')} | Source: {weapon_obj.get('acquisition')}",
                                 "wiki_url": self.wiki.get_article_url(weapon_obj["name"])
                             })
@@ -74,17 +82,9 @@ class SearchEngineV3(SearchEngineV2):
                                 results.append({
                                     "category": "MOD",
                                     "name": mod_obj["name"],
-                                    "relevance": 40,
+                                    "relevance": 45,
                                     "details": f"Category: {mod_obj.get('category')} | Source: {mod_obj.get('source')}",
                                     "wiki_url": self.wiki.get_article_url(mod_obj["name"])
-                                })
-                            else:
-                                results.append({
-                                    "category": "ITEM",
-                                    "name": item_name,
-                                    "relevance": 40,
-                                    "details": f"Tagged under {tag_name}",
-                                    "wiki_url": self.wiki.get_article_url(item_name)
                                 })
 
         # Include custom routes registered by plugins
@@ -92,13 +92,11 @@ class SearchEngineV3(SearchEngineV2):
         for r in pr.routes:
             target = r.get("weapon") or r.get("item") or ""
             source = r.get("source") or ""
-            
             max_relevance = 0
             for eq in set(expanded_queries):
                 relevance = self._calc_relevance(eq, f"{target} Route", target, source)
                 if relevance > max_relevance:
                     max_relevance = relevance
-                    
             if max_relevance > 0:
                 results.append({
                     "category": "ROUTE",
@@ -112,46 +110,26 @@ class SearchEngineV3(SearchEngineV2):
         for item in results:
             name_lower = item["name"].lower()
             details_lower = item["details"].lower()
-
             boost = 0
-            
+
             # Tag-based boosts
             for tag_name, items_list in self.tags.items():
                 if q == tag_name or tag_name in q:
                     if any(it.lower() in name_lower or it.lower() in details_lower for it in items_list):
                         boost += 40
 
-            # Direct keyword matches
-            for eq in set(expanded_queries):
-                if "phenmor" in eq:
-                    if "phenmor" in name_lower:
+            # Direct keyword boosts
+            boost_words = ["phenmor", "steel path", "galvanized chamber", "wisp", "archon"]
+            for word in boost_words:
+                if word in q:
+                    if word in name_lower:
                         boost += 50
-                    if "phenmor" in details_lower:
-                        boost += 20
-                if "steel path" in eq:
-                    if "steel path" in name_lower:
-                        boost += 50
-                    if "steel path" in details_lower:
-                        boost += 20
-                if "galvanized chamber" in eq:
-                    if "galvanized chamber" in name_lower:
-                        boost += 50
-                    if "galvanized chamber" in details_lower:
-                        boost += 20
-                if "wisp" in eq:
-                    if "wisp" in name_lower:
-                        boost += 50
-                    if "wisp" in details_lower:
-                        boost += 20
-                if "archon" in eq or "archons" in eq:
-                    if "archon" in name_lower:
-                        boost += 50
-                    if "archon" in details_lower:
+                    if word in details_lower:
                         boost += 20
 
             item["relevance"] += boost
 
-        # Deduplicate and sort by relevance descending, then by name alphabetically
+        # Deduplicate
         seen = set()
         dedup_results = []
         for r in results:
@@ -160,5 +138,49 @@ class SearchEngineV3(SearchEngineV2):
                 seen.add(key)
                 dedup_results.append(r)
 
+        # Fuzzy matching: if few or no results, find close names using SequenceMatcher
+        if len(dedup_results) < 5:
+            all_candidate_names = []
+            from src.core.weapon_database import WEAPONS
+            all_candidate_names.extend([(w["name"], "WEAPON", f"Type: {w.get('type')} | Source: {w.get('acquisition')}") for w in WEAPONS])
+            all_candidate_names.extend([(m["name"], "MOD", f"Category: {m.get('category')} | Source: {m.get('source')}") for m in self.kb.mods if m.get("name")])
+
+            for name, category, details in all_candidate_names:
+                ratio = difflib.SequenceMatcher(None, q, name.lower()).ratio()
+                if ratio > 0.65:
+                    if not any(r["name"].lower() == name.lower() for r in dedup_results):
+                        dedup_results.append({
+                            "category": category,
+                            "name": name,
+                            "relevance": int(ratio * 50),
+                            "details": f"Fuzzy match (similarity: {ratio:.0%}) | {details}",
+                            "wiki_url": self.wiki.get_article_url(name)
+                        })
+
+        # Add Bookmark / Favorite metadata
+        bookmarks = self.get_bookmarks()
+        for r in dedup_results:
+            r["bookmarked"] = r["name"].lower() in bookmarks
+
         dedup_results.sort(key=lambda r: (-r["relevance"], r["name"].lower()))
         return dedup_results
+
+    # Bookmarks/Favorites System
+    def get_bookmarks(self) -> set[str]:
+        val = self.db.get_config("search_bookmarks")
+        if not val:
+            return set()
+        try:
+            return set(json.loads(val))
+        except Exception:
+            return set()
+
+    def add_bookmark(self, name: str) -> None:
+        b = self.get_bookmarks()
+        b.add(name.strip().lower())
+        self.db.set_config("search_bookmarks", json.dumps(list(b)))
+
+    def remove_bookmark(self, name: str) -> None:
+        b = self.get_bookmarks()
+        b.discard(name.strip().lower())
+        self.db.set_config("search_bookmarks", json.dumps(list(b)))

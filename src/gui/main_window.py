@@ -2,7 +2,8 @@ from typing import Any
 import sys
 from pathlib import Path
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QStatusBar, QMenu, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QTabWidget, QStatusBar, QMenu, QMessageBox, QListWidget, QHBoxLayout, QWidget
+
 from PySide6.QtGui import QAction, QIcon, QKeySequence, QShortcut
 from src.core.settings_manager import SettingsManager
 from src.utils.logger import logger
@@ -54,6 +55,8 @@ from src.gui.comparison_tab import ComparisonTab
 from src.gui.route_tab import RouteTab
 from src.gui.build_library_tab import BuildLibraryTab
 from src.gui.theme_editor_tab import ThemeEditorTab
+from src.gui.patch_tab import PatchTab
+
 
 class MainWindow(QMainWindow):
     """Class MainWindow documentation."""
@@ -67,8 +70,15 @@ class MainWindow(QMainWindow):
         from src.core.app_context import AppContext
         self.context = AppContext()
         self.context.event_bus.subscribe("STATUS_MESSAGE", lambda data: self.show_status(data.get("message", "")))
-        self.context.event_bus.subscribe("NOTIFICATION", lambda data: self.show_status(data.get("message", "")))
+        self.context.event_bus.subscribe("NOTIFICATION", self.show_toast_notification)
         self.context.event_bus.subscribe("PLUGINS_LOADED", lambda data: self.load_registered_tabs())
+
+        
+        # Invalidate cache when profile updates or switch accounts occur
+        from src.core.query_cache import QueryCache
+        self.context.event_bus.subscribe("PROFILE_UPDATED", lambda data: QueryCache().clear())
+        self.context.event_bus.subscribe("ACCOUNT_SWITCHED", lambda data: QueryCache().clear())
+
 
         self.window_manager = WindowManager(self)
 
@@ -105,8 +115,8 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.knowledge_tab, 'Knowledge Base')
         self.tabs.addTab(self.statistics_tab, 'Statistics')
         self.tabs.addTab(self.settings_tab, 'Settings')
-        self.setCentralWidget(self.tabs)
         self.apply_settings()
+
         self.tabs.currentChanged.connect(self.on_tab_changed)
         self.setup_menu_bar()
         self.goal_planner_tab = (
@@ -187,7 +197,37 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.build_library_tab, 'Build Library')
         self.theme_editor_tab = ThemeEditorTab(self)
         self.tabs.addTab(self.theme_editor_tab, 'Theme Studio')
+        self.patch_tab = PatchTab()
+        self.tabs.addTab(self.patch_tab, 'Patch Notes')
         self.load_registered_tabs()
+
+        # Setup sidebar layout
+        self.sidebar = QListWidget()
+        self.sidebar.setObjectName("sidebarNav")
+        self.sidebar.setFixedWidth(190)
+        
+        for idx in range(self.tabs.count()):
+            self.sidebar.addItem(self.tabs.tabText(idx))
+            
+        self.sidebar.currentRowChanged.connect(self.tabs.setCurrentIndex)
+        self.tabs.currentChanged.connect(self._sync_tabs_to_sidebar)
+        self.tabs.tabBar().hide()
+        
+        container = QWidget()
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.sidebar)
+        layout.addWidget(self.tabs)
+        self.setCentralWidget(container)
+
+    def _sync_tabs_to_sidebar(self, index: int) -> None:
+        if hasattr(self, "sidebar"):
+            self.sidebar.blockSignals(True)
+            self.sidebar.setCurrentRow(index)
+            self.sidebar.blockSignals(False)
+
+
 
     def refresh_everything(self) -> None:
         """Refresh all application tabs and data sources."""
@@ -340,6 +380,11 @@ class MainWindow(QMainWindow):
             self.theme_editor_tab.preset_combo.addItems(self.theme_editor_tab.tm.get_themes())
         except Exception:
             pass
+        try:
+            self.patch_tab.load_patch_notes()
+        except Exception:
+            pass
+
 
         # Record latency in profiler
         try:
@@ -430,7 +475,20 @@ class MainWindow(QMainWindow):
             logger.error("Failed to auto-save daily snapshot on close: %s", exc)
         super().closeEvent(event)
 
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        from src.database.database import DatabaseManager
+        db = DatabaseManager()
+        if db.get_player() is None:
+            from src.gui.widgets.setup_wizard import SetupWizard
+            import sys
+            if 'pytest' not in sys.modules:
+                wizard = SetupWizard(self)
+                wizard.exec()
+                self.refresh_everything()
+
     def setup_shortcuts(self) -> None:
+
         """Bind global keyboard shortcuts."""
         QShortcut(QKeySequence('Ctrl+S'), self, activated=self.profile_tab.save_profile)
         QShortcut(QKeySequence('Ctrl+R'), self, activated=self.refresh_everything)
@@ -444,6 +502,15 @@ class MainWindow(QMainWindow):
         from src.gui.widgets.command_palette_dialog import CommandPaletteDialog
         palette = CommandPaletteDialog(self)
         palette.show_palette()
+
+    def show_toast_notification(self, data: dict) -> None:
+        """Instantiate and show a floating toast notification."""
+        message = data.get("message", "")
+        level = data.get("level", "info")
+        from src.gui.widgets.notification_widget import NotificationWidget
+        toast = NotificationWidget(message, level, self)
+        toast.show_toast()
+
 
     def load_registered_tabs(self) -> None:
         """Dynamically add custom GUI tabs registered by plugins."""
@@ -464,7 +531,10 @@ class MainWindow(QMainWindow):
                 try:
                     tab_instance = tab_class()
                     self.tabs.addTab(tab_instance, title)
+                    if hasattr(self, "sidebar"):
+                        self.sidebar.addItem(title)
                     logger.info("Dynamically registered tab '%s' added.", title)
+
                 except Exception as exc:
                     logger.error("Failed to add dynamically registered tab '%s': %s", title, exc)
 
@@ -511,11 +581,17 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             'About',
-            'Warframe Tactical Advisor\nVersion 1.0\nOffline Edition\n\nBuilt With:\nPython + PySide6\n\nAuthor:\nShubham Salunke'
+            'Warframe Tactical Advisor\nVersion 11.0.0\nProfessional Companion Platform\n\nBuilt With:\nPython + PySide6\n\nAuthor:\nShubham Salunke'
         )
 
 def main() -> Any:
     """Method main."""
+    import sys
+    if "--version" in sys.argv or "-v" in sys.argv:
+        print("Warframe Tactical Advisor v11.0.0")
+        sys.exit(0)
+
+
     # Install global exception handler
     from src.utils.error_handler import install_error_handler
     install_error_handler()
@@ -525,6 +601,7 @@ def main() -> Any:
     context = AppContext()
 
     app = QApplication(sys.argv)
+
 
     # Load plugins via background worker in QThreadPool
     from PySide6.QtCore import QThreadPool

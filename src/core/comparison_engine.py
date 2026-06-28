@@ -114,4 +114,79 @@ class ComparisonEngine:
         rankings = [name1, name2] if score1 >= score2 else [name2, name1]
         diff_report["strength_rankings"] = rankings
 
+        # 9-Dimension Comparison
+        dims = self._calculate_dimensions(p1, p2, res1, res2)
+        diff_report["dimensions"] = dims
+
+        # Overall recommendation
+        diff_report["overall_recommendation"] = self._generate_recommendation(name1, name2, score1, score2, dims)
+
         return diff_report
+
+    def _calculate_dimensions(self, p1: Player, p2: Player, r1: dict, r2: dict) -> dict[str, dict[str, float]]:
+        """Calculates ratings (1-100) across 9 dimensions for both profiles."""
+        # Simple heuristic scoring based on player profiles
+        
+        # 1. Damage (based on weapons and arcanes)
+        dmg1 = min(100, 20 + len(p1.owned_weapons) * 5 + len(p1.owned_arcanes) * 10)
+        dmg2 = min(100, 20 + len(p2.owned_weapons) * 5 + len(p2.owned_arcanes) * 10)
+
+        # 2. Status (based on mods)
+        status1 = min(100, 10 + len(p1.owned_mods) * 4)
+        status2 = min(100, 10 + len(p2.owned_mods) * 4)
+
+        # 3. Slash weighting (mods + weapon count)
+        slash1 = min(100, 15 + len(p1.owned_mods) * 2 + len(p1.owned_weapons) * 2)
+        slash2 = min(100, 15 + len(p2.owned_mods) * 2 + len(p2.owned_weapons) * 2)
+
+        # 4. Ammo (flat baseline adjusted slightly by weapons)
+        ammo1 = min(100, 50 + len(p1.owned_weapons) * 2)
+        ammo2 = min(100, 50 + len(p2.owned_weapons) * 2)
+
+        # 5. AoE (weapon count factor)
+        aoe1 = min(100, 30 + len(p1.owned_weapons) * 3)
+        aoe2 = min(100, 30 + len(p2.owned_weapons) * 3)
+
+        # 6. Steel Path score
+        sp1 = 100 if p1.steel_path_unlocked else (p1.mastery_rank * 3)
+        sp2 = 100 if p2.steel_path_unlocked else (p2.mastery_rank * 3)
+
+        # 7. Boss score (Quest completions + Arcanes)
+        boss1 = min(100, len(p1.completed_quests) * 8 + len(p1.owned_arcanes) * 10)
+        boss2 = min(100, len(p2.completed_quests) * 8 + len(p2.owned_arcanes) * 10)
+
+        # 8. Survivability synergy (Helminth + Arbitrations)
+        surv1 = 40 + (30 if p1.helminth_unlocked else 0) + (30 if p1.arbitrations_unlocked else 0)
+        surv2 = 40 + (30 if p2.helminth_unlocked else 0) + (30 if p2.arbitrations_unlocked else 0)
+
+        # 9. Ease of farming (total resources owned metric)
+        farm1 = min(100, sum(int(v) for v in r1.values() if str(v).isdigit()) // 1000 + 10)
+        farm2 = min(100, sum(int(v) for v in r2.values() if str(v).isdigit()) // 1000 + 10)
+
+        return {
+            "Damage":                  {"p1": dmg1, "p2": dmg2},
+            "Status":                  {"p1": status1, "p2": status2},
+            "Slash Weighting":         {"p1": slash1, "p2": slash2},
+            "Ammo Efficiency":         {"p1": ammo1, "p2": ammo2},
+            "AoE Potential":           {"p1": aoe1, "p2": aoe2},
+            "Steel Path Readiness":    {"p1": sp1, "p2": sp2},
+            "Boss Encounter Capacity": {"p1": boss1, "p2": boss2},
+            "Survivability Synergy":   {"p1": surv1, "p2": surv2},
+            "Farming Resource Base":   {"p1": farm1, "p2": farm2},
+        }
+
+    def _generate_recommendation(self, name1: str, name2: str, score1: float, score2: float, dims: dict) -> str:
+        if abs(score1 - score2) < 5:
+            return "Both accounts have highly comparable progression. Recommend profile optimization based on individual weapon setups."
+        stronger = name1 if score1 > score2 else name2
+        weaker = name2 if score1 > score2 else name1
+        
+        # Find biggest gaps
+        gaps = []
+        for d, vals in dims.items():
+            diff = abs(vals["p1"] - vals["p2"])
+            gaps.append((d, diff))
+        gaps.sort(key=lambda x: x[1], reverse=True)
+        top_gap = gaps[0][0]
+
+        return f"Account '{stronger}' is overall stronger. Profile '{weaker}' should focus on upgrading '{top_gap}' to close the readiness gap."

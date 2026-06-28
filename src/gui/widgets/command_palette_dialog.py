@@ -4,9 +4,10 @@ from pathlib import Path
 import sys
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QMessageBox
 from PySide6.QtCore import Qt, QEvent
-from src.core.search_engine_v2 import SearchEngineV2
+from src.core.search_engine_v3 import SearchEngineV3
 from src.core.report_engine import ReportEngine
 from src.core.app_context import AppContext
+
 
 PALETTE_STYLE = """
 QDialog {
@@ -47,8 +48,9 @@ class CommandPaletteDialog(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground, False)
         
         self.context = AppContext()
-        self.search_engine = SearchEngineV2(self.context)
+        self.search_engine = SearchEngineV3(self.context)
         self.report_engine = ReportEngine()
+
         
         self.setStyleSheet(PALETTE_STYLE)
         

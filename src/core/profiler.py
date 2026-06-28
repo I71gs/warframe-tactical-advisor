@@ -40,15 +40,19 @@ class Profiler:
         # Calculate startup time dynamically
         startup_ms = (time.perf_counter() - self._start_time) * 1000
 
+        from src.core.query_cache import QueryCache
+        cache_rate = QueryCache().get_hit_rate()
+
         # 3. Profile metrics compilation
         report = {
             "timestamp": time.time(),
             "startup_time_ms": round(startup_ms, 2),
             "tab_refresh_time_ms": round(self._last_refresh_duration, 2),
             "database_latency_ms": round(db_latency, 3),
-            "cache_hit_rate_pct": 94.2,
+            "cache_hit_rate_pct": cache_rate,
             "memory_usage_mb": round(mem_mb, 2)
         }
+
 
         # 4. Save report
         try:

@@ -3,92 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warframe Tactical Advisor - Web Companion</title>
+    <title>Warframe Tactical Advisor - Companion Client</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            background-color: #0b1220;
+            background-color: #080c14;
             color: #e6eef6;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f1724;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        .tab-btn.active {
+            border-bottom: 2px solid #00a3cc;
+            color: #00a3cc;
+        }
     </style>
 </head>
-<body class="p-6">
-    <div class="max-w-6xl mx-auto">
+<body class="p-4 md:p-6 custom-scrollbar">
+    <div class="max-w-7xl mx-auto">
+        <!-- Toast Notification Area -->
+        <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
         <!-- Header -->
-        <header class="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-800 pb-4 mb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-[#00a3cc]">Warframe Tactical Advisor</h1>
-                <p class="text-gray-400 text-sm">v6.0 Web Companion (Sync Mode)</p>
+                <h1 class="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00a3cc] to-[#caa3ff]">
+                    Warframe Tactical Advisor
+                </h1>
+                <p class="text-gray-400 text-xs mt-1">v7.0 Premium Companion Platform Edition</p>
             </div>
-            <div id="connection-badge" class="px-3 py-1 bg-red-950 text-red-400 text-xs rounded-full border border-red-900">
-                Disconnected from Server
+            
+            <!-- Live World State header widgets -->
+            <div class="flex flex-wrap items-center gap-3">
+                <div id="cetus-widget" class="px-3 py-1.5 bg-[#0f1724] border border-gray-800 rounded text-xs flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                    <span>Cetus: <b id="cetus-val" class="text-amber-400">Loading...</b></span>
+                </div>
+                <div id="vallis-widget" class="px-3 py-1.5 bg-[#0f1724] border border-gray-800 rounded text-xs flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                    <span>Vallis: <b id="vallis-val" class="text-[#00a3cc]">Loading...</b></span>
+                </div>
+                <div id="connection-badge" class="px-3 py-1.5 bg-red-950 text-red-400 text-xs rounded-full border border-red-900 font-semibold shadow-inner">
+                    Offline (127.0.0.1:8000)
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Left Column: Profile & Stats -->
-            <div class="bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg">
-                <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">Account Profile</h2>
-                <div id="profile-data" class="space-y-3">
-                    <p class="text-gray-400">Loading profile data...</p>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Column 1: Profile, Live Alerts & World State -->
+            <div class="space-y-6">
+                <!-- Profile Panel -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#caa3ff]/10 to-transparent rounded-full blur-2xl"></div>
+                    <h2 class="text-lg font-bold mb-4 text-[#caa3ff] border-b border-gray-800 pb-2">Account Profile</h2>
+                    <div id="profile-data" class="space-y-3">
+                        <div class="animate-pulse space-y-2">
+                            <div class="h-4 bg-gray-800 rounded w-3/4"></div>
+                            <div class="h-4 bg-gray-800 rounded w-1/2"></div>
+                            <div class="h-4 bg-gray-800 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live World Alerts Panel -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 text-[#00a3cc] border-b border-gray-800 pb-2">Live Alert Operations</h2>
+                    <div id="live-alerts" class="space-y-3 text-xs max-h-48 overflow-y-auto custom-scrollbar">
+                        <p class="text-gray-500">Retrieving tactical status feeds...</p>
+                    </div>
+                </div>
+
+                <!-- Live Void Fissures Panel -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 text-[#caa3ff] border-b border-gray-800 pb-2">Active Void Fissures</h2>
+                    <div id="live-fissures" class="space-y-2 text-xs max-h-60 overflow-y-auto custom-scrollbar">
+                        <p class="text-gray-500">Scanning neural void links...</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Middle Column: AI Advisor & Questions -->
-            <div class="bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg md:col-span-2">
-                <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">AI Advisor Directives</h2>
-                
-                <!-- Quick Prompts -->
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button onclick="askAdvisor('What should I do tonight?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">What should I do tonight?</button>
-                    <button onclick="askAdvisor('How do I unlock Steel Path fastest?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">How do I unlock Steel Path?</button>
-                    <button onclick="askAdvisor('What is my biggest power gain?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 px-3 py-1.5 rounded transition">What's my biggest power gain?</button>
+            <!-- Column 2 & 3: AI Advisor & Detailed Inventory Management -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- AI Advisor Response/Input Panel -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl relative">
+                    <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">Tactical Advisor Interface</h2>
+                    
+                    <!-- Quick Prompts -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button onclick="askAdvisor('What should I do tonight?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 hover:border-[#00a3cc] px-3 py-1.5 rounded transition">What should I do tonight?</button>
+                        <button onclick="askAdvisor('How do I unlock Steel Path fastest?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 hover:border-[#00a3cc] px-3 py-1.5 rounded transition">How do I unlock Steel Path?</button>
+                        <button onclick="askAdvisor('What is my biggest power gain?')" class="bg-[#0f1a24] hover:bg-gray-800 text-xs border border-gray-700 hover:border-[#caa3ff] px-3 py-1.5 rounded transition">Biggest Power Gain?</button>
+                    </div>
+
+                    <!-- Custom Input -->
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="advisor-input" placeholder="Ask advisor: Phenmor, Serration, or quest requirements..." class="bg-[#080c14] border border-gray-800 rounded p-2 text-sm flex-1 focus:outline-none focus:border-[#00a3cc] transition">
+                        <button onclick="submitCustomQuestion()" class="bg-[#00a3cc] text-black font-semibold px-4 py-2 rounded hover:opacity-90 text-sm transition">Send</button>
+                    </div>
+
+                    <!-- Response Panel -->
+                    <div id="advisor-response" class="bg-[#080c14] p-4 rounded border border-gray-800 min-h-[160px] flex items-center justify-center text-gray-500 text-sm">
+                        Consult the AI Advisor to plot optimized paths.
+                    </div>
                 </div>
 
-                <!-- Custom Input -->
-                <div class="flex gap-2 mb-6">
-                    <input type="text" id="advisor-input" placeholder="Ask the advisor anything (e.g. Phenmor, mods)..." class="bg-[#0b1220] border border-gray-800 rounded p-2 text-sm flex-1 focus:outline-none focus:border-[#00a3cc]">
-                    <button onclick="submitCustomQuestion()" class="bg-[#00a3cc] text-black font-semibold px-4 py-2 rounded hover:opacity-90 text-sm transition">Ask</button>
-                </div>
+                <!-- Comprehensive Inventory & Collection Panel -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl">
+                    <div class="flex justify-between items-center border-b border-gray-800 pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-[#00a3cc]">Collection & Inventory</h2>
+                        <div class="flex gap-2">
+                            <button id="weapons-tab" onclick="switchInventoryTab('weapons')" class="tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider tab-btn active transition">Weapons</button>
+                            <button id="mods-tab" onclick="switchInventoryTab('mods')" class="tab-btn px-3 py-1 text-xs font-semibold uppercase tracking-wider tab-btn transition">Mods</button>
+                        </div>
+                    </div>
 
-                <!-- Response Panel -->
-                <div id="advisor-response" class="bg-[#0b1220] p-4 rounded border border-gray-800 min-h-[150px] flex items-center justify-center text-gray-500 text-sm">
-                    Select a query or ask a question to see tactical coaching feedback.
+                    <!-- Weapons Form & List -->
+                    <div id="weapons-inventory-container" class="space-y-4">
+                        <!-- Add/Update Weapon Form -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 bg-[#080c14] p-3 rounded border border-gray-800 text-xs">
+                            <input type="text" id="weap-name" placeholder="Weapon Name" class="bg-[#0f1724] border border-gray-800 rounded p-1.5 col-span-2">
+                            <input type="number" id="weap-rank" placeholder="Rank (0-40)" min="0" max="40" class="bg-[#0f1724] border border-gray-800 rounded p-1.5">
+                            <input type="number" id="weap-formas" placeholder="Formas" min="0" max="20" class="bg-[#0f1724] border border-gray-800 rounded p-1.5">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none py-1 col-span-2">
+                                <input type="checkbox" id="weap-catalyst" class="rounded border-gray-800 bg-[#0f1724]">
+                                <span>Orokin Catalyst Installed</span>
+                            </label>
+                            <button onclick="saveWeaponDetails()" class="bg-[#00a3cc] text-black font-bold py-1.5 rounded col-span-2 hover:opacity-90 transition">Save Weapon</button>
+                        </div>
+                        <!-- Weapon Grid List -->
+                        <div id="weapons-list" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                            <p class="text-gray-500 text-xs">Loading items...</p>
+                        </div>
+                    </div>
+
+                    <!-- Mods Form & List -->
+                    <div id="mods-inventory-container" class="space-y-4 hidden">
+                        <!-- Add/Update Mod Form -->
+                        <div class="grid grid-cols-3 gap-2 bg-[#080c14] p-3 rounded border border-gray-800 text-xs">
+                            <input type="text" id="mod-name" placeholder="Mod Name" class="bg-[#0f1724] border border-gray-800 rounded p-1.5 col-span-3">
+                            <input type="number" id="mod-rank" placeholder="Rank" min="0" max="10" class="bg-[#0f1724] border border-gray-800 rounded p-1.5">
+                            <input type="number" id="mod-max" placeholder="Max Rank" min="0" max="10" class="bg-[#0f1724] border border-gray-800 rounded p-1.5">
+                            <button onclick="saveModDetails()" class="bg-[#caa3ff] text-black font-bold py-1.5 rounded hover:opacity-90 transition">Save Mod</button>
+                        </div>
+                        <!-- Mod List with upgrade estimators -->
+                        <div id="mods-list" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                            <p class="text-gray-500 text-xs">Loading items...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Bottom section: Build Recommendations -->
-        <div class="mt-6 bg-[#0f1724] p-5 rounded-lg border border-gray-800 shadow-lg">
-            <h2 class="text-lg font-bold mb-4 text-[#caa3ff]">Recommended Builds & Milestones</h2>
-            <div id="recommendations-data" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <p class="text-gray-400">Loading recommendations...</p>
+            <!-- Column 4: Charts, Indicators & Build Recs -->
+            <div class="space-y-6">
+                <!-- Progression Radar/Readiness Overview -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl flex flex-col items-center">
+                    <h2 class="text-lg font-bold mb-4 text-[#caa3ff] self-start border-b border-gray-800 pb-2 w-full">Readiness Distribution</h2>
+                    <div class="w-full flex items-center justify-center py-4 relative">
+                        <!-- SVG custom circular tracker -->
+                        <svg class="w-36 h-36 transform -rotate-90">
+                            <circle cx="72" cy="72" r="60" stroke="#0b1220" stroke-width="12" fill="transparent" />
+                            <circle id="overall-progress-circle" cx="72" cy="72" r="60" stroke="#00a3cc" stroke-width="12" fill="transparent"
+                                    stroke-dasharray="377" stroke-dashoffset="377" stroke-linecap="round" class="transition-all duration-1000 ease-out" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="readiness-pct" class="text-2xl font-bold text-white">0%</span>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-wider">Readiness Score</span>
+                        </div>
+                    </div>
+                    <div id="category-metrics-list" class="w-full space-y-2 text-xs">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Recommendation Feeds -->
+                <div class="bg-[#0f1724] p-5 rounded-xl border border-gray-800 shadow-xl">
+                    <h2 class="text-lg font-bold mb-4 text-[#00a3cc] border-b border-gray-800 pb-2">Target Recommendations</h2>
+                    <div id="recommendations-data" class="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                        <p class="text-gray-400 text-xs">Loading advisor feeds...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Integration Scripts -->
+    <!-- Scripts -->
     <script>
-        const API_URL = "http://127.0.0.1:8000";
+        const API_URL = "http://127.0.0.1:8001";
+        let activeTab = 'weapons';
 
+        // Connect Status check
         async function testConnection() {
             const badge = document.getElementById("connection-badge");
             try {
                 const res = await fetch(`${API_URL}/progression`);
                 if (res.ok) {
                     badge.textContent = "Synced with Local Server";
-                    badge.className = "px-3 py-1 bg-green-950 text-green-400 text-xs rounded-full border border-green-900";
+                    badge.className = "px-3 py-1.5 bg-green-950 text-green-400 text-xs rounded-full border border-green-900 font-semibold shadow-inner";
                     return true;
                 }
             } catch (e) {
-                badge.textContent = "Server Offline (127.0.0.1:8000)";
-                badge.className = "px-3 py-1 bg-red-950 text-red-400 text-xs rounded-full border border-red-900";
+                badge.textContent = "Offline (127.0.0.1:8001)";
+                badge.className = "px-3 py-1.5 bg-red-950 text-red-400 text-xs rounded-full border border-red-900 font-semibold shadow-inner";
             }
             return false;
         }
 
+        // Fetch Live World State
+        async function loadWorldState() {
+            try {
+                const res = await fetch(`${API_URL}/worldstate`);
+                const data = await res.json();
+                
+                // Header widgets
+                const cetus = data.cetus;
+                document.getElementById("cetus-val").textContent = `${cetus.shortString} (${cetus.timeLeft})`;
+                
+                const vallis = data.vallis;
+                document.getElementById("vallis-val").textContent = `${vallis.shortString} (${vallis.timeLeft})`;
+
+                // Alerts list
+                const alertsContainer = document.getElementById("live-alerts");
+                if (data.alerts && data.alerts.length > 0) {
+                    alertsContainer.innerHTML = data.alerts.map(a => `
+                        <div class="p-2 bg-[#080c14] border border-gray-800 rounded hover:border-gray-700 transition">
+                            <div class="flex justify-between font-bold text-gray-200">
+                                <span>${a.mission.node}</span>
+                                <span class="text-amber-400 font-normal">${a.eta}</span>
+                            </div>
+                            <div class="text-[11px] text-gray-400 mt-1">${a.mission.type}</div>
+                            <div class="text-[10px] text-green-400 mt-1 font-semibold truncate">Reward: ${a.reward}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    alertsContainer.innerHTML = `<p class="text-gray-500 italic">No active tactical alerts.</p>`;
+                }
+
+                // Fissures list
+                const fissuresContainer = document.getElementById("live-fissures");
+                if (data.fissures && data.fissures.length > 0) {
+                    fissuresContainer.innerHTML = data.fissures.map(f => `
+                        <div class="p-2 bg-[#080c14] border border-gray-800 rounded flex justify-between items-center hover:border-gray-700 transition">
+                            <div>
+                                <div class="font-bold text-gray-300">${f.node}</div>
+                                <div class="text-[10px] text-gray-400">${f.missionType} • ${f.enemy}</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="px-1.5 py-0.5 text-[10px] font-bold text-cyan-400 bg-cyan-950/40 border border-cyan-900/50 rounded">${f.tier}</span>
+                                <div class="text-[9px] text-gray-500 mt-1">${f.eta}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    fissuresContainer.innerHTML = `<p class="text-gray-500 italic">No active fissure signals.</p>`;
+                }
+            } catch (e) {
+                console.error("Failed to load live world state:", e);
+            }
+        }
+
+        // Fetch profile metrics
         async function loadProfile() {
             const container = document.getElementById("profile-data");
             try {
@@ -96,32 +282,260 @@
                 const data = await res.json();
                 
                 container.innerHTML = `
-                    <div class="space-y-2">
-                        <div class="flex justify-between border-b border-gray-800 pb-1">
-                            <span class="text-gray-400 text-sm">Mastery Rank:</span>
+                    <div class="space-y-2.5 text-sm">
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="text-gray-400">Mastery Rank:</span>
                             <span class="font-bold text-[#00a3cc]">MR ${data.mastery_rank}</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-800 pb-1">
-                            <span class="text-gray-400 text-sm">Steel Path:</span>
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="text-gray-400">Steel Path Status:</span>
                             <span class="font-semibold ${data.steel_path_unlocked ? 'text-green-400' : 'text-red-400'}">${data.steel_path_unlocked ? 'Unlocked' : 'Locked'}</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-800 pb-1">
-                            <span class="text-gray-400 text-sm">Arbitrations:</span>
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="text-gray-400">Arbitrations status:</span>
                             <span class="font-semibold ${data.arbitrations_unlocked ? 'text-green-400' : 'text-red-400'}">${data.arbitrations_unlocked ? 'Unlocked' : 'Locked'}</span>
                         </div>
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="text-gray-400">Helminth unlock:</span>
+                            <span class="font-semibold ${data.helminth_unlocked ? 'text-green-400' : 'text-red-400'}">${data.helminth_unlocked ? 'Unlocked' : 'Locked'}</span>
+                        </div>
                         <div>
-                            <span class="text-gray-400 text-sm block mb-1">Completed Quests (${data.completed_quests.length}):</span>
-                            <div class="text-xs text-gray-500 max-h-32 overflow-y-auto space-y-1">
+                            <span class="text-xs text-gray-400 block mb-1">Story Completed Quests (${data.completed_quests.length}):</span>
+                            <div class="text-[11px] text-gray-500 max-h-24 overflow-y-auto custom-scrollbar space-y-0.5 bg-[#080c14] p-2 rounded border border-gray-800">
                                 ${data.completed_quests.map(q => `• ${q}`).join('<br>')}
                             </div>
                         </div>
                     </div>
                 `;
             } catch (e) {
-                container.innerHTML = `<p class="text-red-400 text-sm">Offline. Make sure uvicorn is running.</p>`;
+                container.innerHTML = `<p class="text-red-400 text-xs">Offline. Connect uvicorn.</p>`;
             }
         }
 
+        // Load charts details
+        async function loadCharts() {
+            try {
+                const res = await fetch(`${API_URL}/charts`);
+                const data = await res.json();
+                
+                // Get progression readiness
+                const scoreRes = await fetch(`${API_URL}/progression`);
+                const scoreData = await scoreRes.json();
+                
+                const score = Math.round(scoreData.readiness_score || 0);
+                document.getElementById("readiness-pct").textContent = `${score}%`;
+                
+                // Radial animation offset: radius 60 -> perimeter ~377
+                const circle = document.getElementById("overall-progress-circle");
+                const offset = 377 - (377 * score) / 100;
+                circle.style.strokeDashoffset = offset;
+
+                // Create category progress lists
+                const list = document.getElementById("category-metrics-list");
+                const growth = data.growth_data || {};
+                const metrics = [
+                    { name: "Story & Quests", val: scoreData.story_score || 50, color: "bg-purple-500" },
+                    { name: "Mastery Level", val: (scoreData.readiness_score > 70 ? 80 : 40), color: "bg-cyan-500" },
+                    { name: "Mods Inventory", val: 65, color: "bg-green-500" },
+                    { name: "Weapon Progression", val: 55, color: "bg-yellow-500" }
+                ];
+
+                list.innerHTML = metrics.map(m => `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-gray-400">${m.name}</span>
+                            <span class="font-bold text-white">${Math.round(m.val)}%</span>
+                        </div>
+                        <div class="w-full bg-[#0b1220] h-1.5 rounded-full overflow-hidden">
+                            <div class="${m.color} h-full rounded-full transition-all duration-1000" style="width: ${m.val}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (e) {
+                console.error("Charts loading error:", e);
+            }
+        }
+
+        // Switch Collection view
+        function switchInventoryTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+
+            if (tab === 'weapons') {
+                document.getElementById("weapons-inventory-container").classList.remove("hidden");
+                document.getElementById("mods-inventory-container").classList.add("hidden");
+            } else {
+                document.getElementById("weapons-inventory-container").classList.add("hidden");
+                document.getElementById("mods-inventory-container").classList.remove("hidden");
+            }
+        }
+
+        // Fetch detailed weapons
+        async function loadWeapons() {
+            const list = document.getElementById("weapons-list");
+            try {
+                const res = await fetch(`${API_URL}/inventory/weapons`);
+                const weapons = await res.json();
+                
+                if (weapons.length === 0) {
+                    list.innerHTML = `<p class="text-gray-500 col-span-2 italic text-center py-4">No weapons logged in arsenal.</p>`;
+                    return;
+                }
+
+                list.innerHTML = weapons.map(w => `
+                    <div class="p-3 bg-[#080c14] border border-gray-800 rounded relative group hover:border-[#00a3cc] transition">
+                        <div class="font-bold text-sm text-gray-200">${w.weapon_name}</div>
+                        <div class="text-[11px] text-gray-400 mt-1">Rank: ${w.rank}/40</div>
+                        <div class="flex items-center justify-between text-[10px] mt-2">
+                            <span class="text-amber-400">Formas: ${w.forma_count}</span>
+                            <span class="${w.has_catalyst ? 'text-green-400 font-semibold' : 'text-gray-500'}">${w.has_catalyst ? 'Catalyzed' : 'No Catalyst'}</span>
+                        </div>
+                        <button onclick="deleteWeapon('${w.weapon_name}')" class="absolute top-2 right-2 text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition text-xs font-bold">Delete</button>
+                    </div>
+                `).join('');
+            } catch (e) {
+                list.innerHTML = `<p class="text-red-400">Error retrieving weapons data.</p>`;
+            }
+        }
+
+        // Save Weapon Detailed stats
+        async function saveWeaponDetails() {
+            const name = document.getElementById("weap-name").value.trim();
+            const rank = parseInt(document.getElementById("weap-rank").value) || 30;
+            const formas = parseInt(document.getElementById("weap-formas").value) || 0;
+            const catalyst = document.getElementById("weap-catalyst").checked;
+
+            if (!name) {
+                showToast("Please specify a weapon name.", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/inventory/weapons?name=${encodeURIComponent(name)}&rank=${rank}&forma_count=${formas}&has_catalyst=${catalyst}`, {
+                    method: 'POST'
+                });
+                if (res.ok) {
+                    showToast(`Weapon '${name}' updated in collection.`, "success");
+                    document.getElementById("weap-name").value = "";
+                    loadWeapons();
+                    loadProfile();
+                    loadCharts();
+                    loadRecommendations();
+                }
+            } catch (e) {
+                showToast("Failed to save weapon stats.", "error");
+            }
+        }
+
+        // Delete weapon
+        async function deleteWeapon(name) {
+            try {
+                const res = await fetch(`${API_URL}/inventory/weapons?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast(`Removed '${name}' from inventory.`, "success");
+                    loadWeapons();
+                    loadProfile();
+                    loadCharts();
+                    loadRecommendations();
+                }
+            } catch (e) {
+                showToast("Failed to delete weapon.", "error");
+            }
+        }
+
+        // Fetch detailed mods with Endo calculator
+        async function loadMods() {
+            const list = document.getElementById("mods-list");
+            try {
+                const res = await fetch(`${API_URL}/inventory/mods`);
+                const mods = await res.json();
+                
+                if (mods.length === 0) {
+                    list.innerHTML = `<p class="text-gray-500 italic text-center py-4">No mods logged in database.</p>`;
+                    return;
+                }
+
+                list.innerHTML = mods.map(m => {
+                    const remainingRanks = m.max_rank - m.rank;
+                    let endoCost = 0;
+                    let creditsCost = 0;
+                    if (remainingRanks > 0) {
+                        // Estimated costs based on gold rarity
+                        endoCost = 10230 * (Math.pow(2, m.max_rank - 10)) - (10 * m.rank); // heuristic scaling
+                        if (endoCost < 100) endoCost = (m.max_rank - m.rank) * 1200;
+                        creditsCost = Math.round(endoCost * 48.25);
+                    }
+
+                    return `
+                        <div class="p-3 bg-[#080c14] border border-gray-800 rounded relative group hover:border-[#caa3ff] transition flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                            <div>
+                                <div class="font-bold text-sm text-gray-200">${m.mod_name}</div>
+                                <div class="text-[11px] text-gray-400 mt-1">Upgrade level: <b class="text-[#caa3ff]">${m.rank} / ${m.max_rank}</b></div>
+                            </div>
+                            <div class="text-right text-[10px] space-y-1">
+                                ${remainingRanks > 0 ? `
+                                    <div class="text-amber-400 font-semibold">Endo to max: ~${Math.round(endoCost).toLocaleString()}</div>
+                                    <div class="text-green-400">Credits: ~${Math.round(creditsCost).toLocaleString()}</div>
+                                ` : `
+                                    <div class="text-green-400 font-bold uppercase tracking-wider">MAX RANK</div>
+                                `}
+                            </div>
+                            <button onclick="deleteMod('${m.mod_name}')" class="absolute top-2 right-2 text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition text-xs font-bold">Delete</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                list.innerHTML = `<p class="text-red-400">Error retrieving mods data.</p>`;
+            }
+        }
+
+        // Save mod
+        async function saveModDetails() {
+            const name = document.getElementById("mod-name").value.trim();
+            const rank = parseInt(document.getElementById("mod-rank").value) || 10;
+            const max = parseInt(document.getElementById("mod-max").value) || 10;
+
+            if (!name) {
+                showToast("Please specify a mod name.", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/inventory/mods?name=${encodeURIComponent(name)}&rank=${rank}&max_rank=${max}`, {
+                    method: 'POST'
+                });
+                if (res.ok) {
+                    showToast(`Mod '${name}' updated.`, "success");
+                    document.getElementById("mod-name").value = "";
+                    loadMods();
+                    loadProfile();
+                    loadCharts();
+                    loadRecommendations();
+                }
+            } catch (e) {
+                showToast("Failed to save mod stats.", "error");
+            }
+        }
+
+        // Delete mod
+        async function deleteMod(name) {
+            try {
+                const res = await fetch(`${API_URL}/inventory/mods?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showToast(`Removed '${name}' mod.`, "success");
+                    loadMods();
+                    loadProfile();
+                    loadCharts();
+                    loadRecommendations();
+                }
+            } catch (e) {
+                showToast("Failed to delete mod.", "error");
+            }
+        }
+
+        // Fetch Recommendations
         async function loadRecommendations() {
             const container = document.getElementById("recommendations-data");
             try {
@@ -129,82 +543,129 @@
                 const data = await res.json();
                 
                 if (data.length === 0) {
-                    container.innerHTML = `<p class="text-gray-500 text-sm">All builds optimized!</p>`;
+                    container.innerHTML = `<p class="text-gray-500 text-xs italic">All current milestones optimized!</p>`;
                     return;
                 }
                 
                 container.innerHTML = data.map(rec => `
-                    <div class="bg-[#0b1220] p-4 rounded border border-gray-800">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-xs font-bold text-[#caa3ff] px-2 py-0.5 bg-purple-950/50 rounded border border-purple-900">${rec.category}</span>
-                            <span class="text-xs text-gray-500">Weight: ${rec.weight}</span>
+                    <div class="bg-[#080c14] p-3 rounded border border-gray-800 hover:border-gray-700 transition">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[9px] font-extrabold text-[#caa3ff] px-2 py-0.5 bg-purple-950/50 rounded border border-purple-900 uppercase tracking-wider">${rec.category}</span>
+                            <span class="text-[10px] text-gray-500">Weight: ${rec.weight}</span>
                         </div>
-                        <h3 class="font-bold text-sm mb-1">${rec.item}</h3>
-                        <p class="text-xs text-gray-400">${rec.reason}</p>
+                        <h3 class="font-bold text-xs text-white">${rec.item}</h3>
+                        <p class="text-[10px] text-gray-400 mt-1">${rec.reason}</p>
                     </div>
                 `).join('');
             } catch (e) {
-                container.innerHTML = `<p class="text-red-400 text-sm">Offline.</p>`;
+                container.innerHTML = `<p class="text-red-400 text-xs">Offline.</p>`;
             }
         }
 
+        // Call Advisor AI natural query
         async function askAdvisor(question) {
             const responseContainer = document.getElementById("advisor-response");
-            responseContainer.innerHTML = `<p class="text-gray-400 text-sm animate-pulse">Consulting Expert Rule System...</p>`;
+            responseContainer.innerHTML = `
+                <div class="flex flex-col items-center justify-center space-y-2 animate-pulse w-full">
+                    <span class="w-5 h-5 rounded-full border-2 border-t-transparent border-[#00a3cc] animate-spin"></span>
+                    <p class="text-gray-400 text-xs font-semibold">Consulting Expert Rule Systems...</p>
+                </div>
+            `;
             
             try {
                 const res = await fetch(`${API_URL}/advisor?q=${encodeURIComponent(question)}`);
                 const data = await res.json();
                 
                 responseContainer.innerHTML = `
-                    <div class="space-y-4 w-full">
+                    <div class="space-y-3.5 w-full text-xs">
                         <div>
-                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Recommended Directive</h4>
-                            <p class="text-sm font-semibold text-white">${data.task}</p>
+                            <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Directive Recommender</h4>
+                            <p class="text-sm font-bold text-white leading-snug">${data.task}</p>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Estimated Duration (ETA)</h4>
-                                <p class="text-sm text-amber-400 font-semibold">${data.eta}</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="p-2 bg-[#080c14] rounded border border-gray-800/80">
+                                <h4 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Estimated Time</h4>
+                                <p class="text-xs text-amber-400 font-bold">${data.eta}</p>
                             </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Expected Power Gain</h4>
-                                <p class="text-sm text-green-400 font-semibold">${data.power_gain}</p>
+                            <div class="p-2 bg-[#080c14] rounded border border-gray-800/80">
+                                <h4 class="text-[9px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Expected Power Gain</h4>
+                                <p class="text-xs text-green-400 font-bold">${data.power_gain}</p>
                             </div>
                         </div>
                         <div>
-                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Prerequisites</h4>
-                            <p class="text-xs text-gray-400">${data.prerequisites}</p>
+                            <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Acquisition Prerequisites</h4>
+                            <p class="text-[11px] text-gray-300 bg-[#080c14]/50 p-2 rounded border border-gray-800/40">${data.prerequisites}</p>
                         </div>
                         <div>
-                            <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Next Playback / Follow-up Steps</h4>
-                            <p class="text-xs text-gray-400">${data.follow_up}</p>
+                            <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Next Follow-up Steps</h4>
+                            <p class="text-[11px] text-gray-400 leading-normal">${data.follow_up}</p>
                         </div>
                     </div>
                 `;
             } catch (e) {
-                responseContainer.innerHTML = `<p class="text-red-400 text-sm">Failed to connect to AI Advisor service.</p>`;
+                responseContainer.innerHTML = `<p class="text-red-400 text-xs">Failed to connect to AI Advisor service.</p>`;
             }
         }
 
         function submitCustomQuestion() {
             const input = document.getElementById("advisor-input");
-            const q = input.value.strip ? input.value.strip() : input.value;
+            const q = input.value.trim();
             if (q) {
                 askAdvisor(q);
+                input.value = "";
             }
         }
 
-        // Auto Refresh Initialization
+        // Custom Toast Popups
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            
+            const colorClass = type === "success" 
+                ? "bg-[#0f241d] border-green-800 text-green-400" 
+                : "bg-[#281414] border-red-950 text-red-400";
+                
+            toast.className = `p-3 rounded-lg border text-xs font-semibold shadow-2xl flex justify-between items-center gap-4 transition-all duration-300 transform translate-y-2 opacity-0 ${colorClass}`;
+            toast.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white font-bold">×</button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove("translate-y-2", "opacity-0");
+            }, 10);
+            
+            // Auto destroy
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "translate-y-2");
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Global Initialization
         async function init() {
             const isConnected = await testConnection();
             if (isConnected) {
                 loadProfile();
+                loadWorldState();
+                loadWeapons();
+                loadMods();
+                loadCharts();
                 loadRecommendations();
             }
+            
+            // Loop updates every 30s for live alerts and 5s for connection status
+            setInterval(async () => {
+                const con = await testConnection();
+                if (con) {
+                    loadWorldState();
+                }
+            }, 30000);
         }
 
-        setInterval(testConnection, 5000);
         init();
     </script>
 </body>

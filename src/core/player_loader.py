@@ -7,6 +7,12 @@ class PlayerLoader:
 
     def load_player(self) -> Player:
         """Return the current saved player profile."""
+        from src.core.query_cache import QueryCache
+        qc = QueryCache()
+        cached = qc.get("player_profile")
+        if cached is not None:
+            return cached
+
         db = DatabaseManager()
         player_row = db.get_player()
         mastery_rank = 0
@@ -22,7 +28,8 @@ class PlayerLoader:
             elif len(player_row) == 2:
                 mastery_rank, steel_path_unlocked_value = player_row
                 steel_path_unlocked = bool(steel_path_unlocked_value)
-        return Player(
+        
+        player = Player(
             mastery_rank=mastery_rank,
             steel_path_unlocked=steel_path_unlocked,
             arbitrations_unlocked=arbitrations_unlocked,
@@ -32,3 +39,6 @@ class PlayerLoader:
             owned_arcanes=db.get_owned_arcanes(),
             owned_weapons=db.get_owned_weapons(),
         )
+        qc.set("player_profile", player, ttl=3.0)
+        return player
+

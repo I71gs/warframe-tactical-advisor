@@ -1,5 +1,6 @@
 import sys
 import traceback
+import json
 from datetime import datetime
 from pathlib import Path
 from PySide6.QtWidgets import QMessageBox, QApplication
@@ -15,22 +16,23 @@ def handle_exception(exc_type, exc_value, exc_traceback) -> None:
         return
 
     # Generate log entry
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().isoformat()
     tb_lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
     tb_text = "".join(tb_lines)
 
-    log_message = (
-        f"==================================================\n"
-        f"CRASH REPORT - {timestamp}\n"
-        f"==================================================\n"
-        f"Exception Type: {exc_type.__name__}\n"
-        f"Exception Value: {exc_value}\n\n"
-        f"Traceback:\n{tb_text}\n"
-    )
+    crash_data = {
+        "timestamp": timestamp,
+        "exception_type": exc_type.__name__,
+        "exception_value": str(exc_value),
+        "traceback": tb_text,
+        "python_version": sys.version,
+        "platform": sys.platform
+    }
 
     try:
+        # Append structured JSON lines
         with open(CRASH_LOG_PATH, 'a', encoding='utf-8') as f:
-            f.write(log_message)
+            f.write(json.dumps(crash_data) + "\n")
     except Exception as exc:
         logger.error("Failed to write to crash.log: %s", exc)
 
@@ -45,7 +47,7 @@ def handle_exception(exc_type, exc_value, exc_traceback) -> None:
                 "Application Crash",
                 f"An unexpected error has occurred.\n\n"
                 f"Error: {exc_type.__name__}: {exc_value}\n\n"
-                f"Details have been written to crash.log.",
+                f"Details have been written to crash.log in structured JSON format.",
                 QMessageBox.Ok
             )
         except Exception:

@@ -6,9 +6,11 @@ from src.utils.logger import logger
 
 ROOT = Path(__file__).resolve().parents[2]
 LIBRARY_DIR = ROOT / "build_library"
+CURATED_BUILDS_FILE = ROOT / "src" / "resources" / "data" / "builds" / "curated_builds.json"
+
 
 class BuildLibraryEngine:
-    """Manages the player's custom builds library, favorites, notes, and rankings."""
+    """Manages the player's custom builds library, favorites, ratings, and displays curated builds."""
 
     def __init__(self, library_dir: Path | str | None = None) -> None:
         self.library_dir = Path(library_dir) if library_dir else LIBRARY_DIR
@@ -44,13 +46,14 @@ class BuildLibraryEngine:
         element: str,
         rating: int = 5,
         notes: str = "",
-        is_favorite: bool = False
+        is_favorite: bool = False,
+        scenario: str = "General Use"
     ) -> None:
         """Adds a new build or updates an existing one for a weapon."""
         builds = self.load_library()
         found = False
         for b in builds:
-            if b["weapon"].lower() == weapon.strip().lower():
+            if b["weapon"].lower() == weapon.strip().lower() and b.get("scenario", "General Use").lower() == scenario.strip().lower():
                 b["mods"] = mods
                 b["arcane"] = arcane
                 b["element"] = element
@@ -67,21 +70,33 @@ class BuildLibraryEngine:
                 "element": element,
                 "rating": rating,
                 "notes": notes,
-                "is_favorite": is_favorite
+                "is_favorite": is_favorite,
+                "scenario": scenario.strip()
             })
         self.save_library(builds)
 
-    def delete_build(self, weapon: str) -> None:
-        """Deletes a custom build by weapon name."""
+    def delete_build(self, weapon: str, scenario: str = "General Use") -> None:
+        """Deletes a custom build by weapon name and scenario."""
         builds = self.load_library()
-        builds = [b for b in builds if b["weapon"].lower() != weapon.strip().lower()]
+        builds = [b for b in builds if not (b["weapon"].lower() == weapon.strip().lower() and b.get("scenario", "General Use").lower() == scenario.strip().lower())]
         self.save_library(builds)
 
-    def toggle_favorite(self, weapon: str) -> None:
+    def toggle_favorite(self, weapon: str, scenario: str = "General Use") -> None:
         """Toggles the favorite status of a build."""
         builds = self.load_library()
         for b in builds:
-            if b["weapon"].lower() == weapon.strip().lower():
+            if b["weapon"].lower() == weapon.strip().lower() and b.get("scenario", "General Use").lower() == scenario.strip().lower():
                 b["is_favorite"] = not b.get("is_favorite", False)
                 break
         self.save_library(builds)
+
+    def get_curated_builds(self) -> list[dict[str, Any]]:
+        """Loads default curated high-tier templates."""
+        if not CURATED_BUILDS_FILE.exists():
+            return []
+        try:
+            with open(CURATED_BUILDS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error("Failed to load curated builds: %s", e)
+            return []

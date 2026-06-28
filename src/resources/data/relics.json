@@ -1,0 +1,164 @@
+[
+  {
+    "era": "Lith",
+    "relic_name": "Lith A4",
+    "rewards": [
+      {"item": "Ash Prime Neuroptics", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Rhino Prime Blueprint", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Boltor Prime Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Glaive Prime Disc", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Anku Prime Blade", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Saryn Prime Neuroptics", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Hepit (Void, Capture)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Lith",
+    "relic_name": "Lith B6",
+    "rewards": [
+      {"item": "Braton Prime Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Burston Prime Barrel", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Orthos Prime Handle", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Mag Prime Neuroptics", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Spira Prime Blueprint", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Boar Prime Stock", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Hepit (Void, Capture)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Lith",
+    "relic_name": "Lith O1",
+    "rewards": [
+      {"item": "Orthos Prime Blade", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Paris Prime Upper Limb", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Latron Prime Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Braton Prime Barrel", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Soma Prime Blueprint", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Volt Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Hepit (Void, Capture)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Meso",
+    "relic_name": "Meso B1",
+    "rewards": [
+      {"item": "Braton Prime Barrel", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Burston Prime Blueprint", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Orthos Prime Blueprint", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Fang Prime Handle", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Nova Prime Neuroptics", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Galatine Prime Blade", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Io (Jupiter, Defense)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Meso",
+    "relic_name": "Meso S5",
+    "rewards": [
+      {"item": "Saryn Prime Systems", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Soma Prime Receiver", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Scindo Prime Handle", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Spira Prime Pouch", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Oberon Prime Blueprint", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Saryn Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Io (Jupiter, Defense)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Neo",
+    "relic_name": "Neo L1",
+    "rewards": [
+      {"item": "Lex Prime Receiver", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Latron Prime Receiver", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Soma Prime Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Nyx Prime Chassis", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Vasto Prime Blueprint", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Mag Prime Systems", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Ukko (Void, Capture)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Neo",
+    "relic_name": "Neo T7",
+    "rewards": [
+      {"item": "Latron Prime Receiver", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Tigris Prime Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Frost Prime Chassis", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Saryn Prime Chassis", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Tiberon Prime Blueprint", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Tigris Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0}
+    ],
+    "best_farm_node": "Ukko (Void, Capture)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Axi",
+    "relic_name": "Axi G1",
+    "rewards": [
+      {"item": "Glaive Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0},
+      {"item": "Ash Prime Chassis", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Orthos Prime Blade", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Rhino Prime Neuroptics", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Braton Prime Stock", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Boltor Prime Receiver", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0}
+    ],
+    "best_farm_node": "Apollo (Lua, Disruption)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Axi",
+    "relic_name": "Axi S1",
+    "rewards": [
+      {"item": "Saryn Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0},
+      {"item": "Nikana Prime Blueprint", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Valkyr Prime Neuroptics", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Spira Prime Blade", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Lex Prime Barrel", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Volt Prime Systems", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0}
+    ],
+    "best_farm_node": "Apollo (Lua, Disruption)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Axi",
+    "relic_name": "Axi W1",
+    "rewards": [
+      {"item": "Wisp Prime Blueprint", "rarity": "Rare", "drop_chance_intact": 2.0, "drop_chance_exceptional": 4.0, "drop_chance_flawless": 6.0, "drop_chance_radiant": 10.0},
+      {"item": "Wisp Prime Neuroptics", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0},
+      {"item": "Nidus Prime Systems", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Garuda Prime Neuroptics", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Kuva Bramma Stock", "rarity": "Common", "drop_chance_intact": 25.33, "drop_chance_exceptional": 23.33, "drop_chance_flawless": 20.0, "drop_chance_radiant": 16.67},
+      {"item": "Citrine Chassis", "rarity": "Uncommon", "drop_chance_intact": 11.0, "drop_chance_exceptional": 13.0, "drop_chance_flawless": 17.0, "drop_chance_radiant": 20.0}
+    ],
+    "best_farm_node": "Apollo (Lua, Disruption)",
+    "best_refinement_for_rare": "Radiant",
+    "avg_traces_to_radiant": 100
+  },
+  {
+    "era": "Requiem",
+    "relic_name": "Requiem I",
+    "rewards": [
+      {"item": "Ris (Requiem Mod)", "rarity": "Common", "drop_chance_intact": 33.33, "drop_chance_exceptional": 33.33, "drop_chance_flawless": 33.33, "drop_chance_radiant": 33.33},
+      {"item": "Vome (Requiem Mod)", "rarity": "Common", "drop_chance_intact": 33.33, "drop_chance_exceptional": 33.33, "drop_chance_flawless": 33.33, "drop_chance_radiant": 33.33},
+      {"item": "Xata (Requiem Mod)", "rarity": "Common", "drop_chance_intact": 33.33, "drop_chance_exceptional": 33.33, "drop_chance_flawless": 33.33, "drop_chance_radiant": 33.33}
+    ],
+    "best_farm_node": "Kuva Fissure missions (any)",
+    "best_refinement_for_rare": "Intact",
+    "avg_traces_to_radiant": 0
+  }
+]

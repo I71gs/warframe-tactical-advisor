@@ -49,6 +49,28 @@ class PlayerService:
         DatabaseManager().remove_owned_weapon(weapon_name)
         self.context.event_bus.publish("PROFILE_UPDATED")
 
+    def get_weapon_inventory(self) -> list[dict]:
+        return DatabaseManager().get_weapon_inventory()
+
+    def update_weapon_details(self, name: str, rank: int, forma_count: int, has_catalyst: bool) -> None:
+        DatabaseManager().add_weapon_detailed(name, rank, forma_count, has_catalyst)
+        self.context.event_bus.publish("PROFILE_UPDATED")
+
+    def remove_weapon_detailed(self, name: str) -> None:
+        DatabaseManager().remove_weapon_detailed(name)
+        self.context.event_bus.publish("PROFILE_UPDATED")
+
+    def get_mod_inventory(self) -> list[dict]:
+        return DatabaseManager().get_mod_inventory()
+
+    def update_mod_details(self, name: str, rank: int, max_rank: int) -> None:
+        DatabaseManager().add_mod_detailed(name, rank, max_rank)
+        self.context.event_bus.publish("PROFILE_UPDATED")
+
+    def remove_mod_detailed(self, name: str) -> None:
+        DatabaseManager().remove_mod_detailed(name)
+        self.context.event_bus.publish("PROFILE_UPDATED")
+
     def save_player(self, mastery_rank: int, steel_path_unlocked: bool, arbitrations_unlocked: bool = False, helminth_unlocked: bool = False) -> None:
         DatabaseManager().save_player(mastery_rank, steel_path_unlocked, arbitrations_unlocked, helminth_unlocked)
         self.context.event_bus.publish("PROFILE_UPDATED")

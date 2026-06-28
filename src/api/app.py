@@ -77,6 +77,11 @@ def get_advisor_advice(q: str = Query(..., description="Natural language query")
     """Returns parsed intent and custom progress coaching advice."""
     return advisor.get_advice(q)
 
+@app.get("/worldstate")
+def get_world_state() -> dict:
+    """Returns live Cetus, Vallis, Zariman cycle statuses, active alerts, and fissures."""
+    return context.world_state_service.get_world_state()
+
 @app.get("/sim")
 def get_projection_simulation() -> dict:
     """Runs a future projection simulation on readiness outcomes."""
@@ -134,4 +139,48 @@ def toggle_pack(pack_id: str, enabled: bool) -> dict:
     pm = PackManager()
     success = pm.set_pack_enabled(pack_id, enabled)
     return {"success": success, "pack_id": pack_id, "enabled": enabled}
+
+@app.get("/inventory/weapons")
+def get_inventory_weapons() -> list:
+    """Returns detailed weapons inventory (rank, forma count, catalyst state)."""
+    return context.player_service.get_weapon_inventory()
+
+@app.post("/inventory/weapons")
+def update_inventory_weapon(
+    name: str,
+    rank: int = 30,
+    forma_count: int = 0,
+    has_catalyst: bool = False
+) -> dict:
+    """Add or update detailed weapon stats in inventory."""
+    context.player_service.update_weapon_details(name, rank, forma_count, has_catalyst)
+    return {"success": True, "weapon": name}
+
+@app.delete("/inventory/weapons")
+def delete_inventory_weapon(name: str) -> dict:
+    """Delete weapon from detailed inventory."""
+    context.player_service.remove_weapon_detailed(name)
+    return {"success": True, "weapon": name}
+
+@app.get("/inventory/mods")
+def get_inventory_mods() -> list:
+    """Returns detailed mods inventory (mod name, rank, max rank)."""
+    return context.player_service.get_mod_inventory()
+
+@app.post("/inventory/mods")
+def update_inventory_mod(
+    name: str,
+    rank: int = 10,
+    max_rank: int = 10
+) -> dict:
+    """Add or update detailed mod stats in inventory."""
+    context.player_service.update_mod_details(name, rank, max_rank)
+    return {"success": True, "mod": name}
+
+@app.delete("/inventory/mods")
+def delete_inventory_mod(name: str) -> dict:
+    """Delete mod from detailed inventory."""
+    context.player_service.remove_mod_detailed(name)
+    return {"success": True, "mod": name}
+
 

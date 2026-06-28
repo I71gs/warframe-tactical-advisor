@@ -17,7 +17,7 @@ DEFAULT_SETTINGS = {
     'last_tab_index': 0,
     'window_size': {'width': 1000, 'height': 700},
     'current_profile': 'default',
-    'active_theme': 'Dark',
+    'active_theme': 'Cosmic Twilight',
 }
 
 class SettingsManager:

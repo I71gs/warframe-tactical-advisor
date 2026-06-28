@@ -2,8 +2,9 @@ from __future__ import annotations
 from typing import Any
 from PySide6.QtWidgets import QGraphicsView, QGraphicsScene, QGraphicsRectItem, QGraphicsTextItem, QGraphicsLineItem, QMessageBox
 from PySide6.QtCore import Qt, QRectF
-from PySide6.QtGui import QPen, QBrush, QColor, QCursor, QFont
+from PySide6.QtGui import QPen, QBrush, QColor, QCursor, QFont, QPainter
 import sys
+
 
 class InteractiveNode(QGraphicsRectItem):
     """Clickable graphical node representing a dependency tree node."""
@@ -72,7 +73,8 @@ class GraphVisualizer(QGraphicsView):
         super().__init__(parent)
         self.scene_obj = QGraphicsScene(self)
         self.setScene(self.scene_obj)
-        self.setRenderHint(Qt.Antialiasing)
+        self.setRenderHint(QPainter.Antialiasing)
+
         self.setStyleSheet("background: #0b1220; border: none;")
         
         # Zoom support

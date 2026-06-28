@@ -1,0 +1,275 @@
+[
+  {
+    "name": "Credits",
+    "category": "Currency",
+    "best_nodes": [
+      {"node": "Profit-Taker (Orb Vallis, Heist)", "rate_per_run": 125000, "mission_time_min": 5},
+      {"node": "Index (Neptune, Laomedeia)", "rate_per_run": 75000, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 250000,
+    "booster_type": "Credit Booster",
+    "notes": "Profit-Taker is the fastest credit farm in the game"
+  },
+  {
+    "name": "Endo",
+    "category": "Currency",
+    "best_nodes": [
+      {"node": "Arbitrations (Any mission)", "rate_per_run": 900, "mission_time_min": 20},
+      {"node": "Vodyanoi (Sedna, Arena)", "rate_per_run": 800, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 8000,
+    "booster_type": "Resource Booster",
+    "notes": "Vodyanoi Arena is fastest for raw Endo, Arbitrations give Vitus too"
+  },
+  {
+    "name": "Kuva",
+    "category": "Currency",
+    "best_nodes": [
+      {"node": "Kuva Survival (Any Kuva Fortress)", "rate_per_run": 1800, "mission_time_min": 5},
+      {"node": "Kuva Siphon missions", "rate_per_run": 550, "mission_time_min": 5},
+      {"node": "Kuva Flood missions", "rate_per_run": 1200, "mission_time_min": 5}
+    ],
+    "rate_per_hr": 15000,
+    "booster_type": "Booster (Smeeta Charm doubles Kuva)",
+    "notes": "Survival gives most Kuva/hr; Siphons are good for casual play"
+  },
+  {
+    "name": "Steel Essence",
+    "category": "Steel Path Currency",
+    "best_nodes": [
+      {"node": "Steel Path Incursions (daily)", "rate_per_run": 5, "mission_time_min": 10},
+      {"node": "Acolyte drops (Steel Path missions)", "rate_per_run": 2, "mission_time_min": 5}
+    ],
+    "rate_per_hr": 12,
+    "booster_type": "None (fixed drop)",
+    "notes": "Do daily SP Incursions (6 max per day = 30 SE), farm Acolytes for more"
+  },
+  {
+    "name": "Vitus Essence",
+    "category": "Arbitration Currency",
+    "best_nodes": [
+      {"node": "Arbitrations (Rotation C rewards)", "rate_per_run": 1, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 15,
+    "booster_type": "None",
+    "notes": "Only obtained from Arbitrations and Arbitration Shield Drone drops"
+  },
+  {
+    "name": "Voidplumes",
+    "category": "Zariman Currency",
+    "best_nodes": [
+      {"node": "Zariman Bounties (Void Cascade)", "rate_per_run": 3, "mission_time_min": 15}
+    ],
+    "rate_per_hr": 8,
+    "booster_type": "None",
+    "notes": "Escalate bounties for Voidplume Quill; need Quill → Down → Drift → Surge Feather"
+  },
+  {
+    "name": "Entrati Lanthorn",
+    "category": "Zariman Currency",
+    "best_nodes": [
+      {"node": "Zariman Bounties (Void Flood)", "rate_per_run": 1, "mission_time_min": 15}
+    ],
+    "rate_per_hr": 3,
+    "booster_type": "None",
+    "notes": "Rare reward from Zariman bounties; needed for Voruna and Styanax crafting"
+  },
+  {
+    "name": "Pathos Clamps",
+    "category": "Duviri Currency",
+    "best_nodes": [
+      {"node": "The Circuit (Duviri)", "rate_per_run": 3, "mission_time_min": 20},
+      {"node": "Duviri Landscape (Enigma Puzzles)", "rate_per_run": 1, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 10,
+    "booster_type": "None",
+    "notes": "Needed for Duviri weapons, Kullervo, and Drifter cosmetics"
+  },
+  {
+    "name": "Orokin Cell",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "General Sargas Ruk (Saturn, Tethys)", "rate_per_run": 2, "mission_time_min": 5},
+      {"node": "Phorid (Eris, Infestation Invasions)", "rate_per_run": 2, "mission_time_min": 5},
+      {"node": "Saturn Survival missions", "rate_per_run": 3, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 40,
+    "booster_type": "Resource Booster",
+    "notes": "Boss kills guarantee 1-2 cells; survival rotation C can give bundles"
+  },
+  {
+    "name": "Neural Sensors",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Alad V (Jupiter, Themisto)", "rate_per_run": 1, "mission_time_min": 5},
+      {"node": "Cameria (Jupiter, Dark Sector Survival)", "rate_per_run": 4, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 35,
+    "booster_type": "Resource Booster",
+    "notes": "Jupiter exclusive resource; Cameria is most efficient"
+  },
+  {
+    "name": "Tellurium",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Ophelia (Uranus, Survival)", "rate_per_run": 2, "mission_time_min": 20},
+      {"node": "Salacia (Neptune, Mobile Defense)", "rate_per_run": 1, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 6,
+    "booster_type": "Resource Booster",
+    "notes": "Rare; only drops in Archwing missions. Ophelia is the standard farm"
+  },
+  {
+    "name": "Argon Crystal",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Oxomoco (Void, Exterminate)", "rate_per_run": 2, "mission_time_min": 5},
+      {"node": "Void Survival missions", "rate_per_run": 4, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 20,
+    "booster_type": "Resource Booster",
+    "notes": "DECAYS after 24hrs (halves every day). Farm only when needed"
+  },
+  {
+    "name": "Cryotic",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Heiracon (Pluto, Excavation)", "rate_per_run": 500, "mission_time_min": 20},
+      {"node": "Hieracon (Pluto, Dark Sector Excavation)", "rate_per_run": 700, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 2000,
+    "booster_type": "Resource Booster",
+    "notes": "100 per successful excavator; only from Excavation missions"
+  },
+  {
+    "name": "Oxium",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Io (Jupiter, Defense)", "rate_per_run": 100, "mission_time_min": 10},
+      {"node": "Galatea (Neptune, Capture)", "rate_per_run": 60, "mission_time_min": 5}
+    ],
+    "rate_per_hr": 600,
+    "booster_type": "Resource Booster",
+    "notes": "Drops from Oxium Ospreys; kill them before they explode!"
+  },
+  {
+    "name": "Hexenon",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Cameria (Jupiter, Dark Sector Survival)", "rate_per_run": 60, "mission_time_min": 20},
+      {"node": "Sinai (Jupiter, Defense)", "rate_per_run": 40, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 200,
+    "booster_type": "Resource Booster",
+    "notes": "Jupiter exclusive. Needed for Wisp, Gauss, and Protea parts"
+  },
+  {
+    "name": "Plastids",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Ophelia (Uranus, Survival)", "rate_per_run": 400, "mission_time_min": 20},
+      {"node": "Outer Terminus (Pluto, Defense)", "rate_per_run": 300, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 1200,
+    "booster_type": "Resource Booster",
+    "notes": "Found on Saturn, Uranus, Phobos, Pluto, Eris"
+  },
+  {
+    "name": "Alloy Plate",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Gabii (Ceres, Dark Sector Survival)", "rate_per_run": 1500, "mission_time_min": 20},
+      {"node": "Ophelia (Uranus, Survival)", "rate_per_run": 800, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 4500,
+    "booster_type": "Resource Booster",
+    "notes": "One of the most abundant resources; rarely a bottleneck"
+  },
+  {
+    "name": "Ferrite",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Apollodorus (Mercury, Survival)", "rate_per_run": 500, "mission_time_min": 10},
+      {"node": "Orokin Moon missions", "rate_per_run": 600, "mission_time_min": 15}
+    ],
+    "rate_per_hr": 3000,
+    "booster_type": "Resource Booster",
+    "notes": "Very common early-game resource"
+  },
+  {
+    "name": "Control Module",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Void missions (any)", "rate_per_run": 2, "mission_time_min": 10},
+      {"node": "Neptune missions", "rate_per_run": 2, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 12,
+    "booster_type": "Resource Booster",
+    "notes": "Drops in Void and Neptune; needed for many Warframe builds"
+  },
+  {
+    "name": "Morphics",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Assassinate missions (Mars, Mercury, Pluto, Phobos)", "rate_per_run": 1, "mission_time_min": 5},
+      {"node": "Cambria (Earth, Survival)", "rate_per_run": 2, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 8,
+    "booster_type": "Resource Booster",
+    "notes": "Low drop rate; boss kills are most reliable source"
+  },
+  {
+    "name": "Nano Spores",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Draco (Ceres, Defense)", "rate_per_run": 3000, "mission_time_min": 10},
+      {"node": "Akkad (Eris, Defense)", "rate_per_run": 2500, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 15000,
+    "booster_type": "Resource Booster",
+    "notes": "Extremely abundant; never a bottleneck"
+  },
+  {
+    "name": "Polymer Bundle",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Ophelia (Uranus, Survival)", "rate_per_run": 600, "mission_time_min": 20},
+      {"node": "Assur (Uranus, Survival)", "rate_per_run": 400, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 2000,
+    "booster_type": "Resource Booster",
+    "notes": "Venus, Mercury, and Uranus are primary sources"
+  },
+  {
+    "name": "Rubedo",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Phobos missions", "rate_per_run": 300, "mission_time_min": 10},
+      {"node": "Pluto missions", "rate_per_run": 400, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 2000,
+    "booster_type": "Resource Booster",
+    "notes": "Found on Phobos, Earth, Sedna, Europa, Void, Orokin Derelict"
+  },
+  {
+    "name": "Circuits",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Cholistan (Venus, Dark Sector Defense)", "rate_per_run": 700, "mission_time_min": 10},
+      {"node": "Hieracon (Pluto, Excavation)", "rate_per_run": 300, "mission_time_min": 20}
+    ],
+    "rate_per_hr": 3000,
+    "booster_type": "Resource Booster",
+    "notes": "Venus and Ceres primary sources"
+  },
+  {
+    "name": "Salvage",
+    "category": "Crafting Resource",
+    "best_nodes": [
+      {"node": "Olympus (Mars, Defense)", "rate_per_run": 2000, "mission_time_min": 10}
+    ],
+    "rate_per_hr": 12000,
+    "booster_type": "Resource Booster",
+    "notes": "Extremely abundant on Mars, Saturn, Jupiter"
+  }
+]
