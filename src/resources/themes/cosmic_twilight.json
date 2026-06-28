@@ -1,9 +1,18 @@
 {
     "name": "Cosmic Twilight",
-    "PRIMARY": "#0c0919",
-    "SECONDARY": "#130f26",
+    "PRIMARY": "#080612",
+    "SECONDARY": "#0c0919",
     "ACCENT": "#bb86fc",
     "TEXT": "#eae6f8",
     "MUTED": "#8e85a6",
-    "CARD": "#1f183a"
+    "CARD": "#120d26",
+    "FONT_FAMILY": "\"Outfit\", \"Segoe UI\", -apple-system, sans-serif",
+    "BORDER_RADIUS_CARD": "8px",
+    "BORDER_RADIUS_WIDGET": "6px",
+    "BORDER_RADIUS_TAB": "6px",
+    "BORDER_STYLE_CARD": "1px solid rgba(187, 134, 252, 0.2)",
+    "BORDER_STYLE_BUTTON": "1px solid rgba(187, 134, 252, 0.25)",
+    "PADDING_CARD": "16px",
+    "BUTTON_HOVER_BG": "rgba(187, 134, 252, 0.15)",
+    "WIDGET_BORDER": "1px solid rgba(255, 255, 255, 0.08)"
 }

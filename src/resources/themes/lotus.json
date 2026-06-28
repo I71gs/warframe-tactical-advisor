@@ -1,9 +1,18 @@
 {
     "name": "Lotus",
-    "PRIMARY": "#1c1124",
-    "SECONDARY": "#2b1a37",
-    "ACCENT": "#e056fd",
-    "TEXT": "#f9f5ff",
-    "MUTED": "#a29bfe",
-    "CARD": "#382547"
+    "PRIMARY": "#1a121e",
+    "SECONDARY": "#241a2a",
+    "ACCENT": "#caa3ff",
+    "TEXT": "#eae6f0",
+    "MUTED": "#8e8596",
+    "CARD": "#2b1e32",
+    "FONT_FAMILY": "\"Montserrat\", \"Segoe UI\", sans-serif",
+    "BORDER_RADIUS_CARD": "16px",
+    "BORDER_RADIUS_WIDGET": "10px",
+    "BORDER_RADIUS_TAB": "10px",
+    "BORDER_STYLE_CARD": "1px solid rgba(202, 163, 255, 0.18)",
+    "BORDER_STYLE_BUTTON": "1px solid rgba(202, 163, 255, 0.15)",
+    "PADDING_CARD": "20px",
+    "BUTTON_HOVER_BG": "rgba(202, 163, 255, 0.12)",
+    "WIDGET_BORDER": "1px solid rgba(255, 255, 255, 0.06)"
 }

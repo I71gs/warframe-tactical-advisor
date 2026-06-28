@@ -5,5 +5,14 @@
     "ACCENT": "#cfad64",
     "TEXT": "#1c1917",
     "MUTED": "#78716c",
-    "CARD": "#ffffff"
+    "CARD": "#ffffff",
+    "FONT_FAMILY": "\"Cinzel\", \"Georgia\", \"Times New Roman\", serif",
+    "BORDER_RADIUS_CARD": "0px",
+    "BORDER_RADIUS_WIDGET": "0px",
+    "BORDER_RADIUS_TAB": "0px",
+    "BORDER_STYLE_CARD": "2px double #cfad64",
+    "BORDER_STYLE_BUTTON": "1px solid #cfad64",
+    "PADDING_CARD": "14px",
+    "BUTTON_HOVER_BG": "rgba(207, 173, 100, 0.15)",
+    "WIDGET_BORDER": "1px solid rgba(207, 173, 100, 0.3)"
 }

@@ -5,5 +5,14 @@
     "ACCENT": "#007ea7",
     "TEXT": "#0f172a",
     "MUTED": "#64748b",
-    "CARD": "#ffffff"
+    "CARD": "#ffffff",
+    "FONT_FAMILY": "\"Segoe UI\", -apple-system, sans-serif",
+    "BORDER_RADIUS_CARD": "8px",
+    "BORDER_RADIUS_WIDGET": "6px",
+    "BORDER_RADIUS_TAB": "6px",
+    "BORDER_STYLE_CARD": "1px solid rgba(0, 0, 0, 0.05)",
+    "BORDER_STYLE_BUTTON": "1px solid rgba(0, 0, 0, 0.08)",
+    "PADDING_CARD": "16px",
+    "BUTTON_HOVER_BG": "rgba(0, 0, 0, 0.03)",
+    "WIDGET_BORDER": "1px solid rgba(0, 0, 0, 0.08)"
 }

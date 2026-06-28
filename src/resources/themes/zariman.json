@@ -1,9 +1,18 @@
 {
     "name": "Zariman",
-    "PRIMARY": "#071a17",
-    "SECONDARY": "#0f2d29",
-    "ACCENT": "#20b2aa",
-    "TEXT": "#e0f2f1",
-    "MUTED": "#4db6ac",
-    "CARD": "#123e38"
+    "PRIMARY": "#0c1515",
+    "SECONDARY": "#121d1d",
+    "ACCENT": "#6fffe8",
+    "TEXT": "#e6f5f3",
+    "MUTED": "#7fb3ab",
+    "CARD": "#172626",
+    "FONT_FAMILY": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
+    "BORDER_RADIUS_CARD": "8px",
+    "BORDER_RADIUS_WIDGET": "4px",
+    "BORDER_RADIUS_TAB": "4px",
+    "BORDER_STYLE_CARD": "1px dashed rgba(111, 255, 232, 0.3)",
+    "BORDER_STYLE_BUTTON": "1px solid rgba(111, 255, 232, 0.3)",
+    "PADDING_CARD": "16px",
+    "BUTTON_HOVER_BG": "rgba(111, 255, 232, 0.12)",
+    "WIDGET_BORDER": "1px solid rgba(255, 255, 255, 0.08)"
 }
