@@ -1,0 +1,56 @@
+{
+  "_comment": "All Mastery-Rank granting item categories with per-item XP values.",
+  "categories": {
+    "Warframe": {"xp_per_item": 6000, "xp_per_rank": 200},
+    "Primary Weapon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Secondary Weapon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Melee Weapon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Archwing": {"xp_per_item": 6000, "xp_per_rank": 200},
+    "Archwing Gun": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Archwing Melee": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Companion": {"xp_per_item": 6000, "xp_per_rank": 200},
+    "Companion Weapon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "K-Drive": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Necramech": {"xp_per_item": 6000, "xp_per_rank": 200},
+    "Necramech Weapon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Parazon": {"xp_per_item": 3000, "xp_per_rank": 100},
+    "Railjack Intrinsic": {"xp_per_rank": 1500, "max_rank": 10}
+  },
+  "mastery_thresholds": {
+    "1": 1500, "2": 7500, "3": 16500, "4": 28500, "5": 43500,
+    "6": 61500, "7": 82500, "8": 106500, "9": 133500, "10": 163500,
+    "11": 196500, "12": 232500, "13": 271500, "14": 313500, "15": 358500,
+    "16": 406500, "17": 457500, "18": 511500, "19": 568500, "20": 628500,
+    "21": 691500, "22": 757500, "23": 826500, "24": 898500, "25": 973500,
+    "26": 1051500, "27": 1132500, "28": 1216500, "29": 1303500, "30": 1393500
+  },
+  "archwings": [
+    {"name": "Itzal", "category": "Archwing", "xp": 6000, "acquisition": "Dojo Research (Tenno Lab)"},
+    {"name": "Elytron", "category": "Archwing", "xp": 6000, "acquisition": "Dojo Research (Clan Lab)"},
+    {"name": "Odonata", "category": "Archwing", "xp": 6000, "acquisition": "Stolen Dreams (Quest)"},
+    {"name": "Odonata Prime", "category": "Archwing", "xp": 6000, "acquisition": "Void Relics"},
+    {"name": "Amesha", "category": "Archwing", "xp": 6000, "acquisition": "Dojo Research (Tenno Lab)"},
+    {"name": "Titania Razorwing", "category": "Archwing", "xp": 0, "acquisition": "Titania ability (not separate)"},
+    {"name": "Zekti Harness", "category": "Archwing", "xp": 0, "acquisition": "Railjack Plunder (no separate MR)"}
+  ],
+  "necramechs": [
+    {"name": "Voidrig", "category": "Necramech", "xp": 6000, "acquisition": "Father (Necralisk, Rank 3)"},
+    {"name": "Bonewidow", "category": "Necramech", "xp": 6000, "acquisition": "Father (Necralisk, Rank 3)"}
+  ],
+  "k_drives": [
+    {"name": "Yarrow (K-Drive)", "category": "K-Drive", "xp": 3000, "acquisition": "The Business (Fortuna, Rank 1)"},
+    {"name": "Bondi (K-Drive)", "category": "K-Drive", "xp": 3000, "acquisition": "The Business (Fortuna, Rank 2)"},
+    {"name": "Surge (K-Drive)", "category": "K-Drive", "xp": 3000, "acquisition": "The Business (Fortuna, Rank 3)"},
+    {"name": "Kdrive (Ventkids)", "category": "K-Drive", "xp": 3000, "acquisition": "Ventkids (Fortuna Standing Rank 3)"}
+  ],
+  "focus_schools": [
+    {"name": "Zenurik", "category": "Focus", "xp": 0, "acquisition": "Focus Lens (any mission, Focus Lens equipped)"},
+    {"name": "Naramon", "category": "Focus", "xp": 0, "acquisition": "Focus Lens"},
+    {"name": "Unairu", "category": "Focus", "xp": 0, "acquisition": "Focus Lens"},
+    {"name": "Madurai", "category": "Focus", "xp": 0, "acquisition": "Focus Lens"},
+    {"name": "Vazarin", "category": "Focus", "xp": 0, "acquisition": "Focus Lens"}
+  ],
+  "parazon": [
+    {"name": "Parazon", "category": "Parazon", "xp": 3000, "acquisition": "Automatic (after tutorial)"}
+  ]
+}

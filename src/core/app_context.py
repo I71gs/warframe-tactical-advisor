@@ -24,6 +24,7 @@ class AppContext:
         from src.services.analytics_service import AnalyticsService
         from src.services.llm_service import LLMService
         from src.services.data_version_service import DataVersionService
+        from src.services.world_state_service import WorldStateService
         
         self.player_service = PlayerService(self)
         self.progression_service = ProgressionService(self)
@@ -35,3 +36,5 @@ class AppContext:
         self.analytics_service = AnalyticsService()
         self.llm_service = LLMService(self)
         self.data_version_service = DataVersionService(self)
+        self.world_state_service = WorldStateService(self)
+

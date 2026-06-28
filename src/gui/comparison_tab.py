@@ -1,69 +1,131 @@
 from __future__ import annotations
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton,
+    QTextEdit, QTableWidget, QTableWidgetItem, QHeaderView, QSplitter,
+    QGroupBox, QFrame
+)
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QFont
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import math
+
 from src.core.save_manager import SaveManager
 from src.core.comparison_engine import ComparisonEngine
 
 class ComparisonTab(QWidget):
-    """GUI tab rendering side-by-side profile metrics and missing collections checklist."""
+    """GUI tab rendering side-by-side profile metrics, radar charts, and difference tables."""
 
     def __init__(self) -> None:
         super().__init__()
         self.sm = SaveManager()
         self.engine = ComparisonEngine()
 
-        self.layout = QVBoxLayout()
-        self.layout.setContentsMargins(15, 15, 15, 15)
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(10, 10, 10, 10)
 
         # Title
-        self.header = QLabel("Multi-Profile Account Comparison")
+        self.header = QLabel("⚔️  Multi-Profile Account Comparison")
         self.header.setStyleSheet("font-size: 16px; font-weight: bold; color: #caa3ff;")
         self.layout.addWidget(self.header)
 
         # Profile Selectors
         sel_layout = QHBoxLayout()
-        sel_layout.addWidget(QLabel("Profile 1:"))
+        sel_layout.addWidget(QLabel("Profile 1 (Baseline):"))
         self.prof1_combo = QComboBox()
         sel_layout.addWidget(self.prof1_combo)
 
-        sel_layout.addWidget(QLabel("Profile 2:"))
+        sel_layout.addWidget(QLabel("Profile 2 (Comparison):"))
         self.prof2_combo = QComboBox()
         sel_layout.addWidget(self.prof2_combo)
 
         self.compare_btn = QPushButton("Compare Accounts")
+        self.compare_btn.setStyleSheet("""
+            QPushButton {
+                background: #0f1a24; border: 1px solid #caa3ff;
+                border-radius: 4px; color: #caa3ff; font-weight: bold; padding: 5px 12px;
+            }
+            QPushButton:hover { background: rgba(202,163,255,0.1); }
+        """)
         self.compare_btn.clicked.connect(self.run_comparison)
         sel_layout.addWidget(self.compare_btn)
-        
         self.layout.addLayout(sel_layout)
 
-        # Output Results Text Box
+        # Splitter to divide graphics and details
+        splitter = QSplitter(Qt.Horizontal)
+
+        # Left Column: Radar Chart + Badges
+        left_panel = QWidget()
+        left_lay = QVBoxLayout(left_panel)
+        left_lay.setContentsMargins(0, 0, 0, 0)
+
+        # Radar canvas container
+        self.chart_container = QWidget()
+        self.chart_layout = QVBoxLayout(self.chart_container)
+        self.chart_layout.setContentsMargins(0, 0, 0, 0)
+        left_lay.addWidget(self.chart_container)
+
+        # Recommendation box
+        self.rec_box = QGroupBox("Strategic Advisor Action Plan")
+        self.rec_box.setStyleSheet("""
+            QGroupBox {
+                background: #0d1117; border: 1px solid #7fffb344;
+                border-radius: 6px; font-weight: bold; color: #7fffb3; margin-top: 8px;
+            }
+            QGroupBox::title { subcontrol-origin: margin; left: 10px; }
+        """)
+        rec_lay = QVBoxLayout(self.rec_box)
+        self.rec_text = QLabel("Select profiles and click 'Compare Accounts'.")
+        self.rec_text.setWordWrap(True)
+        self.rec_text.setStyleSheet("color: #c8d6e5; font-size: 11px; font-weight: 500;")
+        rec_lay.addWidget(self.rec_text)
+        left_lay.addWidget(self.rec_box)
+
+        splitter.addWidget(left_panel)
+
+        # Right Column: Comparison text output + resource difference table
+        right_panel = QWidget()
+        right_lay = QVBoxLayout(right_panel)
+        right_lay.setContentsMargins(0, 0, 0, 0)
+
         self.results_box = QTextEdit()
         self.results_box.setReadOnly(True)
         self.results_box.setStyleSheet("""
             QTextEdit {
-                background-color: #0f1724;
-                border: 1px solid rgba(255,255,255,0.05);
-                color: #e6eef6;
+                background-color: #0d1117;
+                border: 1px solid #1e2a38;
+                color: #c8d6e5;
                 font-family: Consolas, monospace;
-                font-size: 12px;
-                padding: 8px;
+                font-size: 11px;
+                padding: 6px;
             }
         """)
-        self.layout.addWidget(self.results_box)
+        right_lay.addWidget(self.results_box)
 
-        # Table of resource differentials
         self.res_table = QTableWidget()
         self.res_table.setColumnCount(4)
         self.res_table.setHorizontalHeaderLabels(["Resource", "Profile 1 Qty", "Profile 2 Qty", "Difference"])
         self.res_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.res_table.verticalHeader().setVisible(False)
         self.res_table.setStyleSheet("""
             QTableWidget {
-                background-color: #0f1724;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                color: #e6eef6;
+                background-color: #0d1117;
+                alternate-background-color: #12181f;
+                gridline-color: #1e2a38;
+                color: #c8d6e5;
+                border: 1px solid #1e2a38;
+            }
+            QHeaderView::section {
+                background-color: #0f1a24;
+                color: #caa3ff;
+                font-weight: bold;
+                border: none;
             }
         """)
-        self.layout.addWidget(self.res_table)
+        right_lay.addWidget(self.res_table)
+
+        splitter.addWidget(right_panel)
+        self.layout.addWidget(splitter)
 
         self.setLayout(self.layout)
         self.populate_dropdowns()
@@ -83,6 +145,12 @@ class ComparisonTab(QWidget):
         if not p1 or not p2:
             self.results_box.setText("Please select two profiles to compare.")
             return
+
+        # Clear canvas
+        for i in reversed(range(self.chart_layout.count())):
+            w = self.chart_layout.itemAt(i).widget()
+            if w:
+                w.deleteLater()
 
         try:
             report = self.engine.compare_profiles(p1, p2)
@@ -135,5 +203,50 @@ class ComparisonTab(QWidget):
                     diff_item.setForeground(Qt.red)
                 self.res_table.setItem(idx, 3, diff_item)
 
+            # Update Recommendation
+            self.rec_text.setText(report.get("overall_recommendation", ""))
+
+            # Draw Radar Comparison Chart
+            fig = self._draw_radar_comparison(p1, p2, report["dimensions"])
+            canvas = FigureCanvas(fig)
+            self.chart_layout.addWidget(canvas)
+
         except Exception as e:
             self.results_box.setText(f"Comparison failed: {e}")
+
+    def _draw_radar_comparison(self, name1: str, name2: str, dims: dict) -> Figure:
+        categories = list(dims.keys())
+        N = len(categories)
+        
+        values1 = [dims[c]["p1"] for c in categories]
+        values2 = [dims[c]["p2"] for c in categories]
+
+        # Close the loop
+        values1 += values1[:1]
+        values2 += values2[:1]
+        angles = [n / float(N) * 2 * math.pi for n in range(N)]
+        angles += angles[:1]
+
+        fig = Figure(facecolor='#0b1220')
+        ax = fig.add_subplot(111, polar=True)
+        ax.set_facecolor('#0f1724')
+        ax.set_theta_offset(math.pi / 2)
+        ax.set_theta_direction(-1)
+
+        ax.set_rgrids([20, 40, 60, 80, 100], color='#2a384e')
+        ax.set_thetagrids([n / float(N) * 360 for n in range(N)], categories, color='#e6eef6', fontsize=8)
+
+        # Plot Profile 1
+        ax.plot(angles, values1, color='#caa3ff', linewidth=2, label=name1)
+        ax.fill(angles, values1, color='#caa3ff', alpha=0.15)
+
+        # Plot Profile 2
+        ax.plot(angles, values2, color='#00a3cc', linewidth=2, label=name2)
+        ax.fill(angles, values2, color='#00a3cc', alpha=0.15)
+
+        ax.set_ylim(0, 100)
+        ax.tick_params(colors='#9fb6c8', grid_color='#2a384e')
+        ax.spines['polar'].set_color('#2a384e')
+        
+        ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.2), facecolor='#0b1220', edgecolor='#2a384e', labelcolor='#e6eef6')
+        return fig

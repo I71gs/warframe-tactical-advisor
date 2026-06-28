@@ -1,0 +1,49 @@
+name: Production Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pytest
+
+      - name: Run test suite
+        run: |
+          python -m pytest tests/ --ignore=tests/test_history_engine.py --ignore=tests/test_route_engine.py
+
+      - name: Build executable via PyInstaller
+        run: |
+          pyinstaller main.spec --noconfirm
+
+      - name: Compress build artifacts
+        run: |
+          powershell Compress-Archive -Path dist\WarframeTacticalAdvisor.exe, installer\setup.iss -DestinationPath WarframeTacticalAdvisor-win64.zip
+
+      - name: Generate Github Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            WarframeTacticalAdvisor-win64.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

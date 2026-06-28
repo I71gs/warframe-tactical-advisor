@@ -1,0 +1,47 @@
+[
+    {
+        "weapon": "Phenmor",
+        "scenario": "Steel Path General",
+        "mods": ["Galvanized Chamber", "Galvanized Aptitude", "Serration", "Hellfire", "Infected Clip", "Split Chamber", "Point Strike", "Vital Sense"],
+        "arcane": "Primary Merciless",
+        "element": "Viral Heat",
+        "rating": 98,
+        "notes": "Non-crit build relying on Devouring Attrition evolution for +2000% damage on non-critical hits. Viral Heat is ideal for melting armor."
+    },
+    {
+        "weapon": "Phenmor",
+        "scenario": "Archon Hunt Boss",
+        "mods": ["Galvanized Chamber", "Serration", "Hellfire", "Stormbringer", "Infected Clip", "Primed Cryo Rounds", "Split Chamber", "Heavy Caliber"],
+        "arcane": "Primary Deadhead",
+        "element": "Radiation Cold",
+        "rating": 96,
+        "notes": "Configured for maximum single-shot radiation burst damage to bypass Archon damage attenuation mechanics."
+    },
+    {
+        "weapon": "Laetum",
+        "scenario": "Steel Path General",
+        "mods": ["Galvanized Diffusion", "Galvanized Shot", "Serrated Rounds", "Pathogen Rounds", "Convulsion", "Lethal Torrent", "Pistol Gambit", "Target Cracker"],
+        "arcane": "Secondary Deadhead",
+        "element": "Corrosive",
+        "rating": 97,
+        "notes": "Overwhelmingly strong pocket rifle. Devastating Overload evolution gives massive damage boost on non-crits."
+    },
+    {
+        "weapon": "Rubico Prime",
+        "scenario": "Eidolon Hunting",
+        "mods": ["Serration", "Split Chamber", "Point Strike", "Vital Sense", "Hellfire", "Stormbringer", "Vigilant Armaments", "Wildfire"],
+        "arcane": "Primary Deadhead",
+        "element": "Radiation",
+        "rating": 94,
+        "notes": "The classic Eidolon limb shooter. Stack combo counter before firing at Synovias. Radiation damage deals +75% against Alloy Armor."
+    },
+    {
+        "weapon": "Kuva Bramma",
+        "scenario": "Steel Path General",
+        "mods": ["Serration", "Galvanized Chamber", "Critical Delay", "Vital Sense", "Primed Firestorm", "Hunter Munitions", "Malignant Force", "Rime Rounds"],
+        "arcane": "Primary Merciless",
+        "element": "Viral Slash",
+        "rating": 92,
+        "notes": "AOE monster. Viral status combined with Hunter Munitions Slash procs ignores heavy armor completely."
+    }
+]

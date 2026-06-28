@@ -62,9 +62,14 @@ class BuildDatabase:
         for f in files:
             try:
                 with open(f, "r", encoding="utf-8") as file_obj:
-                    builds.append(json.load(file_obj))
+                    data = json.load(file_obj)
+                    if isinstance(data, list):
+                        builds.extend(data)
+                    else:
+                        builds.append(data)
             except Exception as e:
                 logger.error("Failed to load build config %s: %s", f.name, e)
+
                 
         # Fill missing ones from static database for robustness
         for sb in STATIC_BUILDS:

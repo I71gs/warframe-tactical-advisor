@@ -9,7 +9,7 @@ from src.models.player import Player
 from src.utils.logger import logger
 
 class ImportExportService:
-    """Manages profile exports (JSON, CSV), data restores, and profile merging."""
+    """Manages profile exports (JSON, CSV), data restores, profile merging, and third-party imports."""
 
     def __init__(self, context: Any = None) -> None:
         self.context = context
@@ -18,7 +18,7 @@ class ImportExportService:
         """Export current profile state to a JSON file."""
         player = PlayerLoader().load_player()
         data = {
-            "version": "8.0",
+            "version": "10.0",
             "profile": {
                 "mastery_rank": player.mastery_rank,
                 "steel_path_unlocked": player.steel_path_unlocked,
@@ -74,8 +74,29 @@ class ImportExportService:
             owned_weapons=profile.get("owned_weapons", [])
         )
 
+    def validate_import(self, source: str | Path, file_type: str = "json") -> list[str]:
+        """Validates the input file and returns any validation errors found before importing."""
+        errors = []
+        try:
+            if file_type == "json":
+                with open(source, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if not isinstance(data, dict):
+                    errors.append("Invalid format: Root JSON must be an object.")
+                elif "profile" not in data and "mastery_rank" not in data:
+                    errors.append("Missing required profile fields.")
+            else:
+                with open(source, "r", encoding="utf-8") as f:
+                    reader = csv.reader(f)
+                    header = next(reader, None)
+                    if not header:
+                        errors.append("CSV file is empty.")
+        except Exception as e:
+            errors.append(f"File read error: {e}")
+        return errors
+
     def import_from_csv(self, source: str | Path) -> Player:
-        """Loads and returns a Player object from CSV without saving it to DB yet."""
+        """Loads a Player object from CSV supporting standard exports, AlecaFrame, or Overframe exports."""
         mastery_rank = 1
         steel_path_unlocked = False
         arbitrations_unlocked = False
@@ -86,29 +107,74 @@ class ImportExportService:
         owned_weapons = []
 
         with open(source, "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            next(reader, None)  # skip header
-            for row in reader:
-                if not row or len(row) < 3:
-                    continue
-                rtype, rname, rval = row[0], row[1], row[2]
-                if rtype == "Attribute":
-                    if rname == "mastery_rank":
-                        mastery_rank = int(rval)
-                    elif rname == "steel_path_unlocked":
-                        steel_path_unlocked = (rval.lower() == "true")
-                    elif rname == "arbitrations_unlocked":
-                        arbitrations_unlocked = (rval.lower() == "true")
-                    elif rname == "helminth_unlocked":
-                        helminth_unlocked = (rval.lower() == "true")
-                elif rtype == "Quest":
-                    completed_quests.append(rname)
-                elif rtype == "Mod":
-                    owned_mods.append(rname)
-                elif rtype == "Arcane":
-                    owned_arcanes.append(rname)
-                elif rtype == "Weapon":
-                    owned_weapons.append(rname)
+            # Check headers for AlecaFrame/Overframe format
+            content = f.read()
+            f.seek(0)
+            
+            # Simple sniff test
+            is_generic = "Type,Name,Value" in content or "Quest,Mod,Arcane" in content
+
+            if is_generic:
+                reader = csv.reader(f)
+                next(reader, None)  # skip header
+                for row in reader:
+                    if not row or len(row) < 3:
+                        continue
+                    rtype, rname, rval = row[0], row[1], row[2]
+                    if rtype == "Attribute":
+                        if rname == "mastery_rank":
+                            mastery_rank = int(rval)
+                        elif rname == "steel_path_unlocked":
+                            steel_path_unlocked = (rval.lower() == "true")
+                        elif rname == "arbitrations_unlocked":
+                            arbitrations_unlocked = (rval.lower() == "true")
+                        elif rname == "helminth_unlocked":
+                            helminth_unlocked = (rval.lower() == "true")
+                    elif rtype == "Quest":
+                        completed_quests.append(rname)
+                    elif rtype == "Mod":
+                        owned_mods.append(rname)
+                    elif rtype == "Arcane":
+                        owned_arcanes.append(rname)
+                    elif rtype == "Weapon":
+                        owned_weapons.append(rname)
+            else:
+                # AlecaFrame / Overframe mapping: columns could be name, owned, rank, type, category
+                reader = csv.DictReader(f)
+                headers = [h.lower() for h in (reader.fieldnames or [])]
+                
+                name_col = next((h for h in headers if h in ["name", "item", "weapon", "mod"]), None)
+                type_col = next((h for h in headers if h in ["type", "category"]), None)
+                owned_col = next((h for h in headers if h in ["owned", "count", "quantity"]), None)
+
+                for row in reader:
+                    # Clean keys
+                    clean_row = {k.lower(): v for k, v in row.items()}
+                    name = clean_row.get(name_col) if name_col else ""
+                    if not name:
+                        continue
+                    
+                    category = clean_row.get(type_col, "").lower() if type_col else ""
+                    is_owned = True
+                    if owned_col:
+                        o_val = clean_row.get(owned_col, "1")
+                        is_owned = (o_val.lower() in ["true", "yes", "1"] or (o_val.isdigit() and int(o_val) > 0))
+
+                    if not is_owned:
+                        continue
+
+                    if "mod" in category or "mod" in name_col:
+                        owned_mods.append(name)
+                    elif "arcane" in category:
+                        owned_arcanes.append(name)
+                    elif "weapon" in category or "gun" in category or "sword" in category or "rifle" in category:
+                        owned_weapons.append(name)
+                    else:
+                        # Fallback heuristic based on names
+                        if "prime" in name.lower() or "kuva" in name.lower() or "tenet" in name.lower():
+                            owned_weapons.append(name)
+                        else:
+                            owned_mods.append(name)
 
         return Player(
             mastery_rank=mastery_rank,

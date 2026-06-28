@@ -1,26 +1,33 @@
-# User Guide & Operations (v7.0)
+# Warframe Tactical Advisor — User Guide
 
-## Overview
-Warframe Tactical Advisor helps you plan and optimize your progression paths from early game to endgame.
+Welcome to the Warframe Tactical Advisor v11.0 Companion Platform.
 
-## Getting Started
+## Core Features
 
-### 1. Dashboard
-- Displays your progression stage (Early, Mid, Late, Endgame), overall readiness scores, and highest priority recommendations.
+- **Modern Navigation**: Navigate tabs using the clean left sidebar list.
+- **Unified Command Palette (Ctrl+P)**: Toggle the floating dialog to search all weapons, mods, arcanes, quests, and run setup tasks.
+- **Build Planner & Simulator**: Simulate mods placement, view estimated sustained DPS, check missing upgrade requirements, and optimize polarities.
+- **Relic & Economy Planners**: Calculate drops, trace resource farming nodes, and set booster alerts.
 
-### 2. Profile Configuration
-- Manage your profile parameters: Mastery Rank, Completed Quests, and Owned Inventory (Weapons, Mods, Arcanes).
-- Click **Save Profile** or use `Ctrl+S` to persist values.
+---
 
-### 3. Goal Planner
-- Select a major milestone (e.g., *Unlock Steel Path*, *Become Archon Ready*) to generate a step-by-step roadmap.
-- The planner calculates exactly which quests you need to run, what mods/weapons you should farm, and resource deficits.
+## Global Keyboard Shortcuts
 
-### 4. Visual Themes
-- Open the **Theme Tab** to select a preset (Dark, Light, Lotus, Corpus, Orokin, Zariman).
-- Presets are updated in real-time.
-- If you want a custom design, edit the file `themes/custom_theme.json` to configure HSL/hex parameters.
+| Shortcut | Action Description |
+|---|---|
+| `Ctrl+P` | Opens Unified Command Palette search dialog |
+| `Ctrl+R` | Reloads / Refreshes all active dashboard panels |
+| `Ctrl+S` | Saves current profile modifications |
+| `Ctrl+I` | Opens Import Profile dialog wizard |
+| `Ctrl+E` | Exports current profile to backup JSON |
+| `Ctrl+F` | Focuses quest input field inside Profile tab |
 
-### 5. Interactive Graph Visualizations
-- Select any weapon or milestone in the **Interactive Graph** tab to show requirements recursively.
-- Click on nodes to check acquisition steps and unlock statuses.
+---
+
+## Troubleshooting FAQ
+
+### How do I switch accounts?
+- Open the Command Palette (`Ctrl+P`) and type `Command: Switch Account to Alt` or `Command: Switch Account to Default`.
+
+### Where are SQLite databases and backups saved?
+- Profiles are saved locally to `warframe.db`. Creating backups publishes backup paths to the status bar (e.g., `backup_yyyyMMdd.db`).

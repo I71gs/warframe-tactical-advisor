@@ -101,9 +101,9 @@ class ThemeManager:
         return self.themes.get("Dark", self.fallback_themes["Dark"])
 
     def get_active_theme_name(self) -> str:
-        """Fetch saved active theme or default to Dark."""
+        """Fetch saved active theme or default to Cosmic Twilight."""
         self.settings.load()
-        return self.settings.get("active_theme", "Dark")
+        return self.settings.get("active_theme", "Cosmic Twilight")
 
     def save_active_theme(self, name: str) -> None:
         """Saves selected theme selection to settings."""
