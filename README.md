@@ -4,26 +4,19 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
 
 ---
 
-## 🌟 Stage 2 Features
+## 🌟 Key Features
 
 ### 🧠 Intelligent Progression Coach
-- **Goal Planner**: Generates step-by-step custom roadmaps for major game milestones:
-  - *Finish Main Story*
-  - *Unlock Steel Path*
-  - *Become Archon Ready*
-  - *Reach Endgame*
+- **Goal Planner**: Generates step-by-step custom roadmaps for major game milestones (e.g., *Finish Main Story*, *Unlock Steel Path*, *Become Archon Ready*, *Reach Endgame*).
 - **Dependency Engine**: Dynamically analyzes and visualizes prerequisites for items, weapons, and quests (e.g., Mastery Rank, story progress, node unlocking).
 - **Farming Routes Planner**: Recommends mathematically optimized progression loops and farming order to minimize grinding efficiency gaps.
 - **Intelligent Build Analysis**: Highlights missing core mods/arcanes and outlines upgrade priorities.
 
-### 🔄 Live Wiki Database Synchronization
-- **Live Sync Engine (`tools/sync_wiki.py`)**: Fetches stats, classifications, passive text, and Helminth skills from live Fandom Wiki Scribunto Lua data modules (`Module:Weapons/data`, `Module:Mods/data`, `Module:Warframes/data`, `Module:Companions/data`).
-- **HTML Acquisition Scraper**: Dynamically scans Fandom page parsed HTML for quests, warframes, companions, arcanes, and weapons to verify and import exact drop locations.
-- **Background GUI Worker**: Integrates "Sync Database with Wiki" controls in the desktop app's Settings Tab using `QThread` async signals to prevent UI freezes.
-
 ### 🎨 Premium Visual Theme System
 - **Real-Time Theme Engine**: Compiles and updates stylesheet parameters on the fly without restarts.
-- **Built-in Styling presets**:
+- **Cosmic Twilight Default**: Features a gorgeous, high-contrast twilight navy and cosmic violet theme designed for 24/7 visual comfort and high legibility.
+- **Built-in Styling Presets**:
+  - `Cosmic Twilight` (Default space-violet layout)
   - `Dark` (Standard dark mode)
   - `Light` (High-contrast light mode)
   - `Lotus` (Royal magenta & purple tones)
@@ -31,6 +24,16 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
   - `Orokin` (Elegant marble white & gold filigree)
   - `Zariman` (Dark emerald & void-teal glow)
 - **Custom Theme Extensibility**: Supports loading a customized palette definition file at `src/resources/themes/custom_theme.json`.
+
+### 🩺 Enterprise-Grade Design Polish
+- **Healthcare-Grade Sidebar**: Fully redesigned left navigation panel with professional status icons and high-contrast clinical spacing.
+- **Enhanced Circular Progress Indicators**: Upgraded radial widgets supporting nested status labels (`READINESS`, `MR XP`) and customizable thickness and color.
+- **Clean Visual Hierarchy**: Cohesive card layouts (`QGroupBox`), border rules, spacing, and unified starlight color palettes that elevate the desktop experience.
+
+### 🔄 Live Wiki Database Synchronization
+- **Live Sync Engine (`tools/sync_wiki.py`)**: Fetches stats, classifications, passive text, and Helminth skills from live Fandom Wiki Scribunto Lua data modules (`Module:Weapons/data`, `Module:Mods/data`, `Module:Warframes/data`, `Module:Companions/data`).
+- **HTML Acquisition Scraper**: Dynamically scans Fandom page parsed HTML for quests, warframes, companions, arcanes, and weapons to verify and import exact drop locations.
+- **Background GUI Worker**: Integrates "Sync Database with Wiki" controls in the desktop app's Settings Tab using `QThread` async signals to prevent UI freezes.
 
 ### 🌐 Multi-Platform & Extensibility Ecosystem
 - **Local REST API**: Hosted at `src/api/app.py` for integration with external tools and third-party dashboards.
@@ -60,7 +63,7 @@ An advanced progression assistant, tactical coach, and optimization suite for Wa
   - `frontend/web/` — Web application components
 - `plugins/` — Custom plugin implementations and templates
   - `plugins/examples/` — Consolidated example plugin files
-- `tests/` — Automated test suite with 150+ test cases covering the entire coaching ecosystem
+- `tests/` — Automated test suite with 250+ test cases covering the entire coaching ecosystem
 - `tools/` — Developer CLI tools (Wiki Sync engine, theme checkers, build helpers)
 
 ---
