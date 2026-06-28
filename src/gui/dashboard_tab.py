@@ -193,9 +193,17 @@ class DashboardTab(QWidget):
         hero_row.addStretch()
         root.addLayout(hero_row)
 
-        # ── 4-column command centre ────────────────────────────────────────
-        cols_row = QHBoxLayout()
-        cols_row.setSpacing(10)
+        # ── Responsive Command Centre container & Scroll Area ──────────────
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.NoFrame)
+        self.scroll_area.setStyleSheet("background: transparent;")
+        
+        self.cols_container = QWidget()
+        self.cols_container.setStyleSheet("background: transparent;")
+        self.cols_layout = QGridLayout(self.cols_container)
+        self.cols_layout.setContentsMargins(0, 0, 0, 0)
+        self.cols_layout.setSpacing(10)
 
         # Col 1 — Today's Priorities
         col1_box, col1_lay = _card("📅  Today's Priorities", "#00d4ff", 280)
@@ -215,10 +223,13 @@ class DashboardTab(QWidget):
         weekly_lay.addWidget(self.weekly_progress_bar)
         weekly_lay.addStretch()
 
-        col1_wrap = QVBoxLayout()
+        self.col1_widget = QWidget()
+        self.col1_widget.setStyleSheet("background: transparent;")
+        col1_wrap = QVBoxLayout(self.col1_widget)
+        col1_wrap.setContentsMargins(0, 0, 0, 0)
+        col1_wrap.setSpacing(10)
         col1_wrap.addWidget(col1_box, 2)
         col1_wrap.addWidget(weekly_strip, 1)
-        cols_row.addLayout(col1_wrap, 1)
 
         # Col 2 — World State
         col2_box, col2_lay = _card("🌍  World State", "#ffb76b", 380)
@@ -246,7 +257,8 @@ class DashboardTab(QWidget):
             col2_lay.addLayout(row_w)
             self.ws_labels[key] = v_lbl
         col2_lay.addStretch()
-        cols_row.addWidget(col2_box, 1)
+        
+        self.col2_widget = col2_box
 
         # Col 3 — Goal Tracker + Economy
         col3_box, col3_lay = _card("🎯  Goal Tracker", "#caa3ff", 200)
@@ -265,10 +277,13 @@ class DashboardTab(QWidget):
             self.econ_labels.append(lbl)
         econ_lay.addStretch()
 
-        col3_wrap = QVBoxLayout()
+        self.col3_widget = QWidget()
+        self.col3_widget.setStyleSheet("background: transparent;")
+        col3_wrap = QVBoxLayout(self.col3_widget)
+        col3_wrap.setContentsMargins(0, 0, 0, 0)
+        col3_wrap.setSpacing(10)
         col3_wrap.addWidget(col3_box, 1)
         col3_wrap.addWidget(econ_box, 1)
-        cols_row.addLayout(col3_wrap, 1)
 
         # Col 4 — MR + Scores + Readiness
         col4_box, col4_lay = _card("📊  Progression Metrics", "#7fffb3", 380)
@@ -298,7 +313,6 @@ class DashboardTab(QWidget):
         self.mr_lbl = _row_label("MR: —  |  XP needed: —")
         col4_lay.addWidget(self.mr_lbl)
 
-
         score_sections = [
             ("Story",    "story",    "#7fb3ff"),
             ("Mods",     "mods",     "#7fffb3"),
@@ -320,11 +334,76 @@ class DashboardTab(QWidget):
         col4_lay.addLayout(self.badge_layout)
         col4_lay.addStretch()
 
-        col4_wrap = QVBoxLayout()
-        col4_wrap.addWidget(col4_box)
-        cols_row.addLayout(col4_wrap, 1)
+        self.col4_widget = col4_box
 
-        root.addLayout(cols_row)
+        # Default standard mapping to columns
+        self.cols_layout.addWidget(self.col1_widget, 0, 0)
+        self.cols_layout.addWidget(self.col2_widget, 0, 1)
+        self.cols_layout.addWidget(self.col3_widget, 0, 2)
+        self.cols_layout.addWidget(self.col4_widget, 0, 3)
+        self._current_bp = "wide"
+
+        self.scroll_area.setWidget(self.cols_container)
+        root.addWidget(self.scroll_area, 1)
+
+    def resizeEvent(self, event: Any) -> None:
+        super().resizeEvent(event)
+        self.adjust_layout_to_width(self.width())
+
+    def adjust_layout_to_width(self, width: int) -> None:
+        """Dynamically re-assign columns to grid cells based on window width."""
+        if width <= 1100:
+            bp = "compact"
+        elif width <= 1440:
+            bp = "standard"
+        else:
+            bp = "wide"
+             
+        if hasattr(self, "_current_bp") and self._current_bp == bp:
+            return
+             
+        self._current_bp = bp
+        self.setUpdatesEnabled(False)
+         
+        # Detach widgets from layout
+        self.cols_layout.removeWidget(self.col1_widget)
+        self.cols_layout.removeWidget(self.col2_widget)
+        self.cols_layout.removeWidget(self.col3_widget)
+        self.cols_layout.removeWidget(self.col4_widget)
+         
+        if bp == "compact":
+            # 1 column stacked layout
+            self.cols_layout.addWidget(self.col1_widget, 0, 0)
+            self.cols_layout.addWidget(self.col2_widget, 1, 0)
+            self.cols_layout.addWidget(self.col3_widget, 2, 0)
+            self.cols_layout.addWidget(self.col4_widget, 3, 0)
+            self.cols_layout.setColumnStretch(0, 1)
+            self.cols_layout.setColumnStretch(1, 0)
+            self.cols_layout.setColumnStretch(2, 0)
+            self.cols_layout.setColumnStretch(3, 0)
+        elif bp == "standard":
+            # 2 columns grid layout
+            self.cols_layout.addWidget(self.col1_widget, 0, 0)
+            self.cols_layout.addWidget(self.col2_widget, 0, 1)
+            self.cols_layout.addWidget(self.col3_widget, 1, 0)
+            self.cols_layout.addWidget(self.col4_widget, 1, 1)
+            self.cols_layout.setColumnStretch(0, 1)
+            self.cols_layout.setColumnStretch(1, 1)
+            self.cols_layout.setColumnStretch(2, 0)
+            self.cols_layout.setColumnStretch(3, 0)
+        else:
+            # 4 columns side-by-side layout
+            self.cols_layout.addWidget(self.col1_widget, 0, 0)
+            self.cols_layout.addWidget(self.col2_widget, 0, 1)
+            self.cols_layout.addWidget(self.col3_widget, 0, 2)
+            self.cols_layout.addWidget(self.col4_widget, 0, 3)
+            self.cols_layout.setColumnStretch(0, 1)
+            self.cols_layout.setColumnStretch(1, 1)
+            self.cols_layout.setColumnStretch(2, 1)
+            self.cols_layout.setColumnStretch(3, 1)
+             
+        self.setUpdatesEnabled(True)
+        self.update()
 
     @staticmethod
     def _hero_chip(text: str, color: str, wide: bool = False) -> QLabel:

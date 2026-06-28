@@ -68,6 +68,7 @@ class MainWindow(QMainWindow):
         """Initialize the class."""
         super().__init__()
         self.setWindowTitle('Warframe Tactical Advisor')
+        self.setMinimumSize(900, 600)
         
         # Initialize AppContext and subscribe to UI events
         from src.core.app_context import AppContext
@@ -618,6 +619,8 @@ class MainWindow(QMainWindow):
             width = size.get('width', 1000)
             height = size.get('height', 700)
             self.resize(width, height)
+            if 'x' in size and 'y' in size:
+                self.move(size['x'], size['y'])
         else:
             self.resize(1000, 700)
         if self.settings.get('remember_tab', True):
@@ -650,7 +653,13 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event: Any) -> None:
         """Save window settings before closing."""
         if self.settings.get('remember_size', True):
-            self.settings.update(window_size={'width': self.width(), 'height': self.height()})
+            pos = self.pos()
+            self.settings.update(window_size={
+                'width': self.width(),
+                'height': self.height(),
+                'x': pos.x(),
+                'y': pos.y()
+            })
         self.settings.save()
         try:
             from src.core.player_loader import PlayerLoader
