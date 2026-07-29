@@ -5,7 +5,7 @@ TEMPLATE = """
 QWidget {{
   background-color: {PRIMARY};
   color: {TEXT};
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-family: {FONT_FAMILY};
   font-size: 12px;
 }}
 
@@ -20,15 +20,15 @@ QToolTip {{
   background-color: {SECONDARY};
   color: {TEXT};
   border: 1px solid {ACCENT};
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   padding: 6px;
 }}
 
 /* Tab Bar Overhaul */
 QTabWidget::pane {{
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: {BORDER_STYLE_CARD};
   background-color: {PRIMARY};
-  border-radius: 8px;
+  border-radius: {BORDER_RADIUS_CARD};
 }}
 
 QTabWidget::tab-bar {{
@@ -41,8 +41,8 @@ QTabBar::tab {{
   padding: 10px 20px;
   margin-right: 6px;
   margin-bottom: 4px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  border-top-left-radius: {BORDER_RADIUS_TAB};
+  border-top-right-radius: {BORDER_RADIUS_TAB};
   border: 1px solid rgba(255, 255, 255, 0.03);
   font-weight: 600;
   font-size: 11px;
@@ -66,9 +66,9 @@ QTabBar::tab:selected {{
 /* Buttons */
 QPushButton {{
   background-color: {CARD};
-  border: 1px solid rgba(188, 163, 255, 0.15);
+  border: {BORDER_STYLE_BUTTON};
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   color: {TEXT};
   font-weight: bold;
   font-size: 11px;
@@ -77,7 +77,7 @@ QPushButton {{
 }}
 
 QPushButton:hover {{
-  background-color: rgba(188, 163, 255, 0.1);
+  background-color: {BUTTON_HOVER_BG};
   border-color: {ACCENT};
   color: #ffffff;
 }}
@@ -96,9 +96,9 @@ QPushButton:disabled {{
 QLineEdit, QComboBox, QTextEdit, QPlainTextEdit, QSpinBox {{
   background-color: {SECONDARY};
   color: {TEXT};
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: {WIDGET_BORDER};
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   selection-background-color: {ACCENT};
   selection-color: {PRIMARY};
 }}
@@ -121,8 +121,8 @@ QTableView, QTableWidget {{
   alternate-background-color: rgba(255, 255, 255, 0.01);
   gridline-color: rgba(255, 255, 255, 0.04);
   color: {TEXT};
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border: {BORDER_STYLE_CARD};
+  border-radius: {BORDER_RADIUS_CARD};
   selection-background-color: {ACCENT};
   selection-color: {PRIMARY};
 }}
@@ -152,14 +152,14 @@ QTableWidget::item:selected, QTableView::item:selected {{
 /* Lists */
 QListWidget {{
   background-color: {SECONDARY};
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  border: {BORDER_STYLE_CARD};
+  border-radius: {BORDER_RADIUS_CARD};
   padding: 8px;
 }}
 
 QListWidget::item {{
   padding: 10px 14px;
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   margin-bottom: 2px;
   color: {MUTED};
   font-weight: 500;
@@ -180,7 +180,7 @@ QListWidget::item:selected {{
 QProgressBar {{
   background-color: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   text-align: center;
   font-weight: bold;
   color: {TEXT};
@@ -188,16 +188,16 @@ QProgressBar {{
 
 QProgressBar::chunk {{
   background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {ACCENT}, stop:1 {MUTED});
-  border-radius: 5px;
+  border-radius: {BORDER_RADIUS_WIDGET};
 }}
 
 /* Group Boxes (Clean Card Layout) */
 QGroupBox {{
-  border: 1px solid rgba(188, 163, 255, 0.15);
+  border: {BORDER_STYLE_CARD};
   background-color: {CARD};
   margin-top: 14px;
-  padding: 16px;
-  border-radius: 8px;
+  padding: {PADDING_CARD};
+  border-radius: {BORDER_RADIUS_CARD};
   font-weight: bold;
   font-size: 13px;
 }}
@@ -226,7 +226,7 @@ QScrollBar::handle:vertical {{
 }}
 
 QScrollBar::handle:vertical:hover {{
-  background-color: {ACCENT};
+  background-color: {SCROLLBAR_ACCENT};
 }}
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
@@ -247,7 +247,7 @@ QScrollBar::handle:horizontal {{
 }}
 
 QScrollBar::handle:horizontal:hover {{
-  background-color: {ACCENT};
+  background-color: {SCROLLBAR_ACCENT};
 }}
 
 QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
@@ -264,29 +264,54 @@ QListWidget::item[recCategory="ENDGAME"] {{ color: #ff7b7b; }}
 QListWidget::item[recCategory="PROGRESSION"] {{ color: #6fffe8; }}
 
 /* Sidebar Nav Styles */
-QTreeWidget#sidebarNav {{
+QTreeWidget#sidebarNav, QTreeWidget#bottomSidebarNav {{
   border: none;
   background-color: {SECONDARY};
-  padding: 10px 4px;
+  padding: 6px 4px;
 }}
 
-QTreeWidget#sidebarNav::item {{
+QTreeWidget#sidebarNav::item, QTreeWidget#bottomSidebarNav::item {{
   padding: 8px 10px;
   margin-bottom: 2px;
-  border-radius: 6px;
+  border-radius: {BORDER_RADIUS_WIDGET};
   color: {MUTED};
   font-weight: 500;
 }}
 
-QTreeWidget#sidebarNav::item:hover {{
+QTreeWidget#sidebarNav::item:hover, QTreeWidget#bottomSidebarNav::item:hover {{
   background-color: rgba(255, 255, 255, 0.03);
   color: {TEXT};
 }}
 
-QTreeWidget#sidebarNav::item:selected {{
+QTreeWidget#sidebarNav::item:selected, QTreeWidget#bottomSidebarNav::item:selected {{
   background-color: {ACCENT};
   color: {PRIMARY};
   font-weight: bold;
+}}
+
+QPushButton#sidebarSearchBtn {{
+  background-color: {PRIMARY};
+  border: {WIDGET_BORDER};
+  border-radius: {BORDER_RADIUS_WIDGET};
+  color: {MUTED};
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 11px;
+  margin: 8px 10px;
+  font-weight: 500;
+}}
+
+QPushButton#sidebarSearchBtn:hover {{
+  background-color: {SECONDARY};
+  border-color: {ACCENT};
+  color: {TEXT};
+}}
+
+QFrame#sidebarSeparator {{
+  background-color: rgba(255, 255, 255, 0.08);
+  max-height: 1px;
+  border: none;
+  margin: 6px 10px;
 }}
 """
 
@@ -294,14 +319,68 @@ QTreeWidget#sidebarNav::item:selected {{
 class ThemeEngine:
     """Compiles template stylesheet parameters into PySide6 stylesheets."""
 
-    def compile_stylesheet(self, theme_data: dict[str, str]) -> str:
-        """Substitute theme colors into structural template CSS."""
+    def compile_stylesheet(self, theme_data: dict[str, str], theme_name: str = "") -> str:
+        """Substitute theme colors and design tokens into structural template CSS."""
+        font_family = '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        border_radius_card = "8px"
+        border_radius_widget = "6px"
+        border_radius_tab = "6px"
+        border_style_card = "1px solid rgba(255, 255, 255, 0.05)"
+        border_style_button = "1px solid rgba(255, 255, 255, 0.15)"
+        padding_card = "16px"
+        
+        # Determine styling properties based on theme name (base / accent)
+        if "Lotus" in theme_name:
+            border_radius_card = "16px"
+            border_radius_widget = "10px"
+            border_radius_tab = "10px"
+            padding_card = "20px"
+        elif "Orokin" in theme_name:
+            border_radius_card = "0px"
+            border_radius_widget = "0px"
+            border_radius_tab = "0px"
+            border_style_card = f"2px double {theme_data.get('ACCENT', '#cfad64')}"
+            border_style_button = f"1px solid {theme_data.get('ACCENT', '#cfad64')}"
+            padding_card = "14px"
+        elif "Corpus" in theme_name:
+            border_radius_card = "3px"
+            border_radius_widget = "2px"
+            border_radius_tab = "2px"
+            border_style_card = f"1px solid {theme_data.get('ACCENT', '#00a3cc')}"
+            padding_card = "10px"
+        elif "Grineer" in theme_name:
+            border_radius_card = "6px"
+            border_radius_widget = "4px"
+            border_radius_tab = "4px"
+            border_style_card = f"2px solid {theme_data.get('ACCENT', '#a35d3d')}"
+            padding_card = "12px"
+        elif "Zariman" in theme_name:
+            border_radius_card = "8px"
+            border_radius_widget = "4px"
+            border_radius_tab = "4px"
+            border_style_card = f"1px dashed {theme_data.get('ACCENT', '#6fffe8')}55"
+            padding_card = "16px"
+
+        button_hover_bg = theme_data.get("BUTTON_HOVER_BG", "rgba(255, 255, 255, 0.05)")
+        widget_border = theme_data.get("WIDGET_BORDER", "1px solid rgba(255, 255, 255, 0.08)")
+        scrollbar_accent = theme_data.get("ACCENT", "#00a3cc")
+
         return TEMPLATE.format(
             PRIMARY=theme_data.get("PRIMARY", "#0b1220"),
             SECONDARY=theme_data.get("SECONDARY", "#0f1724"),
             ACCENT=theme_data.get("ACCENT", "#00a3cc"),
             TEXT=theme_data.get("TEXT", "#e6eef6"),
             MUTED=theme_data.get("MUTED", "#9fb6c8"),
-            CARD=theme_data.get("CARD", "#0f1a24")
+            CARD=theme_data.get("CARD", "#0f1a24"),
+            FONT_FAMILY=font_family,
+            BORDER_RADIUS_CARD=border_radius_card,
+            BORDER_RADIUS_WIDGET=border_radius_widget,
+            BORDER_RADIUS_TAB=border_radius_tab,
+            BORDER_STYLE_CARD=border_style_card,
+            BORDER_STYLE_BUTTON=border_style_button,
+            PADDING_CARD=padding_card,
+            BUTTON_HOVER_BG=button_hover_bg,
+            WIDGET_BORDER=widget_border,
+            SCROLLBAR_ACCENT=scrollbar_accent
         )
 

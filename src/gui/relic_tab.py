@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 
 from src.core.relic_engine import RelicEngine, RELIC_DATA, REFINEMENT_TRACE_COST, ERA_BEST_NODES
+from src.gui.widgets.custom_charts import AnimatedButton
 
 RARITY_COLORS = {
     "Common":    "#7fffb3",
@@ -74,15 +75,82 @@ class RelicTab(QWidget):
         self.search_box.setPlaceholderText("🔍  Search by item name, relic name, era…")
         self.search_box.textChanged.connect(self._filter_relics)
         toolbar.addWidget(self.search_box)
-
-        era_lbl = QLabel("Era:")
-        era_lbl.setStyleSheet("color: #7a8fa6;")
-        self.era_combo = QComboBox()
-        self.era_combo.addItems(["All", "Lith", "Meso", "Neo", "Axi", "Requiem"])
-        self.era_combo.currentTextChanged.connect(self._filter_relics)
-        toolbar.addWidget(era_lbl)
-        toolbar.addWidget(self.era_combo)
         lay.addLayout(toolbar)
+
+        # Era filter chips
+        chips_lay = QHBoxLayout()
+        chips_lay.setSpacing(8)
+        chips_lbl = QLabel("Era Filters:")
+        chips_lbl.setStyleSheet("font-size: 11px; font-weight: bold; color: rgba(255, 255, 255, 0.4);")
+        chips_lay.addWidget(chips_lbl)
+
+        self.chip_all = AnimatedButton("All")
+        self.chip_all.setCheckable(True)
+        self.chip_all.setChecked(True)
+
+        self.chip_lith = AnimatedButton("Lith")
+        self.chip_lith.setCheckable(True)
+
+        self.chip_meso = AnimatedButton("Meso")
+        self.chip_meso.setCheckable(True)
+
+        self.chip_neo = AnimatedButton("Neo")
+        self.chip_neo.setCheckable(True)
+
+        self.chip_axi = AnimatedButton("Axi")
+        self.chip_axi.setCheckable(True)
+
+        self.chip_requiem = AnimatedButton("Requiem")
+        self.chip_requiem.setCheckable(True)
+
+        # Style era chips
+        chip_style = """
+            QPushButton {
+                background-color: #0f1a24;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                color: #e6eef6;
+                padding: 4px 12px;
+                font-size: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: rgba(255, 255, 255, 0.05);
+            }
+            QPushButton:checked {
+                background-color: #caa3ff;
+                border-color: #caa3ff;
+                color: #000000;
+            }
+        """
+
+        for chip in (self.chip_all, self.chip_lith, self.chip_meso, self.chip_neo, self.chip_axi, self.chip_requiem):
+            chip.setStyleSheet(chip_style)
+            chips_lay.addWidget(chip)
+
+        self.chip_all.clicked.connect(self._on_all_chip_clicked)
+        self.chip_lith.clicked.connect(self._on_era_chip_clicked)
+        self.chip_meso.clicked.connect(self._on_era_chip_clicked)
+        self.chip_neo.clicked.connect(self._on_era_chip_clicked)
+        self.chip_axi.clicked.connect(self._on_era_chip_clicked)
+        self.chip_requiem.clicked.connect(self._on_era_chip_clicked)
+
+        chips_lay.addStretch()
+        lay.addLayout(chips_lay)
+
+        # Load persistent relic filters
+        from src.core.settings_manager import SettingsManager
+        settings = SettingsManager()
+        saved = settings.get("relic_filters", {})
+        if isinstance(saved, dict) and saved:
+            self.chip_all.setChecked(saved.get("all", True))
+            self.chip_lith.setChecked(saved.get("lith", False))
+            self.chip_meso.setChecked(saved.get("meso", False))
+            self.chip_neo.setChecked(saved.get("neo", False))
+            self.chip_axi.setChecked(saved.get("axi", False))
+            self.chip_requiem.setChecked(saved.get("requiem", False))
+        else:
+            self.chip_all.setChecked(True)
 
         # Relic table
         cols = ["Era", "Relic Name", "Rewards (top 3)", "Best Farm Node"]
@@ -202,30 +270,62 @@ class RelicTab(QWidget):
     # ── data loading ──────────────────────────────────────────────────────────
 
     def _load_all_relics(self) -> None:
-        self.relic_model.setRowCount(0)
-        for relic in RELIC_DATA:
-            era = relic.get("era", "")
-            name = relic.get("relic_name", "")
-            farm = relic.get("best_farm_node", ERA_BEST_NODES.get(era, ""))
-            rewards_preview = ", ".join(
-                f"{r['item']} ({r['rarity']})" for r in relic.get("rewards", [])[:3]
-            )
-            era_color = ERA_COLORS.get(era, "#c8d6e5")
-            row = [
-                _cell(era, era_color, bold=True),
-                _cell(name, "#caa3ff"),
-                _cell(rewards_preview),
-                _cell(farm, "#7a8fa6"),
-            ]
-            self.relic_model.appendRow(row)
+        self._filter_relics()
+
+    def _on_all_chip_clicked(self) -> None:
+        if self.chip_all.isChecked():
+            self.chip_lith.setChecked(False)
+            self.chip_meso.setChecked(False)
+            self.chip_neo.setChecked(False)
+            self.chip_axi.setChecked(False)
+            self.chip_requiem.setChecked(False)
+        else:
+            self.chip_all.setChecked(True)
+        self._save_relic_filters()
+        self._filter_relics()
+
+    def _on_era_chip_clicked(self) -> None:
+        any_checked = (self.chip_lith.isChecked() or self.chip_meso.isChecked() or 
+                       self.chip_neo.isChecked() or self.chip_axi.isChecked() or 
+                       self.chip_requiem.isChecked())
+        if any_checked:
+            self.chip_all.setChecked(False)
+        else:
+            self.chip_all.setChecked(True)
+        self._save_relic_filters()
+        self._filter_relics()
+
+    def _save_relic_filters(self) -> None:
+        from src.core.settings_manager import SettingsManager
+        settings = SettingsManager()
+        settings.update(**{
+            "relic_filters": {
+                "all": self.chip_all.isChecked(),
+                "lith": self.chip_lith.isChecked(),
+                "meso": self.chip_meso.isChecked(),
+                "neo": self.chip_neo.isChecked(),
+                "axi": self.chip_axi.isChecked(),
+                "requiem": self.chip_requiem.isChecked(),
+            }
+        })
+        settings.save()
 
     def _filter_relics(self) -> None:
         text = self.search_box.text().strip().lower()
-        era_filter = self.era_combo.currentText()
+        
+        active_eras = []
+        if self.chip_lith.isChecked(): active_eras.append("Lith")
+        if self.chip_meso.isChecked(): active_eras.append("Meso")
+        if self.chip_neo.isChecked(): active_eras.append("Neo")
+        if self.chip_axi.isChecked(): active_eras.append("Axi")
+        if self.chip_requiem.isChecked(): active_eras.append("Requiem")
+        
+        show_all_eras = self.chip_all.isChecked() or not active_eras
+        
         self.relic_model.setRowCount(0)
         for relic in RELIC_DATA:
             era = relic.get("era", "")
-            if era_filter != "All" and era != era_filter:
+            if not show_all_eras and era not in active_eras:
                 continue
             name = relic.get("relic_name", "")
             rewards = relic.get("rewards", [])

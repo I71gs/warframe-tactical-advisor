@@ -3,10 +3,11 @@ from typing import Any
 from pathlib import Path
 import sys
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLineEdit, QListWidget, QListWidgetItem, QMessageBox
-from PySide6.QtCore import Qt, QEvent
+from PySide6.QtCore import Qt, QEvent, QPropertyAnimation, QParallelAnimationGroup, QEasingCurve
 from src.core.search_engine_v3 import SearchEngineV3
 from src.core.report_engine import ReportEngine
 from src.core.app_context import AppContext
+from src.gui.widgets.custom_charts import FadeTranslateScaleEffect
 
 
 PALETTE_STYLE = """
@@ -45,7 +46,10 @@ class CommandPaletteDialog(QDialog):
     def __init__(self, parent: Any = None) -> None:
         super().__init__(parent)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
-        self.setAttribute(Qt.WA_TranslucentBackground, False)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        
+        self.effect = FadeTranslateScaleEffect(self)
+        self.setGraphicsEffect(self.effect)
         
         self.context = AppContext()
         self.search_engine = SearchEngineV3(self.context)
@@ -85,6 +89,32 @@ class CommandPaletteDialog(QDialog):
         
         # Install event filter to handle navigation & selection
         self.search_input.installEventFilter(self)
+
+    def showEvent(self, event: Any) -> None:
+        super().showEvent(event)
+        self.effect.set_opacity(0.0)
+        self.effect.set_scale(0.85)
+        
+        if 'pytest' not in sys.modules:
+            self.anim_group = QParallelAnimationGroup()
+            
+            op_anim = QPropertyAnimation(self.effect, b"opacity")
+            op_anim.setDuration(160)
+            op_anim.setStartValue(0.0)
+            op_anim.setEndValue(1.0)
+            
+            scale_anim = QPropertyAnimation(self.effect, b"scale")
+            scale_anim.setDuration(160)
+            scale_anim.setEasingCurve(QEasingCurve.OutQuad)
+            scale_anim.setStartValue(0.85)
+            scale_anim.setEndValue(1.0)
+            
+            self.anim_group.addAnimation(op_anim)
+            self.anim_group.addAnimation(scale_anim)
+            self.anim_group.start()
+        else:
+            self.effect.set_opacity(1.0)
+            self.effect.set_scale(1.0)
 
     def show_palette(self) -> None:
         """Positions and displays the command palette."""
@@ -244,6 +274,24 @@ class CommandPaletteDialog(QDialog):
     def action_show_search_result(self, res: dict) -> None:
         if 'pytest' in sys.modules:
             return
+        
+        parent = self.parent()
+        if parent and hasattr(parent, "tabs"):
+            search_tab_idx = -1
+            for idx in range(parent.tabs.count()):
+                if parent.tabs.tabText(idx).lower() == "global search":
+                    search_tab_idx = idx
+                    break
+            
+            if search_tab_idx != -1:
+                parent.tabs.setCurrentIndex(search_tab_idx)
+                tab_widget = parent.tabs.widget(search_tab_idx)
+                if hasattr(tab_widget, "search_input"):
+                    tab_widget.search_input.setText(res["name"])
+                    tab_widget.search_input.setFocus()
+                    return
+
+        # Fallback to QMessageBox if Global Search tab is not found/loaded
         wiki_info = f"\n\nWiki URL:\n{res['wiki_url']}" if res.get('wiki_url') else ""
         QMessageBox.information(
             self.parent(),

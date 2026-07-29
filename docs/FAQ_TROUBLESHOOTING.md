@@ -30,7 +30,7 @@ Welcome to the FAQ & Troubleshooting guide. This document helps resolve issues r
 
 ### Q: How do I switch between default and alternate accounts?
 - **Option 1**: Go to the **Settings** tab in the main sidebar navigation, choose **Alt Account** or **Default Account** from the Active Account Profile dropdown, and click **Save Settings**.
-- **Option 2**: Press `Ctrl+P` to open the VSCode-style Command Palette, type `Command: Switch Account to Alt` (or `Default`), and press Enter.
+- **Option 2**: Press `Ctrl+K` (or `Ctrl+P`) to open the VSCode-style Command Palette, type `Command: Switch Account to Alt` (or `Default`), and press Enter.
 
 ### Q: Why does the UI not update immediately when I switch profiles?
 - **Solution**: Profile switches now automatically broadcast the `ACCOUNT_SWITCHED` event. This clears the thread-safe `QueryCache` layer and refreshes all active tabs instantly. If data appears stale, press `Ctrl+R` to force-refresh all dashboards.

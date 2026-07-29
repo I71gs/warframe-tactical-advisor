@@ -2,7 +2,7 @@
   "version": "1.0",
   "dark_mode": true,
   "auto_refresh": true,
-  "remember_size": false,
+  "remember_size": true,
   "remember_tab": false,
   "last_tab_index": 0,
   "window_size": {
@@ -11,5 +11,21 @@
   },
   "current_profile": "default",
   "active_theme": "Dark",
-  "use_wiki_gg": true
+  "use_wiki_gg": true,
+  "onboarding_completed": true,
+  "onboarding_path": "Endgame",
+  "goal_focus": "Endgame",
+  "priority_level": "power",
+  "guidance_level": "low",
+  "recommendation_filters": [
+    "STORY"
+  ],
+  "relic_filters": {
+    "all": false,
+    "lith": true,
+    "meso": true,
+    "neo": false,
+    "axi": false,
+    "requiem": false
+  }
 }

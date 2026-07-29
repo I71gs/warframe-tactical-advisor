@@ -2,6 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 import shutil
 import sqlite3
+import threading
 from datetime import datetime
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -12,6 +13,8 @@ SCHEMA_VERSION = '2'
 
 class DatabaseManager:
     """Manages local SQLite persistence for player profiles and progress."""
+
+    _thread_local = threading.local()
 
     def __init__(self, db_path: Path | str | None = None, timeout: int = 5) -> None:
         """Open or create the SQLite database file."""
@@ -24,8 +27,19 @@ class DatabaseManager:
             sm = SaveManager()
             sm.create_profile(profile)
             self.db_path = sm.get_profile_db_path(profile)
+        
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.connection = sqlite3.connect(str(self.db_path), timeout=timeout)
+        
+        thread_conn_key = f"conn_{self.db_path}"
+        if not hasattr(self._thread_local, thread_conn_key):
+            conn = sqlite3.connect(str(self.db_path), timeout=timeout, check_same_thread=False)
+            try:
+                conn.execute("PRAGMA journal_mode=WAL;")
+            except Exception:
+                pass
+            setattr(self._thread_local, thread_conn_key, conn)
+            
+        self.connection = getattr(self._thread_local, thread_conn_key)
         self.cursor = self.connection.cursor()
         self.create_tables()
 

@@ -1,9 +1,9 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QGroupBox, QGridLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QListWidgetItem, QGroupBox, QGridLayout, QFrame
 from PySide6.QtCore import Qt
 from src.core.player_loader import PlayerLoader
 from src.core.mastery_planner import MasteryPlanner
-
 from src.core.app_context import AppContext
+from src.gui.widgets.custom_charts import CircularProgress
 
 class MasteryTab(QWidget):
     """GUI tab visualizing Mastery Rank XP deficits and prioritizing optimal leveling routes."""
@@ -21,22 +21,33 @@ class MasteryTab(QWidget):
         
         # Summary Box
         self.summary_box = QGroupBox("Mastery Progress Summary")
-        self.summary_layout = QGridLayout(self.summary_box)
+        self.summary_layout = QHBoxLayout(self.summary_box)
+        
+        info_panel = QFrame()
+        info_panel.setStyleSheet("border: none; background: transparent;")
+        info_grid = QGridLayout(info_panel)
+        info_grid.setContentsMargins(0, 0, 0, 0)
         
         self.mr_lbl = QLabel("Current Mastery Rank: -")
-        self.mr_lbl.setStyleSheet("font-size: 13px; font-weight: bold;")
+        self.mr_lbl.setStyleSheet("font-size: 13px; font-weight: bold; color: #e6eef6;")
         self.next_lbl = QLabel("Next Rank Target: -")
-        self.next_lbl.setStyleSheet("font-size: 13px; font-weight: bold;")
+        self.next_lbl.setStyleSheet("font-size: 13px; font-weight: bold; color: #caa3ff;")
         
         self.xp_lbl = QLabel("XP Needed for Next Rank: -")
         self.xp_lbl.setStyleSheet("color: #ffb76b; font-weight: 500;")
         self.eta_lbl = QLabel("Estimated Timeframe: -")
         self.eta_lbl.setStyleSheet("color: #22c55e; font-weight: bold;")
         
-        self.summary_layout.addWidget(self.mr_lbl, 0, 0)
-        self.summary_layout.addWidget(self.next_lbl, 0, 1)
-        self.summary_layout.addWidget(self.xp_lbl, 1, 0)
-        self.summary_layout.addWidget(self.eta_lbl, 1, 1)
+        info_grid.addWidget(self.mr_lbl, 0, 0)
+        info_grid.addWidget(self.next_lbl, 0, 1)
+        info_grid.addWidget(self.xp_lbl, 1, 0)
+        info_grid.addWidget(self.eta_lbl, 1, 1)
+        
+        self.summary_layout.addWidget(info_panel, 1)
+        
+        # Add Circular Progress for MR 30 completion
+        self.mr_progress = CircularProgress(self, color="#caa3ff", min_size=90, subtitle="To MR 30")
+        self.summary_layout.addWidget(self.mr_progress)
         
         self.layout.addWidget(self.summary_box)
         
@@ -70,6 +81,10 @@ class MasteryTab(QWidget):
         self.next_lbl.setText(f"Next Rank Target: MR {res['next_mr']}")
         self.xp_lbl.setText(f"XP Needed for Next Rank: {res['xp_needed']:,} XP")
         self.eta_lbl.setText(f"Estimated Timeframe: {res['days_estimate']}")
+        
+        # Set MR circle value and text label
+        self.mr_progress.label = f"MR {res['current_mr']}"
+        self.mr_progress.set_value(res['current_mr'] / 30.0 * 100)
         
         # Populate Weapons List
         self.weap_list.clear()
