@@ -302,13 +302,22 @@ class RecommendationEngine:
             logger.warning("Failed to integrate live world state into recommendations: %s", e)
 
         # ----------------------------------
-        # REMOVE DUPLICATES
+        # REMOVE DUPLICATES & FILTER BY SETTINGS
         # ----------------------------------
+        try:
+            from src.core.settings_manager import SettingsManager
+            settings = SettingsManager()
+            excluded_categories = settings.get('recommendation_filters', [])
+            if not isinstance(excluded_categories, list):
+                excluded_categories = []
+        except Exception:
+            excluded_categories = []
 
         unique = {}
 
         for rec in recommendations:
-
+            if rec.category in excluded_categories:
+                continue
             unique[rec.action] = rec
 
         recommendations = list(

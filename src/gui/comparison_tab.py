@@ -6,8 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QFont
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+from src.gui.widgets.custom_charts import RadarChartWidget
 import math
 
 from src.core.save_manager import SaveManager
@@ -207,46 +206,17 @@ class ComparisonTab(QWidget):
             self.rec_text.setText(report.get("overall_recommendation", ""))
 
             # Draw Radar Comparison Chart
-            fig = self._draw_radar_comparison(p1, p2, report["dimensions"])
-            canvas = FigureCanvas(fig)
-            self.chart_layout.addWidget(canvas)
+            dims = report["dimensions"]
+            categories = list(dims.keys())
+            values1 = [dims[c]["p1"] for c in categories]
+            values2 = [dims[c]["p2"] for c in categories]
+            
+            widget = RadarChartWidget(self)
+            widget.set_data(categories, [
+                {"name": p1, "values": values1, "color": "#caa3ff"},
+                {"name": p2, "values": values2, "color": "#00a3cc"}
+            ])
+            self.chart_layout.addWidget(widget)
 
         except Exception as e:
             self.results_box.setText(f"Comparison failed: {e}")
-
-    def _draw_radar_comparison(self, name1: str, name2: str, dims: dict) -> Figure:
-        categories = list(dims.keys())
-        N = len(categories)
-        
-        values1 = [dims[c]["p1"] for c in categories]
-        values2 = [dims[c]["p2"] for c in categories]
-
-        # Close the loop
-        values1 += values1[:1]
-        values2 += values2[:1]
-        angles = [n / float(N) * 2 * math.pi for n in range(N)]
-        angles += angles[:1]
-
-        fig = Figure(facecolor='#0b1220')
-        ax = fig.add_subplot(111, polar=True)
-        ax.set_facecolor('#0f1724')
-        ax.set_theta_offset(math.pi / 2)
-        ax.set_theta_direction(-1)
-
-        ax.set_rgrids([20, 40, 60, 80, 100], color='#2a384e')
-        ax.set_thetagrids([n / float(N) * 360 for n in range(N)], categories, color='#e6eef6', fontsize=8)
-
-        # Plot Profile 1
-        ax.plot(angles, values1, color='#caa3ff', linewidth=2, label=name1)
-        ax.fill(angles, values1, color='#caa3ff', alpha=0.15)
-
-        # Plot Profile 2
-        ax.plot(angles, values2, color='#00a3cc', linewidth=2, label=name2)
-        ax.fill(angles, values2, color='#00a3cc', alpha=0.15)
-
-        ax.set_ylim(0, 100)
-        ax.tick_params(colors='#9fb6c8', grid_color='#2a384e')
-        ax.spines['polar'].set_color('#2a384e')
-        
-        ax.legend(loc='upper right', bbox_to_anchor=(1.2, 1.2), facecolor='#0b1220', edgecolor='#2a384e', labelcolor='#e6eef6')
-        return fig

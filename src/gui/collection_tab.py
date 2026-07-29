@@ -17,6 +17,7 @@ from src.core.app_context import AppContext
 from src.core.player_loader import PlayerLoader
 from src.core.collection_engine import CollectionEngine, WARFRAME_ROSTER, COMPANION_ROSTER, MASTERY_DATA
 from src.database.database import DatabaseManager
+from src.gui.widgets.custom_charts import AnimatedButton
 
 _DATA = Path(__file__).resolve().parents[1] / "resources" / "data"
 
@@ -108,6 +109,11 @@ class _CollectionTableWidget(QWidget):
         lay = QVBoxLayout(self)
         lay.setSpacing(6)
 
+        from src.core.theme_manager import ThemeManager
+        theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
+        card_bg = theme_colors.get("CARD", "#1f183a")
+        text_color = theme_colors.get("TEXT", "#eae6f8")
+
         # ── toolbar ────────────────────────────────────────────────────────
         toolbar = QHBoxLayout()
 
@@ -116,21 +122,83 @@ class _CollectionTableWidget(QWidget):
         self.search_box.textChanged.connect(self._apply_filter)
         toolbar.addWidget(self.search_box)
 
-        self.show_missing = QCheckBox("Missing only")
-        self.show_missing.stateChanged.connect(self._apply_filter)
-        toolbar.addWidget(self.show_missing)
-
-        mark_btn = QPushButton("✔  Mark Owned")
+        mark_btn = AnimatedButton("✔  Mark Owned")
         mark_btn.setToolTip("Mark selected items as owned")
         mark_btn.clicked.connect(self._mark_owned)
         toolbar.addWidget(mark_btn)
 
-        edit_btn = QPushButton("✏  Edit")
+        edit_btn = AnimatedButton("✏  Edit")
         edit_btn.setToolTip("Edit rank / forma / reactor for selected item")
         edit_btn.clicked.connect(self._edit_selected)
         toolbar.addWidget(edit_btn)
 
         lay.addLayout(toolbar)
+
+        # ── filter chips ───────────────────────────────────────────────────
+        chips_lay = QHBoxLayout()
+        chips_lay.setSpacing(8)
+        chips_lbl = QLabel("Filters:")
+        chips_lbl.setStyleSheet("font-size: 11px; font-weight: bold; color: rgba(255, 255, 255, 0.4);")
+        chips_lay.addWidget(chips_lbl)
+
+        self.chip_owned = AnimatedButton("Owned")
+        self.chip_owned.setCheckable(True)
+        
+        self.chip_unowned = AnimatedButton("Unowned")
+        self.chip_unowned.setCheckable(True)
+        
+        self.chip_prime = AnimatedButton("Prime")
+        self.chip_prime.setCheckable(True)
+        
+        self.chip_nonprime = AnimatedButton("Non-Prime")
+        self.chip_nonprime.setCheckable(True)
+        
+        self.chip_mastered = AnimatedButton("Mastered")
+        self.chip_mastered.setCheckable(True)
+        
+        self.chip_notmastered = AnimatedButton("Not Mastered")
+        self.chip_notmastered.setCheckable(True)
+
+        chip_style = f"""
+            QPushButton {{
+                background-color: {card_bg};
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 12px;
+                color: {text_color};
+                padding: 4px 12px;
+                font-size: 10px;
+                font-weight: bold;
+            }}
+            QPushButton:hover {{
+                background-color: rgba(255, 255, 255, 0.05);
+            }}
+            QPushButton:checked {{
+                background-color: {self.color};
+                border-color: {self.color};
+                color: #000000;
+            }}
+        """
+
+        for chip in (self.chip_owned, self.chip_unowned, self.chip_prime, 
+                     self.chip_nonprime, self.chip_mastered, self.chip_notmastered):
+            chip.setStyleSheet(chip_style)
+            chip.clicked.connect(self._on_chip_clicked)
+            chips_lay.addWidget(chip)
+            
+        chips_lay.addStretch()
+        lay.addLayout(chips_lay)
+
+        # Load persistent filters
+        from src.core.settings_manager import SettingsManager
+        settings = SettingsManager()
+        saved = settings.get(f"collection_filters_{self.category_key}", {})
+        if isinstance(saved, dict):
+            self.chip_owned.setChecked(saved.get("owned", False))
+            self.chip_unowned.setChecked(saved.get("unowned", False))
+            self.chip_prime.setChecked(saved.get("prime", False))
+            self.chip_nonprime.setChecked(saved.get("nonprime", False))
+            self.chip_mastered.setChecked(saved.get("mastered", False))
+            self.chip_notmastered.setChecked(saved.get("notmastered", False))
 
         # ── table ──────────────────────────────────────────────────────────
         self.model = QStandardItemModel(0, len(self.COLS))
@@ -237,24 +305,74 @@ class _CollectionTableWidget(QWidget):
         pct = round(owned_count / total * 100) if total else 0
         self.stats_label.setText(f"Owned: {owned_count} / {total} ({pct}%)")
         self.progress.setValue(pct)
+        self._apply_filter()
 
     # ── private helpers ────────────────────────────────────────────────────
 
+    def _on_chip_clicked(self) -> None:
+        from src.core.settings_manager import SettingsManager
+        settings = SettingsManager()
+        settings.update(**{
+            f"collection_filters_{self.category_key}": {
+                "owned": self.chip_owned.isChecked(),
+                "unowned": self.chip_unowned.isChecked(),
+                "prime": self.chip_prime.isChecked(),
+                "nonprime": self.chip_nonprime.isChecked(),
+                "mastered": self.chip_mastered.isChecked(),
+                "notmastered": self.chip_notmastered.isChecked(),
+            }
+        })
+        settings.save()
+        self._apply_filter()
+
     def _apply_filter(self) -> None:
-        text = self.search_box.text()
-        if self.show_missing.isChecked():
-            self.proxy.setFilterRegularExpression("")
-            # Hide rows where Owned column is ✔
-            for row in range(self.model.rowCount()):
-                owned_item = self.model.item(row, 1)
-                match = (owned_item and owned_item.text() == "○")
-                name_item = self.model.item(row, 0)
-                name_match = (not text) or (name_item and text.lower() in name_item.text().lower())
-                self.table.setRowHidden(row, not (match and name_match))
-        else:
-            self.proxy.setFilterRegularExpression(text)
-            for row in range(self.model.rowCount()):
-                self.table.setRowHidden(row, False)
+        text = self.search_box.text().strip().lower()
+        
+        owned_active = self.chip_owned.isChecked()
+        unowned_active = self.chip_unowned.isChecked()
+        prime_active = self.chip_prime.isChecked()
+        nonprime_active = self.chip_nonprime.isChecked()
+        mastered_active = self.chip_mastered.isChecked()
+        notmastered_active = self.chip_notmastered.isChecked()
+        
+        self.proxy.setFilterRegularExpression("")
+        
+        for row in range(self.model.rowCount()):
+            name_item = self.model.item(row, 0)
+            owned_item = self.model.item(row, 1)
+            rank_item = self.model.item(row, 2)
+            
+            name = name_item.text() if name_item else ""
+            owned = (owned_item.text() == "✔") if owned_item else False
+            try:
+                rank = int(rank_item.text()) if rank_item else 0
+            except ValueError:
+                rank = 0
+                
+            matches_search = (not text) or (text in name.lower())
+            
+            matches_owned = True
+            if owned_active and not owned:
+                matches_owned = False
+            elif unowned_active and owned:
+                matches_owned = False
+                
+            matches_prime = True
+            is_prime = "prime" in name.lower()
+            if prime_active and not is_prime:
+                matches_prime = False
+            elif nonprime_active and is_prime:
+                matches_prime = False
+                
+            matches_mastery = True
+            is_mastered = rank >= 30
+            if mastered_active and not is_mastered:
+                matches_mastery = False
+            elif notmastered_active and is_mastered:
+                matches_mastery = False
+                
+            visible = matches_search and matches_owned and matches_prime and matches_mastery
+            self.table.setRowHidden(row, not visible)
 
     def _get_db(self) -> DatabaseManager:
         if self._db is None:

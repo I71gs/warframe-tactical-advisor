@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 
-from PySide6.QtCore import Qt, QTimer, QDateTime
+from PySide6.QtCore import Qt, QTimer, QDateTime, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup, QEasingCurve
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QProgressBar,
@@ -15,18 +15,19 @@ from src.core.progression_engine import ProgressionEngine
 from src.core.recommendation_engine import RecommendationEngine
 from src.core.readiness_analyzer import ReadinessAnalyzer
 from src.gui.widgets.circle_progress import CircleProgress
+from src.gui.widgets.custom_charts import HoverAnimatedCard
 
 
 
 # ── tiny helpers ──────────────────────────────────────────────────────────────
 
-def _card(title: str, color: str | None = None, min_h: int = 120) -> tuple[QGroupBox, QVBoxLayout]:
+def _card(title: str, color: str | None = None, min_h: int = 120) -> tuple[HoverAnimatedCard, QVBoxLayout]:
     from src.core.theme_manager import ThemeManager
     theme_colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
     accent = color or theme_colors.get("ACCENT", "#bb86fc")
     bg = theme_colors.get("CARD", "#1f183a")
     
-    box = QGroupBox(title)
+    box = HoverAnimatedCard(title)
     box.setMinimumHeight(min_h)
     box.setStyleSheet(f"""
         QGroupBox {{
@@ -645,6 +646,59 @@ class DashboardTab(QWidget):
             self.alerts_desc_lbl.setText("No urgent alerts detected.")
             self.baro_desc.setText("Void Trader: Offline")
 
+    def showEvent(self, event: Any) -> None:
+        super().showEvent(event)
+        if not hasattr(self, "_dashboard_animated_once"):
+            self._dashboard_animated_once = True
+            self.animate_cards_in()
+
+    def animate_cards_in(self) -> None:
+        import sys
+        if "pytest" in sys.modules:
+            return
+            
+        cards = [
+            self.directive_card,
+            self.ops_card,
+            self.alerts_card,
+            self.status_card,
+            self.warnings_card,
+            self.baro_card,
+            self.econ_card,
+            self.sys_card
+        ]
+        
+        self._stagger_group = QParallelAnimationGroup()
+        for idx, card in enumerate(cards):
+            if hasattr(card, "effect"):
+                card.effect.set_opacity(0.0)
+                card.effect.set_y_offset(8.0)
+                
+                op_anim = QPropertyAnimation(card.effect, b"opacity")
+                op_anim.setDuration(180)
+                op_anim.setStartValue(0.0)
+                op_anim.setEndValue(1.0)
+                
+                y_anim = QPropertyAnimation(card.effect, b"yOffset")
+                y_anim.setDuration(180)
+                y_anim.setEasingCurve(QEasingCurve.OutQuad)
+                y_anim.setStartValue(8.0)
+                y_anim.setEndValue(0.0)
+                
+                delay = idx * 25
+                
+                seq = QSequentialAnimationGroup()
+                seq.addPause(delay)
+                
+                par = QParallelAnimationGroup()
+                par.addAnimation(op_anim)
+                par.addAnimation(y_anim)
+                seq.addAnimation(par)
+                
+                self._stagger_group.addAnimation(seq)
+                
+        self._stagger_group.start()
+
     # ── export ────────────────────────────────────────────────────────────────
 
     def export_screenshot(self) -> None:
@@ -663,28 +717,52 @@ class DashboardTab(QWidget):
         """Highlight the tactical directive step and show contextual tooltips explaining key dashboard areas."""
         from PySide6.QtWidgets import QToolTip
         
-        # Highlight card
-        self.directive_card.setStyleSheet("""
-            QGroupBox {
-                background-color: #1f183a;
-                border: 2px solid #cfad64;
+        # Retrieve active theme colors
+        from src.core.theme_manager import ThemeManager
+        colors = ThemeManager().get_theme_colors(ThemeManager().get_active_theme_name())
+        accent = colors.get("ACCENT", "#00a3cc")
+        card_bg = colors.get("CARD", "#0f1a24")
+        
+        # Highlight card with glowing accent border
+        self.directive_card.setStyleSheet(f"""
+            QGroupBox {{
+                background-color: {card_bg};
+                border: 2px solid {accent};
                 border-radius: 8px;
                 margin-top: 8px;
                 font-weight: bold;
-                color: #cfad64;
+                color: {accent};
                 padding: 6px;
-            }
-            QGroupBox::title {
+            }}
+            QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
-                color: #cfad64;
-            }
+                color: {accent};
+            }}
         """)
         
+        # Tooltip 1: What should I do next?
         QTimer.singleShot(1000, lambda: QToolTip.showText(
             self.next_step_lbl.mapToGlobal(self.next_step_lbl.rect().center()),
-            "<b>🎯 TACTICAL DIRECTIVE</b><br>"
-            "This is your primary next action! The advisor analyzed your inventory<br>"
-            "and quest logs to compute the most optimal path here.",
+            "<b>🎯 WHAT SHOULD I DO NEXT?</b><br>"
+            "This is your first personalized progression directive! The advisor analyzed your profile<br>"
+            "to determine this is the most valuable action to take right now.",
             self.next_step_lbl
+        ))
+
+        # Tooltip 2: Player profile details
+        QTimer.singleShot(5000, lambda: QToolTip.showText(
+            self.hero_mr.mapToGlobal(self.hero_mr.rect().center()),
+            "<b>📊 ACCOUNT METRICS</b><br>"
+            "Monitor your Mastery Rank, progression stage, and overall account score.<br>"
+            "As you sync more gear, your score rises!",
+            self.hero_mr
+        ))
+
+        # Tooltip 3: Glance banner
+        QTimer.singleShot(9000, lambda: QToolTip.showText(
+            self.glance_banner.mapToGlobal(self.glance_banner.rect().center()),
+            "<b>⚡ TODAY AT A GLANCE</b><br>"
+            "Get a high-level summary of your active quest path and daily achievements.",
+            self.glance_banner
         ))

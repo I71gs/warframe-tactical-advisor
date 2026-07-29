@@ -1,8 +1,9 @@
 from PySide6.QtCore import QThread, Signal
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QPushButton, QMessageBox, QComboBox, QFileDialog
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QPushButton, QMessageBox, QComboBox, QFileDialog, QGroupBox
 from src.core.profile_manager import ProfileManager
 from src.core.settings_manager import SettingsManager
 from src.core.report_engine import ReportEngine
+from typing import Any
 
 class WikiSyncWorker(QThread):
     finished = Signal(dict)
@@ -66,6 +67,55 @@ class SettingsTab(QWidget):
         self.layout.addWidget(self.backup_button)
         self.layout.addWidget(self.save_btn)
         
+        # Onboarding & Recommendation Focus Section
+        onboarding_header = QLabel("Onboarding & Recommendation Focus")
+        onboarding_header.setStyleSheet("font-size: 14px; font-weight: bold; color: #caa3ff; margin-top: 15px; margin-bottom: 5px;")
+        self.layout.addWidget(onboarding_header)
+
+        self.onboarding_box = QGroupBox("Configure Guidance & Priorities")
+        onboarding_box_lay = QVBoxLayout(self.onboarding_box)
+        onboarding_box_lay.setSpacing(10)
+
+        # Priority Level ComboBox
+        priority_row = QHBoxLayout()
+        priority_row.addWidget(QLabel("Scoring Priority Focus:"))
+        self.priority_level_combo = QComboBox()
+        self.priority_level_combo.addItems([
+            "Balanced (Default)",
+            "Power & Build Optimization",
+            "Story & Quest Progression",
+            "Time Efficiency"
+        ])
+        priority_row.addWidget(self.priority_level_combo)
+        onboarding_box_lay.addLayout(priority_row)
+
+        # Guidance Level ComboBox
+        guidance_row = QHBoxLayout()
+        guidance_row.addWidget(QLabel("Guidance Level:"))
+        self.guidance_level_combo = QComboBox()
+        self.guidance_level_combo.addItems([
+            "High Guidance (New Player)",
+            "Medium Guidance (Progressing)",
+            "Low Guidance (Endgame)"
+        ])
+        guidance_row.addWidget(self.guidance_level_combo)
+        onboarding_box_lay.addLayout(guidance_row)
+
+        # Category Filters Checkboxes
+        onboarding_box_lay.addWidget(QLabel("Exclude Recommendation Categories:"))
+        self.filter_checks = {
+            "STORY": QCheckBox("Exclude Story Quests"),
+            "PROGRESSION": QCheckBox("Exclude General Progression"),
+            "MOD": QCheckBox("Exclude Mods"),
+            "ARCANE": QCheckBox("Exclude Arcanes"),
+            "WEAPON": QCheckBox("Exclude Weapons"),
+            "ENDGAME": QCheckBox("Exclude Endgame Content")
+        }
+        for check in self.filter_checks.values():
+            onboarding_box_lay.addWidget(check)
+
+        self.layout.addWidget(self.onboarding_box)
+
         # Report Export Buttons
         export_header = QLabel("Export Progression Reports")
         export_header.setStyleSheet("font-size: 14px; font-weight: bold; color: #caa3ff; margin-top: 15px; margin-bottom: 5px;")
@@ -113,6 +163,19 @@ class SettingsTab(QWidget):
         else:
             self.wiki_combo.setCurrentText("Fandom.com")
 
+        # Load onboarding parameters
+        p_lvl = self.settings_manager.get('priority_level', 'balanced')
+        p_mapping = {'balanced': 0, 'power': 1, 'progress': 2, 'efficiency': 3}
+        self.priority_level_combo.setCurrentIndex(p_mapping.get(p_lvl, 0))
+
+        g_lvl = self.settings_manager.get('guidance_level', 'high')
+        g_mapping = {'high': 0, 'medium': 1, 'low': 2}
+        self.guidance_level_combo.setCurrentIndex(g_mapping.get(g_lvl, 0))
+
+        filters = self.settings_manager.get('recommendation_filters', [])
+        for cat, check in self.filter_checks.items():
+            check.setChecked(cat in filters)
+
     def save(self) -> Any:
         """Update and save settings to disk."""
         profile_val = 'alt' if self.profile_combo.currentText() == "Alt Account" else 'default'
@@ -120,6 +183,14 @@ class SettingsTab(QWidget):
         
         old_profile = self.settings_manager.get('current_profile', 'default')
         profile_changed = (old_profile != profile_val)
+
+        p_mapping_rev = {0: 'balanced', 1: 'power', 2: 'progress', 3: 'efficiency'}
+        priority_val = p_mapping_rev.get(self.priority_level_combo.currentIndex(), 'balanced')
+
+        g_mapping_rev = {0: 'high', 1: 'medium', 2: 'low'}
+        guidance_val = g_mapping_rev.get(self.guidance_level_combo.currentIndex(), 'high')
+
+        filters_val = [cat for cat, check in self.filter_checks.items() if check.isChecked()]
         
         self.settings_manager.update(
             dark_mode=bool(self.dark_mode.isChecked()), 
@@ -127,7 +198,10 @@ class SettingsTab(QWidget):
             remember_size=bool(self.remember_size.isChecked()), 
             remember_tab=bool(self.remember_tab.isChecked()),
             current_profile=profile_val,
-            use_wiki_gg=use_wiki_gg_val
+            use_wiki_gg=use_wiki_gg_val,
+            priority_level=priority_val,
+            guidance_level=guidance_val,
+            recommendation_filters=filters_val
         )
         if not self.settings_manager.save():
             QMessageBox.critical(self, 'Error', 'Failed to save settings.')

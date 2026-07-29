@@ -19,6 +19,12 @@ DEFAULT_SETTINGS = {
     'current_profile': 'default',
     'active_theme': 'Cosmic Twilight',
     'use_wiki_gg': True,
+    'onboarding_completed': False,
+    'onboarding_path': 'New Player',
+    'goal_focus': 'New Player',
+    'priority_level': 'balanced',
+    'guidance_level': 'high',
+    'recommendation_filters': [],
 }
 
 class SettingsManager:
@@ -39,7 +45,7 @@ class SettingsManager:
                 data = json.load(fh)
             if not isinstance(data, dict):
                 raise ValueError('Settings file is not a JSON object')
-            self.values.update({k: v for k, v in data.items() if k in self.values})
+            self.values.update(data)
         except Exception as exc:
             logger.warning('Failed to load settings: %s', exc)
 
@@ -57,8 +63,7 @@ class SettingsManager:
     def update(self, **kwargs: Any) -> None:
         """Update the in-memory settings dictionary."""
         for key, value in kwargs.items():
-            if key in self.values:
-                self.values[key] = value
+            self.values[key] = value
 
     def get(self, key: str, default: Any = None) -> Any:
         """Return a registered setting value or a fallback default."""

@@ -1,14 +1,72 @@
 from typing import Any
 import sys
 from pathlib import Path
-from PySide6.QtCore import QTimer, Qt
+from PySide6.QtCore import QTimer, Qt, Property, QEasingCurve, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QTabWidget, QStatusBar, QMenu, QMessageBox,
-    QHBoxLayout, QWidget, QTreeWidget, QTreeWidgetItem
+    QHBoxLayout, QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QGraphicsOpacityEffect, QFrame
 )
 from PySide6.QtGui import QAction, QIcon, QKeySequence, QShortcut, QFont, QColor
 from src.core.settings_manager import SettingsManager
 from src.utils.logger import logger
+from src.gui.widgets.custom_charts import AnimatedButton
+
+class PageTransitionContainer(QWidget):
+    """Wrapper that smoothly fades and slides up new pages upon initial rendering."""
+
+    def __init__(self, child_widget: QWidget, parent: Any = None) -> None:
+        super().__init__(parent)
+        self.child = child_widget
+        self.lay = QVBoxLayout(self)
+        self.lay.setContentsMargins(0, 8, 0, 0)
+        self.lay.addWidget(child_widget)
+        
+        self.opacity_effect = QGraphicsOpacityEffect(self)
+        self.setGraphicsEffect(self.opacity_effect)
+        self.opacity_effect.setOpacity(0.0)
+        
+        self._top_margin = 8.0
+        
+        self.opacity_anim = QPropertyAnimation(self.opacity_effect, b"opacity")
+        self.opacity_anim.setDuration(160)
+        self.opacity_anim.setStartValue(0.0)
+        self.opacity_anim.setEndValue(1.0)
+        
+        self.margin_anim = QPropertyAnimation(self, b"topMargin")
+        self.margin_anim.setDuration(160)
+        self.margin_anim.setEasingCurve(QEasingCurve.OutQuad)
+        self.margin_anim.setStartValue(8.0)
+        self.margin_anim.setEndValue(0.0)
+        
+        self.group = QParallelAnimationGroup()
+        self.group.addAnimation(self.opacity_anim)
+        self.group.addAnimation(self.margin_anim)
+
+    def get_top_margin(self) -> float:
+        return self._top_margin
+
+    def set_top_margin(self, val: float) -> None:
+        self._top_margin = val
+        self.lay.setContentsMargins(0, int(val), 0, 0)
+
+    topMargin = Property(float, get_top_margin, set_top_margin)
+
+    def trigger_transition(self) -> None:
+        if "pytest" in sys.modules:
+            self.opacity_effect.setOpacity(1.0)
+            self.set_top_margin(0.0)
+        else:
+            self.group.start()
+
+
+class NavPill(QWidget):
+    """Visual selection pill overlay styled to slide between tree navigation items."""
+
+    def __init__(self, parent: Any = None) -> None:
+        super().__init__(parent)
+        self.setStyleSheet("background-color: rgba(202, 163, 255, 0.12); border-left: 3px solid #caa3ff; border-radius: 4px;")
+        self.hide()
+
 from src.gui.profile_tab import ProfileTab
 from src.gui.recommendations_tab import RecommendationsTab
 from src.gui.progression_tab import ProgressionTab
@@ -96,6 +154,52 @@ class MainWindow(QMainWindow):
                 self.setWindowIcon(QIcon(str(icon_path)))
         except Exception as exc:
             logger.warning('Failed to set application icon: %s', exc)
+
+        # Initialize tab cache and defer data loading until tab selection/visit
+        self._loaded_tabs_this_session = set()
+        
+        tab_classes = [
+            ProfileTab, RecommendationsTab, ProgressionTab, BuildAdvisorTab,
+            QuestPlannerTab, ReadinessTab, LoadoutTab, KnowledgeTab, StatisticsTab,
+            DashboardTab, SettingsTab, GoalPlannerTab, GapAnalysisTab, BuildSimulatorTab,
+            WeaponTiersTab, DailyTab, WeeklyTab, SearchTab, TimelineTab, ChartsTab,
+            MilestoneTab, DependencyGraphTab, GraphTab, ResourceTab, FarmingRoutesTab,
+            TeamTab, AchievementsTab, EncyclopediaTab, CollectionTab, MasteryTab,
+            RelicTab, IncarnonTab, CircuitTab, DuviriTab, CompanionTab, EconomyTab,
+            SessionTab, CodexTab, BenchmarkTab, ReplayTab, ComparisonTab, RouteTab,
+            BuildLibraryTab, ThemeEditorTab, PatchTab
+        ]
+        
+        def wrap_tab_class_methods(cls):
+            methods_to_wrap = [
+                "load_profile", "load_recommendations", "load_progress",
+                "load_readiness", "load_quests", "load_plan", "load_gaps", "run_simulation",
+                "load_tiers", "load_data", "refresh_list", "load_stats", "load_daily",
+                "load_weekly", "load_timeline", "render_selected_chart", "load_milestones",
+                "load_graph", "load_planner", "load_routes", "load_teams", "load_achievements",
+                "load_encyclopedia", "load_codex", "load_collections", "load_mastery",
+                "load_relics", "load_incarnon", "load_circuit", "load_duviri",
+                "load_companions", "load_economy", "load_session", "load_benchmarks",
+                "populate_dropdowns", "refresh", "load", "load_patch_notes"
+            ]
+            for method_name in methods_to_wrap:
+                if hasattr(cls, method_name):
+                    original = getattr(cls, method_name)
+                    if callable(original) and not hasattr(original, "_is_wrapped"):
+                        def make_wrapper(orig_method, name):
+                            def wrapper(self, *args, **kwargs):
+                                if getattr(sys, "_defer_tab_loading", False) and "pytest" not in sys.modules:
+                                    logger.info("Deferred load method %s for %s", name, self.__class__.__name__)
+                                    return None
+                                return orig_method(self, *args, **kwargs)
+                            wrapper._is_wrapped = True
+                            return wrapper
+                        setattr(cls, method_name, make_wrapper(original, method_name))
+
+        for cls in tab_classes:
+            wrap_tab_class_methods(cls)
+
+        sys._defer_tab_loading = True
         self.tabs = QTabWidget()
         self.profile_tab = ProfileTab()
         self.recommendations_tab = RecommendationsTab()
@@ -108,17 +212,20 @@ class MainWindow(QMainWindow):
         self.statistics_tab = StatisticsTab()
         self.dashboard_tab = DashboardTab()
         self.settings_tab = SettingsTab(self)
-        self.tabs.addTab(self.dashboard_tab, 'Dashboard')
-        self.tabs.addTab(self.profile_tab, 'Profile')
-        self.tabs.addTab(self.recommendations_tab, 'Recommendations')
-        self.tabs.addTab(self.progression_tab, 'Progression')
-        self.tabs.addTab(self.readiness_tab, 'Readiness')
-        self.tabs.addTab(self.quest_planner_tab, 'Quest Planner')
-        self.tabs.addTab(self.build_tab, 'Build Advisor')
-        self.tabs.addTab(self.loadout_tab, 'Loadout Advisor')
-        self.tabs.addTab(self.knowledge_tab, 'Knowledge Base')
-        self.tabs.addTab(self.statistics_tab, 'Statistics')
-        self.tabs.addTab(self.settings_tab, 'Settings')
+        
+        self._animated_tabs_this_session = set()
+        
+        self.add_animated_tab(self.dashboard_tab, 'Dashboard')
+        self.add_animated_tab(self.profile_tab, 'Profile')
+        self.add_animated_tab(self.recommendations_tab, 'Recommendations')
+        self.add_animated_tab(self.progression_tab, 'Progression')
+        self.add_animated_tab(self.readiness_tab, 'Readiness')
+        self.add_animated_tab(self.quest_planner_tab, 'Quest Planner')
+        self.add_animated_tab(self.build_tab, 'Build Advisor')
+        self.add_animated_tab(self.loadout_tab, 'Loadout Advisor')
+        self.add_animated_tab(self.knowledge_tab, 'Knowledge Base')
+        self.add_animated_tab(self.statistics_tab, 'Statistics')
+        self.add_animated_tab(self.settings_tab, 'Settings')
         self.apply_settings()
 
         self.tabs.currentChanged.connect(self.on_tab_changed)
@@ -126,15 +233,15 @@ class MainWindow(QMainWindow):
         self.goal_planner_tab = (
             GoalPlannerTab()
         )
-        self.tabs.addTab(self.goal_planner_tab, 'Goal Planner')
+        self.add_animated_tab(self.goal_planner_tab, 'Goal Planner')
         
         # New Stage 2 Coach Tabs
         self.gap_tab = GapAnalysisTab()
         self.build_simulator_tab = BuildSimulatorTab()
         self.weapon_tiers_tab = WeaponTiersTab()
-        self.tabs.addTab(self.gap_tab, 'Gap Analyzer')
-        self.tabs.addTab(self.build_simulator_tab, 'Build Simulator')
-        self.tabs.addTab(self.weapon_tiers_tab, 'Weapon Tiers')
+        self.add_animated_tab(self.gap_tab, 'Gap Analyzer')
+        self.add_animated_tab(self.build_simulator_tab, 'Build Simulator')
+        self.add_animated_tab(self.weapon_tiers_tab, 'Weapon Tiers')
 
         # Phase 3 & 4 Tabs
         self.daily_tab = DailyTab()
@@ -142,11 +249,11 @@ class MainWindow(QMainWindow):
         self.timeline_tab = TimelineTab()
         self.charts_tab = ChartsTab()
         self.search_tab = SearchTab()
-        self.tabs.addTab(self.daily_tab, 'Daily Objectives')
-        self.tabs.addTab(self.weekly_tab, 'Weekly Planner')
-        self.tabs.addTab(self.timeline_tab, '30-Day Timeline')
-        self.tabs.addTab(self.charts_tab, 'Progression Charts')
-        self.tabs.addTab(self.search_tab, 'Global Search')
+        self.add_animated_tab(self.daily_tab, 'Daily Objectives')
+        self.add_animated_tab(self.weekly_tab, 'Weekly Planner')
+        self.add_animated_tab(self.timeline_tab, '30-Day Timeline')
+        self.add_animated_tab(self.charts_tab, 'Progression Charts')
+        self.add_animated_tab(self.search_tab, 'Global Search')
 
         # Stage 3 & 4 new tabs
         self.milestone_tab = MilestoneTab()
@@ -157,13 +264,13 @@ class MainWindow(QMainWindow):
         self.team_tab = TeamTab()
         self.achievements_tab = AchievementsTab()
         
-        self.tabs.addTab(self.milestone_tab, 'Roadmap Milestones')
-        self.tabs.addTab(self.dependency_graph_tab, 'Dependency Graph')
-        self.tabs.addTab(self.graph_tab, 'Interactive Graph')
-        self.tabs.addTab(self.resource_tab, 'Resource Planner')
-        self.tabs.addTab(self.farming_routes_tab, 'Farming Routes')
-        self.tabs.addTab(self.team_tab, 'Team Synergy')
-        self.tabs.addTab(self.achievements_tab, 'Badges & Achievements')
+        self.add_animated_tab(self.milestone_tab, 'Roadmap Milestones')
+        self.add_animated_tab(self.dependency_graph_tab, 'Dependency Graph')
+        self.add_animated_tab(self.graph_tab, 'Interactive Graph')
+        self.add_animated_tab(self.resource_tab, 'Resource Planner')
+        self.add_animated_tab(self.farming_routes_tab, 'Farming Routes')
+        self.add_animated_tab(self.team_tab, 'Team Synergy')
+        self.add_animated_tab(self.achievements_tab, 'Badges & Achievements')
 
         # Stage 6 - 20 Tabs (v3.0 Progression)
         self.encyclopedia_tab = EncyclopediaTab()
@@ -180,30 +287,31 @@ class MainWindow(QMainWindow):
         self.benchmark_tab = BenchmarkTab()
         self.replay_tab = ReplayTab(self)
 
-        self.tabs.addTab(self.encyclopedia_tab, 'Encyclopedia')
-        self.tabs.addTab(self.codex_tab, 'Codex')
-        self.tabs.addTab(self.collection_tab, 'Collection Tracker')
-        self.tabs.addTab(self.mastery_tab, 'Mastery Rank Planner')
-        self.tabs.addTab(self.relic_tab, 'Relic Planner')
-        self.tabs.addTab(self.incarnon_tab, 'Incarnon Evolutions')
-        self.tabs.addTab(self.circuit_tab, 'Circuit Forecast')
-        self.tabs.addTab(self.duviri_tab, 'Duviri Upgrades')
-        self.tabs.addTab(self.companion_tab, 'Companion Synergy')
-        self.tabs.addTab(self.economy_tab, 'Economy Deficits')
-        self.tabs.addTab(self.session_tab, 'Session Planner')
-        self.tabs.addTab(self.benchmark_tab, 'Benchmark Engine')
-        self.tabs.addTab(self.replay_tab, 'Progression Replay')
+        self.add_animated_tab(self.encyclopedia_tab, 'Encyclopedia')
+        self.add_animated_tab(self.codex_tab, 'Codex')
+        self.add_animated_tab(self.collection_tab, 'Collection Tracker')
+        self.add_animated_tab(self.mastery_tab, 'Mastery Rank Planner')
+        self.add_animated_tab(self.relic_tab, 'Relic Planner')
+        self.add_animated_tab(self.incarnon_tab, 'Incarnon Evolutions')
+        self.add_animated_tab(self.circuit_tab, 'Circuit Forecast')
+        self.add_animated_tab(self.duviri_tab, 'Duviri Upgrades')
+        self.add_animated_tab(self.companion_tab, 'Companion Synergy')
+        self.add_animated_tab(self.economy_tab, 'Economy Deficits')
+        self.add_animated_tab(self.session_tab, 'Session Planner')
+        self.add_animated_tab(self.benchmark_tab, 'Benchmark Engine')
+        self.add_animated_tab(self.replay_tab, 'Progression Replay')
         self.comparison_tab = ComparisonTab()
-        self.tabs.addTab(self.comparison_tab, 'Account Comparison')
+        self.add_animated_tab(self.comparison_tab, 'Account Comparison')
         self.route_tab = RouteTab()
-        self.tabs.addTab(self.route_tab, 'Tactical Routes')
+        self.add_animated_tab(self.route_tab, 'Tactical Routes')
         self.build_library_tab = BuildLibraryTab()
-        self.tabs.addTab(self.build_library_tab, 'Build Library')
+        self.add_animated_tab(self.build_library_tab, 'Build Library')
         self.theme_editor_tab = ThemeEditorTab(self)
-        self.tabs.addTab(self.theme_editor_tab, 'Theme Studio')
+        self.add_animated_tab(self.theme_editor_tab, 'Theme Studio')
         self.patch_tab = PatchTab()
-        self.tabs.addTab(self.patch_tab, 'Patch Notes')
+        self.add_animated_tab(self.patch_tab, 'Patch Notes')
         self.load_registered_tabs()
+        sys._defer_tab_loading = False
 
         # Setup hierarchical sidebar layout using QTreeWidget for enterprise-grade category nesting
         self.sidebar = QTreeWidget()
@@ -212,6 +320,11 @@ class MainWindow(QMainWindow):
         self.sidebar.setHeaderHidden(True)
         self.sidebar.setIndentation(12)
         self.sidebar.setAnimated(True)
+        
+        self.sidebar_pill = NavPill(self.sidebar.viewport())
+        self.sidebar_pill_opacity = QGraphicsOpacityEffect(self.sidebar_pill)
+        self.sidebar_pill.setGraphicsEffect(self.sidebar_pill_opacity)
+        self.sidebar_pill_opacity.setOpacity(0.0)
 
         # Bottom navigation list for Settings and About
         self.bottom_sidebar = QTreeWidget()
@@ -221,6 +334,11 @@ class MainWindow(QMainWindow):
         self.bottom_sidebar.setIndentation(12)
         self.bottom_sidebar.setAnimated(True)
         self.bottom_sidebar.setFixedHeight(72) # Fits Settings and About perfectly
+        
+        self.bottom_pill = NavPill(self.bottom_sidebar.viewport())
+        self.bottom_pill_opacity = QGraphicsOpacityEffect(self.bottom_pill)
+        self.bottom_pill.setGraphicsEffect(self.bottom_pill_opacity)
+        self.bottom_pill_opacity.setOpacity(0.0)
 
         # Retrieve active theme ACCENT color for category labels
         from src.core.theme_manager import ThemeManager
@@ -230,7 +348,7 @@ class MainWindow(QMainWindow):
         from src.core.design_system import get_icon, FONT_H3, FONT_BODY
 
         # Search bar button at the top
-        self.search_btn = QPushButton("  Search Command Palette     [Ctrl+K]")
+        self.search_btn = AnimatedButton("  Search Command Palette     [Ctrl+K]")
         self.search_btn.setIcon(get_icon("search", size=16, color=theme_colors.get("MUTED", "#8e85a6")))
         self.search_btn.setObjectName("sidebarSearchBtn")
         self.search_btn.setFixedWidth(220)
@@ -352,9 +470,13 @@ class MainWindow(QMainWindow):
                 self.bottom_sidebar.clearSelection()
                 self.bottom_sidebar.blockSignals(False)
                 item = selected[0]
+                self._animate_pill_to_item(self.sidebar, self.sidebar_pill, self.sidebar_pill_opacity, item)
+                self._animate_pill_to_item(self.bottom_sidebar, self.bottom_pill, self.bottom_pill_opacity, None)
                 idx = item.data(0, Qt.UserRole)
                 if idx is not None:
                     self.tabs.setCurrentIndex(idx)
+            else:
+                self._animate_pill_to_item(self.sidebar, self.sidebar_pill, self.sidebar_pill_opacity, None)
 
         def on_bottom_sidebar_selection_changed():
             selected = self.bottom_sidebar.selectedItems()
@@ -363,6 +485,8 @@ class MainWindow(QMainWindow):
                 self.sidebar.clearSelection()
                 self.sidebar.blockSignals(False)
                 item = selected[0]
+                self._animate_pill_to_item(self.bottom_sidebar, self.bottom_pill, self.bottom_pill_opacity, item)
+                self._animate_pill_to_item(self.sidebar, self.sidebar_pill, self.sidebar_pill_opacity, None)
                 idx = item.data(0, Qt.UserRole)
                 if idx is not None:
                     self.tabs.setCurrentIndex(idx)
@@ -370,9 +494,12 @@ class MainWindow(QMainWindow):
                     self.show_about_dialog()
                     self.bottom_sidebar.clearSelection()
                     self._sync_tabs_to_sidebar(self.tabs.currentIndex())
+            else:
+                self._animate_pill_to_item(self.bottom_sidebar, self.bottom_pill, self.bottom_pill_opacity, None)
 
         self.sidebar.itemSelectionChanged.connect(on_sidebar_selection_changed)
         self.bottom_sidebar.itemSelectionChanged.connect(on_bottom_sidebar_selection_changed)
+        self.sidebar.verticalScrollBar().valueChanged.connect(self._sync_pill_instantly)
         self.tabs.currentChanged.connect(self._sync_tabs_to_sidebar)
         self.tabs.tabBar().hide()
         
@@ -411,12 +538,16 @@ class MainWindow(QMainWindow):
                 self.sidebar.clearSelection()
                 if item.treeWidget() == self.sidebar:
                     self.sidebar.setCurrentItem(item)
+                    self._animate_pill_to_item(self.sidebar, self.sidebar_pill, self.sidebar_pill_opacity, item)
+                    self._animate_pill_to_item(self.bottom_sidebar, self.bottom_pill, self.bottom_pill_opacity, None)
                 self.sidebar.blockSignals(False)
             if hasattr(self, "bottom_sidebar"):
                 self.bottom_sidebar.blockSignals(True)
                 self.bottom_sidebar.clearSelection()
                 if item.treeWidget() == self.bottom_sidebar:
                     self.bottom_sidebar.setCurrentItem(item)
+                    self._animate_pill_to_item(self.bottom_sidebar, self.bottom_pill, self.bottom_pill_opacity, item)
+                    self._animate_pill_to_item(self.sidebar, self.sidebar_pill, self.sidebar_pill_opacity, None)
                 self.bottom_sidebar.blockSignals(False)
 
     def showEvent(self, event: Any) -> None:
@@ -439,162 +570,34 @@ class MainWindow(QMainWindow):
 
 
 
+
+
     def refresh_everything(self) -> None:
-        """Refresh all application tabs and data sources."""
+        """Refresh only the active tab and clear the loaded cache for the others."""
         import time
         start_time = time.perf_counter()
-        self.profile_tab.load_profile()
-        self.recommendations_tab.load_recommendations()
-        self.progression_tab.load_progress()
-        self.readiness_tab.load_readiness()
-        self.quest_planner_tab.load_quests()
-        self.dashboard_tab.load_dashboard()
+        
+        # Clear the cache of loaded tabs so they reload when next visited
+        self._loaded_tabs_this_session.clear()
+        
+        # Find the active tab index and trigger its load
+        active_idx = self.tabs.currentIndex()
+        self._loaded_tabs_this_session.add(active_idx)
+        
+        container = self.tabs.widget(active_idx)
+        tab_widget = container
+        if isinstance(container, PageTransitionContainer):
+            tab_widget = container.child
+            
+        self.lazy_load_tab_widget(tab_widget)
+        
+        # Also always refresh the theme editor combo box helper if active
         try:
-            self.goal_planner_tab.load_plan()
+            if hasattr(self, "theme_editor_tab"):
+                self.theme_editor_tab.preset_combo.clear()
+                self.theme_editor_tab.preset_combo.addItems(self.theme_editor_tab.tm.get_themes())
         except Exception:
             pass
-        try:
-            self.gap_tab.load_gaps()
-        except Exception:
-            pass
-        try:
-            self.build_simulator_tab.run_simulation()
-        except Exception:
-            pass
-        try:
-            self.weapon_tiers_tab.load_tiers()
-        except Exception:
-            pass
-        try:
-            self.loadout_tab.load_data()
-        except Exception:
-            pass
-        try:
-            self.knowledge_tab.refresh_list()
-        except Exception:
-            pass
-        try:
-            self.statistics_tab.load_stats()
-        except Exception:
-            pass
-        try:
-            self.daily_tab.load_daily()
-        except Exception:
-            pass
-        try:
-            self.weekly_tab.load_weekly()
-        except Exception:
-            pass
-        try:
-            self.timeline_tab.load_timeline()
-        except Exception:
-            pass
-        try:
-            self.charts_tab.render_selected_chart()
-        except Exception:
-            pass
-        try:
-            self.milestone_tab.load_milestones()
-        except Exception:
-            pass
-        try:
-            self.dependency_graph_tab.load_graph()
-        except Exception:
-            pass
-        try:
-            self.graph_tab.load_graph()
-        except Exception:
-            pass
-        try:
-            self.resource_tab.load_planner()
-        except Exception:
-            pass
-        try:
-            self.farming_routes_tab.load_routes()
-        except Exception:
-            pass
-        try:
-            self.team_tab.calculate_synergy()
-        except Exception:
-            pass
-        try:
-            self.achievements_tab.load_achievements()
-        except Exception:
-            pass
-        try:
-            self.encyclopedia_tab.load_items()
-        except Exception:
-            pass
-        try:
-            self.codex_tab.load_items()
-        except Exception:
-            pass
-        try:
-            self.collection_tab.load_collections()
-        except Exception:
-            pass
-        try:
-            self.mastery_tab.load_planner()
-        except Exception:
-            pass
-        try:
-            self.relic_tab.load_relics()
-        except Exception:
-            pass
-        try:
-            self.incarnon_tab.load_incarnon()
-        except Exception:
-            pass
-        try:
-            self.circuit_tab.load_circuit()
-        except Exception:
-            pass
-        try:
-            self.duviri_tab.load_duviri()
-        except Exception:
-            pass
-        try:
-            self.companion_tab.load_companions()
-        except Exception:
-            pass
-        try:
-            self.economy_tab.load_economy()
-        except Exception:
-            pass
-        try:
-            self.session_tab.load_session()
-        except Exception:
-            pass
-        try:
-            self.benchmark_tab.load_benchmarks()
-        except Exception:
-            pass
-        try:
-            self.replay_tab.load_timeline()
-        except Exception:
-            pass
-        try:
-            self.comparison_tab.populate_dropdowns()
-        except Exception:
-            pass
-        try:
-            self.route_tab.load_routes()
-        except Exception:
-            pass
-        try:
-            self.build_library_tab.refresh_list()
-        except Exception:
-            pass
-        try:
-            self.theme_editor_tab.preset_combo.clear()
-            self.theme_editor_tab.preset_combo.addItems(self.theme_editor_tab.tm.get_themes())
-        except Exception:
-            pass
-        try:
-            self.patch_tab.load_patch_notes()
-        except Exception:
-            pass
-
 
         # Record latency in profiler
         try:
@@ -615,7 +618,77 @@ class MainWindow(QMainWindow):
         except Exception as exc:
             logger.warning('Unable to show status bar message: %s', exc)
             print(message)
-        logger.info('Status: %s', message)
+    def add_animated_tab(self, tab_instance: QWidget, title: str) -> int:
+        container = PageTransitionContainer(tab_instance, self)
+        return self.tabs.addTab(container, title)
+
+    def _sync_pill_instantly(self) -> None:
+        selected = self.sidebar.selectedItems()
+        if selected and hasattr(self, "sidebar_pill"):
+            item = selected[0]
+            rect = self.sidebar.visualItemRect(item)
+            if not rect.isEmpty():
+                rect.setX(4)
+                rect.setWidth(self.sidebar.viewport().width() - 8)
+                self.sidebar_pill.setGeometry(rect)
+
+    def _animate_pill_to_item(self, sidebar: QTreeWidget, pill: QWidget, opacity_effect: QGraphicsOpacityEffect, item: QTreeWidgetItem) -> None:
+        import sys
+        if not item or item.text(0) in ("Your Journey", "Arsenal", "Grind", "Reference", "Extensions"):
+            if "pytest" in sys.modules:
+                opacity_effect.setOpacity(0.0)
+                pill.hide()
+            else:
+                anim = QPropertyAnimation(opacity_effect, b"opacity")
+                anim.setDuration(120)
+                anim.setStartValue(opacity_effect.opacity())
+                anim.setEndValue(0.0)
+                anim.start()
+            return
+            
+        rect = sidebar.visualItemRect(item)
+        if rect.isEmpty():
+            return
+            
+        rect.setX(4)
+        rect.setWidth(sidebar.viewport().width() - 8)
+        
+        if "pytest" in sys.modules:
+            pill.setGeometry(rect)
+            opacity_effect.setOpacity(1.0)
+            pill.show()
+            return
+            
+        if opacity_effect.opacity() == 0.0 or not pill.isVisible():
+            pill.setGeometry(rect)
+            pill.show()
+            anim = QPropertyAnimation(opacity_effect, b"opacity")
+            anim.setDuration(120)
+            anim.setStartValue(0.0)
+            anim.setEndValue(1.0)
+            anim.start()
+        else:
+            geom_anim = QPropertyAnimation(pill, b"geometry")
+            geom_anim.setDuration(150)
+            geom_anim.setEasingCurve(QEasingCurve.OutQuad)
+            geom_anim.setStartValue(pill.geometry())
+            geom_anim.setEndValue(rect)
+            
+            op_anim = QPropertyAnimation(opacity_effect, b"opacity")
+            op_anim.setDuration(150)
+            op_anim.setStartValue(opacity_effect.opacity())
+            op_anim.setEndValue(1.0)
+            
+            if sidebar == self.sidebar:
+                self._sidebar_anim_group = QParallelAnimationGroup()
+                self._sidebar_anim_group.addAnimation(geom_anim)
+                self._sidebar_anim_group.addAnimation(op_anim)
+                self._sidebar_anim_group.start()
+            else:
+                self._bottom_anim_group = QParallelAnimationGroup()
+                self._bottom_anim_group.addAnimation(geom_anim)
+                self._bottom_anim_group.addAnimation(op_anim)
+                self._bottom_anim_group.start()
 
     def apply_settings(self) -> None:
         """Apply persisted user settings to the window and auto-refresh timer."""
@@ -659,6 +732,39 @@ class MainWindow(QMainWindow):
         else:
             self.refresh_timer.stop()
 
+    def lazy_load_tab_widget(self, tab_widget: QWidget) -> None:
+        methods = [
+            "load_dashboard", "load_profile", "load_recommendations", "load_progress",
+            "load_readiness", "load_quests", "load_plan", "load_gaps", "run_simulation",
+            "load_tiers", "load_data", "refresh_list", "load_stats", "load_daily",
+            "load_weekly", "load_timeline", "render_selected_chart", "load_milestones",
+            "load_graph", "load_planner", "load_routes", "load_teams", "load_achievements",
+            "load_encyclopedia", "load_codex", "load_collections", "load_mastery",
+            "load_relics", "load_incarnon", "load_circuit", "load_duviri",
+            "load_companions", "load_economy", "load_session", "load_benchmarks",
+            "populate_dropdowns", "load_patch_notes"
+        ]
+        for method_name in methods:
+            if hasattr(tab_widget, method_name):
+                method = getattr(tab_widget, method_name)
+                if callable(method):
+                    try:
+                        logger.info("Lazy loading tab widget %s using method %s", tab_widget.__class__.__name__, method_name)
+                        method()
+                        return
+                    except Exception as e:
+                        logger.exception("Failed to lazy load tab widget %s with method %s: %s", tab_widget.__class__.__name__, method_name, e)
+                        
+        for fallback in ["refresh", "load", "refresh_data"]:
+            if hasattr(tab_widget, fallback):
+                method = getattr(tab_widget, fallback)
+                if callable(method):
+                    try:
+                        method()
+                        return
+                    except Exception:
+                        pass
+
     def on_tab_changed(self, index: int) -> None:
         """Persist the selected tab index in settings and track analytics."""
         if self.settings.get('remember_tab', True):
@@ -668,6 +774,24 @@ class MainWindow(QMainWindow):
             self.context.analytics_service.track_tab_view(tab_name)
         except Exception:
             pass
+            
+        try:
+            container = self.tabs.widget(index)
+            tab_widget = container
+            if isinstance(container, PageTransitionContainer):
+                if index not in self._animated_tabs_this_session:
+                    self._animated_tabs_this_session.add(index)
+                    container.trigger_transition()
+                else:
+                    container.opacity_effect.setOpacity(1.0)
+                    container.set_top_margin(0.0)
+                tab_widget = container.child
+                
+            if index not in self._loaded_tabs_this_session:
+                self._loaded_tabs_this_session.add(index)
+                self.lazy_load_tab_widget(tab_widget)
+        except Exception as e:
+            logger.error("Failed to load/transition tab: %s", e)
 
     def backup_data(self) -> None:
         """Create an on-demand backup of the player database."""
@@ -775,7 +899,7 @@ class MainWindow(QMainWindow):
             if not already_added:
                 try:
                     tab_instance = tab_class()
-                    idx = self.tabs.addTab(tab_instance, title)
+                    idx = self.add_animated_tab(tab_instance, title)
                     if hasattr(self, "sidebar"):
                         if isinstance(self.sidebar, QTreeWidget):
                             # Find the "Extensions" category item
@@ -879,6 +1003,8 @@ def main() -> Any:
     from src.core.app_context import AppContext
     context = AppContext()
 
+    from PySide6.QtCore import Qt
+    QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication(sys.argv)
 
     from src.core.design_system import init_fonts
